@@ -160,10 +160,10 @@ jobs:
           }
           Expand-Archive edgedriver.zip -DestinationPath "$env:RUNNER_TEMP\edgedriver" -Force
           "LOAM_NATIVE_DRIVER=$env:RUNNER_TEMP\edgedriver\msedgedriver.exe" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
-      - name: Build the shell
+      - name: Build the shell (debug — matches Tauri's WebDriver reference setup)
         run: |
           pnpm --filter @loam-app/desktop build
-          cargo build --release -p loam-desktop
+          cargo build -p loam-desktop
       - name: Run native smoke
         working-directory: apps/desktop
         run: |

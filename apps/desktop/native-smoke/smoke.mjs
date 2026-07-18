@@ -24,18 +24,54 @@ const resultsDir = resolve(root, "native-results");
 
 const args = process.argv.slice(2);
 const expectFail = args.includes("--expect-fail");
+// Debug build: matches Tauri's canonical WebDriver example, and on Windows the
+// debug binary keeps the console subsystem so startup crashes reach stderr.
 const binary =
   args.find((a) => !a.startsWith("--")) ??
   resolve(
     root,
-    "../../target/release/",
+    "../../target/debug/",
     process.platform === "win32" ? "loam-desktop.exe" : "loam-desktop",
   );
 
 if (!existsSync(binary)) {
   throw new Error(
-    `Shell binary not found at ${binary}. Build it first (cargo build --release -p loam-desktop).`,
+    `Shell binary not found at ${binary}. Build it first (cargo build -p loam-desktop).`,
   );
+}
+
+// Pre-flight: prove the app boots at all on this runner before involving any
+// WebDriver — a driver "session not created" is indistinguishable from an app
+// that crashes at startup, so settle that question first with hard evidence.
+async function preflightBareLaunch() {
+  let appOutput = "";
+  const app = spawn(binary, [], { stdio: ["ignore", "pipe", "pipe"] });
+  app.stdout.on("data", (chunk) => {
+    appOutput += chunk.toString();
+  });
+  app.stderr.on("data", (chunk) => {
+    appOutput += chunk.toString();
+  });
+  const exited = new Promise((resolveExit) => {
+    app.on("exit", (code, signal) => resolveExit({ code, signal }));
+  });
+  const verdict = await Promise.race([
+    exited,
+    new Promise((resolveAlive) => setTimeout(() => resolveAlive("alive"), 5000)),
+  ]);
+  if (verdict !== "alive") {
+    mkdirSync(resultsDir, { recursive: true });
+    writeFileSync(
+      resolve(resultsDir, "preflight.txt"),
+      `app exited during 5s bare-launch preflight: ${JSON.stringify(verdict)}\n--- output ---\n${appOutput}`,
+    );
+    throw new Error(
+      `preflight failed: the shell exited within 5s (${JSON.stringify(verdict)}); see preflight.txt`,
+    );
+  }
+  app.kill();
+  await exited.catch(() => {});
+  console.log("preflight passed: shell boots and stays alive bare");
 }
 
 let driverLog = "";
@@ -65,6 +101,9 @@ async function webdriver(method, path, body) {
     method,
     headers: { "content-type": "application/json" },
     body: body === undefined ? undefined : JSON.stringify(body),
+    // Fail fast with attribution instead of undici's 5-minute stall when the
+    // driver chain hangs (seen on Linux: session creation never answered).
+    signal: AbortSignal.timeout(60_000),
   });
   const json = await response.json();
   if (!response.ok) {
@@ -111,6 +150,8 @@ async function findReadyMain(testId) {
 }
 
 try {
+  await preflightBareLaunch();
+
   // tauri-driver needs a moment to bind its port.
   let up = false;
   for (let attempt = 0; attempt < 20 && !up; attempt += 1) {
