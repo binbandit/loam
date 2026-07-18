@@ -2,7 +2,7 @@
 
 macOS has **no WKWebView WebDriver support**, so tauri-driver cannot automate the shell there — this scripted/manual checklist is the accepted §5.12 substitute, run weekly on real hardware and before every release. Windows/Linux are automated in CI (`native-smoke` job). `pnpm checklist:check` lints this file for completeness.
 
-> Always test the **bundled `Loam.app`** (`target/release/bundle/macos/Loam.app`), never the raw `target/release/loam-desktop` binary — WKWebView does not render the embedded frontend outside the bundle context (discovered in LOA-44).
+> Always test a build that embeds the frontend: the **bundled `Loam.app`** (`target/release/bundle/macos/Loam.app`) or a binary built with `--features custom-protocol`. A bare `cargo build` binary points its webview at the Vite dev URL and renders a blank window — this masqueraded as a "bundle-only" limitation until the native smoke harness isolated it (LOA-49).
 
 ## Checklist
 
