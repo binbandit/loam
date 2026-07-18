@@ -28,7 +28,7 @@ jobs:
       - uses: ./.github/actions/setup-native # rust-toolchain.toml + Linux WebKit deps; cache keyed by Cargo.lock + toolchain
       - uses: taiki-e/install-action@v2 # gates:check exercises the cargo-deny negative fixture
         with:
-          tool: cargo-deny
+          tool: cargo-deny@0.19.4
       - name: Lint (Biome, typecheck, Clippy -D warnings)
         run: pnpm lint
       - name: Format check (Biome, rustfmt)
@@ -164,7 +164,7 @@ jobs:
       - uses: actions-rust-lang/setup-rust-toolchain@v1
       - uses: taiki-e/install-action@v2
         with:
-          tool: cargo-deny
+          tool: cargo-deny@0.19.4
       - name: Audit JS and Rust dependency licenses (offline)
         run: pnpm licenses:audit
 
