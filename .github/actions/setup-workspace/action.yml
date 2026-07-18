@@ -9,5 +9,12 @@ runs:
       with:
         node-version-file: .node-version
         cache: pnpm # store cache keyed by pnpm-lock.yaml — a lockfile change misses by design
+    # Turborepo's local cache is content-hashed, so restoring a stale cache is
+    # always safe and turns unchanged typecheck/test tasks into replays.
+    - uses: actions/cache@v4
+      with:
+        path: .turbo/cache
+        key: turbo-${{ runner.os }}-${{ github.sha }}
+        restore-keys: turbo-${{ runner.os }}-
     - run: pnpm install --frozen-lockfile
       shell: bash

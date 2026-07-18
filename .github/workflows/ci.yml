@@ -68,6 +68,15 @@ jobs:
         run: pnpm test
         env:
           NEXTEST_PROFILE: ci
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/ms-playwright
+            ~/Library/Caches/ms-playwright
+            ~\AppData\Local\ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
+          restore-keys: playwright-${{ runner.os }}-
       - name: Install Playwright browser
         run: pnpm --filter @loam-app/desktop exec playwright install ${{ runner.os == 'Linux' && '--with-deps' || '' }} chromium
       - name: Browser smoke (Playwright)
@@ -104,8 +113,10 @@ jobs:
       - name: Install WebKitGTK driver and Xvfb
         if: runner.os == 'Linux'
         run: sudo apt-get install -y -qq webkit2gtk-driver xvfb
-      - name: Install tauri-driver
-        run: cargo install tauri-driver --locked
+      - name: Install tauri-driver (cached binary)
+        uses: taiki-e/cache-cargo-install-action@v2
+        with:
+          tool: tauri-driver@2.0.6
       - name: Build the shell
         run: |
           pnpm --filter @loam-app/desktop build
