@@ -26,6 +26,9 @@ jobs:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-workspace
       - uses: ./.github/actions/setup-native # rust-toolchain.toml + Linux WebKit deps; cache keyed by Cargo.lock + toolchain
+      - uses: taiki-e/install-action@v2 # gates:check exercises the cargo-deny negative fixture
+        with:
+          tool: cargo-deny
       - name: Lint (Biome, typecheck, Clippy -D warnings)
         run: pnpm lint
       - name: Format check (Biome, rustfmt)
