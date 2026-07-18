@@ -21,3 +21,6 @@ loam-core = { path = "../../../crates/loam-core" }
 
 [lints]
 workspace = true
+
+[dev-dependencies]
+tauri = { version = "2.11.5", features = ["test"] }
