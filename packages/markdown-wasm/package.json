@@ -1,0 +1,13 @@
+{
+  "name": "@loam-app/markdown-wasm",
+  "version": "0.0.0",
+  "private": true,
+  "license": "AGPL-3.0-only",
+  "type": "module",
+  "scripts": {
+    "dev": "node ../../scripts/workspace-task.mjs dev markdown-wasm",
+    "build": "node ../../scripts/workspace-task.mjs build markdown-wasm",
+    "test": "node ../../scripts/workspace-task.mjs test markdown-wasm",
+    "typecheck": "tsc --noEmit"
+  }
+}

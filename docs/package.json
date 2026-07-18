@@ -1,0 +1,12 @@
+{
+  "name": "@loam-app/docs",
+  "version": "0.0.0",
+  "private": true,
+  "license": "AGPL-3.0-only",
+  "type": "module",
+  "scripts": {
+    "dev": "node ../scripts/workspace-task.mjs dev docs",
+    "build": "node ../scripts/workspace-task.mjs build docs",
+    "test": "node ../scripts/workspace-task.mjs test docs"
+  }
+}

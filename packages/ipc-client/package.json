@@ -1,0 +1,13 @@
+{
+  "name": "@loam-app/ipc-client",
+  "version": "0.0.0",
+  "private": true,
+  "license": "AGPL-3.0-only",
+  "type": "module",
+  "scripts": {
+    "dev": "node ../../scripts/workspace-task.mjs dev ipc-client",
+    "build": "node ../../scripts/workspace-task.mjs build ipc-client",
+    "test": "node ../../scripts/workspace-task.mjs test ipc-client",
+    "typecheck": "tsc --noEmit"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "name": "@loam-app/plugin-sdk",
+  "version": "0.0.0",
+  "private": false,
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "dev": "node ../../scripts/workspace-task.mjs dev plugin-sdk",
+    "build": "node ../../scripts/workspace-task.mjs build plugin-sdk",
+    "test": "node ../../scripts/workspace-task.mjs test plugin-sdk",
+    "typecheck": "tsc --noEmit"
+  }
+}
