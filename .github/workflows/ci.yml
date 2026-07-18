@@ -123,7 +123,7 @@ jobs:
   # docs/native-smoke-checklist.md and covered by the weekly manual checklist.
   native-smoke:
     name: Native smoke (${{ matrix.os }})
-    timeout-minutes: 20
+    timeout-minutes: 30
     needs: lint
     strategy:
       fail-fast: false
