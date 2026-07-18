@@ -13,7 +13,12 @@ import { existsSync, mkdirSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 
 const DRIVER_PORT = 4445;
+// tauri-driver's --native-port DEFAULTS to 4445; it must never collide with
+// --port or the spawned native driver bind-loops forever (seen on CI).
+const NATIVE_DRIVER_PORT = 4446;
 const READY_TIMEOUT_MS = 30_000;
+// The native driver can spew retry errors endlessly; keep artifacts bounded.
+const DRIVER_LOG_LIMIT = 2 * 1024 * 1024;
 const root = resolve(import.meta.dirname, "..");
 const resultsDir = resolve(root, "native-results");
 
@@ -33,15 +38,18 @@ if (!existsSync(binary)) {
   );
 }
 
-const driverLog = [];
-const driverArgs = ["--port", String(DRIVER_PORT)];
+let driverLog = "";
+const appendDriverLog = (chunk) => {
+  driverLog = (driverLog + chunk.toString()).slice(-DRIVER_LOG_LIMIT);
+};
+const driverArgs = ["--port", String(DRIVER_PORT), "--native-port", String(NATIVE_DRIVER_PORT)];
 // GitHub's Windows runners expose the matching Edge WebDriver via EDGEWEBDRIVER.
 if (process.platform === "win32" && process.env.EDGEWEBDRIVER) {
   driverArgs.push("--native-driver", resolve(process.env.EDGEWEBDRIVER, "msedgedriver.exe"));
 }
 const driver = spawn("tauri-driver", driverArgs, { stdio: ["ignore", "pipe", "pipe"] });
-driver.stdout.on("data", (chunk) => driverLog.push(chunk.toString()));
-driver.stderr.on("data", (chunk) => driverLog.push(chunk.toString()));
+driver.stdout.on("data", appendDriverLog);
+driver.stderr.on("data", appendDriverLog);
 
 const wait = (ms) => new Promise((resolveWait) => setTimeout(resolveWait, ms));
 
@@ -63,7 +71,7 @@ let sessionId = null;
 async function captureFailureArtifacts(error) {
   mkdirSync(resultsDir, { recursive: true });
   writeFileSync(resolve(resultsDir, "error.txt"), String(error?.stack ?? error));
-  writeFileSync(resolve(resultsDir, "tauri-driver.log"), driverLog.join(""));
+  writeFileSync(resolve(resultsDir, "tauri-driver.log"), driverLog);
   if (sessionId) {
     try {
       const screenshot = await webdriver("GET", `/session/${sessionId}/screenshot`);
