@@ -23,6 +23,7 @@ defaults:
 jobs:
   lint:
     name: Lint & format
+    timeout-minutes: 20
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -53,6 +54,7 @@ jobs:
 
   test:
     name: Test (${{ matrix.os }})
+    timeout-minutes: 30
     needs: lint
     strategy:
       fail-fast: false
@@ -102,6 +104,7 @@ jobs:
   # docs/native-smoke-checklist.md and covered by the weekly manual checklist.
   native-smoke:
     name: Native smoke (${{ matrix.os }})
+    timeout-minutes: 20
     needs: lint
     strategy:
       fail-fast: false
@@ -142,6 +145,7 @@ jobs:
 
   coverage:
     name: Coverage gates
+    timeout-minutes: 20
     needs: lint
     runs-on: ubuntu-latest
     steps:
@@ -169,6 +173,7 @@ jobs:
 
   license-audit:
     name: License audit
+    timeout-minutes: 15
     needs: [test, coverage]
     runs-on: ubuntu-latest
     steps:
@@ -183,6 +188,7 @@ jobs:
 
   bundle-budget:
     name: Bundle budget
+    timeout-minutes: 10
     needs: license-audit
     runs-on: ubuntu-latest
     steps:
@@ -193,6 +199,7 @@ jobs:
 
   perf:
     name: Perf smoke
+    timeout-minutes: 5
     needs: bundle-budget
     runs-on: ubuntu-latest
     steps:
@@ -204,6 +211,7 @@ jobs:
   # workflow at all; publication is additionally gated to trusted (same-repo) runs.
   build-artifacts:
     name: Build artifacts (${{ matrix.os }})
+    timeout-minutes: 45
     needs: perf
     strategy:
       fail-fast: false
