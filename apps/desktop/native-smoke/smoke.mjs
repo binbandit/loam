@@ -173,7 +173,16 @@ try {
   if (!up) throw new Error("tauri-driver did not start");
 
   const session = await webdriver("POST", "/session", {
-    capabilities: { alwaysMatch: { "tauri:options": { application: binary } } },
+    capabilities: {
+      alwaysMatch: {
+        // webviewOptions tells msedgedriver to attach to a WebView2 APP;
+        // without it the binary is treated as an Edge browser and session
+        // creation hangs on Windows (tauri-apps/tauri#9653). Harmless on
+        // Linux's WebKitWebDriver.
+        "tauri:options": { application: binary, webviewOptions: {} },
+        browserName: "wry",
+      },
+    },
   });
   sessionId = session.sessionId;
 
