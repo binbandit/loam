@@ -122,6 +122,25 @@ jobs:
         uses: taiki-e/cache-cargo-install-action@v2
         with:
           tool: tauri-driver@2.0.6
+      # msedgedriver must match the WebView2 *runtime* version (not Edge), or
+      # the session dies with "DevToolsActivePort file doesn't exist".
+      - name: Install msedgedriver matching the WebView2 runtime
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $version = (Get-ItemProperty 'HKLM:\SOFTWARE\WOW6432Node\Microsoft\EdgeUpdate\Clients\{F3017226-FE2A-4295-8BDF-00C3A9A7E4C5}').pv
+          Write-Host "WebView2 runtime: $version"
+          $url = "https://msedgedriver.microsoft.com/$version/edgedriver_win64.zip"
+          try {
+            Invoke-WebRequest $url -OutFile edgedriver.zip
+          } catch {
+            $major = $version.Split('.')[0]
+            $fallback = (Invoke-WebRequest "https://msedgedriver.microsoft.com/LATEST_RELEASE_$major" -UseBasicParsing).Content.Trim()
+            Write-Host "Exact driver missing; using latest for major ${major}: $fallback"
+            Invoke-WebRequest "https://msedgedriver.microsoft.com/$fallback/edgedriver_win64.zip" -OutFile edgedriver.zip
+          }
+          Expand-Archive edgedriver.zip -DestinationPath "$env:RUNNER_TEMP\edgedriver" -Force
+          "LOAM_NATIVE_DRIVER=$env:RUNNER_TEMP\edgedriver\msedgedriver.exe" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
       - name: Build the shell
         run: |
           pnpm --filter @loam-app/desktop build

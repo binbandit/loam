@@ -43,9 +43,16 @@ const appendDriverLog = (chunk) => {
   driverLog = (driverLog + chunk.toString()).slice(-DRIVER_LOG_LIMIT);
 };
 const driverArgs = ["--port", String(DRIVER_PORT), "--native-port", String(NATIVE_DRIVER_PORT)];
-// GitHub's Windows runners expose the matching Edge WebDriver via EDGEWEBDRIVER.
-if (process.platform === "win32" && process.env.EDGEWEBDRIVER) {
-  driverArgs.push("--native-driver", resolve(process.env.EDGEWEBDRIVER, "msedgedriver.exe"));
+// Windows needs an msedgedriver matching the WebView2 RUNTIME version.
+// LOAM_NATIVE_DRIVER is set by CI (registry-matched download); EDGEWEBDRIVER
+// (Edge-matched) is the local-dev fallback.
+if (process.platform === "win32") {
+  const nativeDriver =
+    process.env.LOAM_NATIVE_DRIVER ??
+    (process.env.EDGEWEBDRIVER
+      ? resolve(process.env.EDGEWEBDRIVER, "msedgedriver.exe")
+      : undefined);
+  if (nativeDriver) driverArgs.push("--native-driver", nativeDriver);
 }
 const driver = spawn("tauri-driver", driverArgs, { stdio: ["ignore", "pipe", "pipe"] });
 driver.stdout.on("data", appendDriverLog);
