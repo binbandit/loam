@@ -11,4 +11,9 @@ test("the web app entry boots in a real browser with the mock transport", async 
     Object.keys(window).some((key) => key.startsWith("__TAURI")),
   );
   expect(hasTauriGlobal).toBe(false);
+  // First-run entry action (§4.4); in the browser the mock picker is a no-op.
+  const openFolder = page.getByRole("button", { name: "Open folder" });
+  await expect(openFolder).toBeVisible();
+  await openFolder.click();
+  await expect(page.locator("main")).toHaveAttribute("data-ready", "true");
 });
