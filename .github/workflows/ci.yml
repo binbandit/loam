@@ -118,9 +118,10 @@ jobs:
           if-no-files-found: ignore
           retention-days: 7
 
-# Native shell smoke via tauri-driver (LOA-49). Windows + Linux only: macOS
-  # has no WKWebView WebDriver support — that accepted gap is documented in
-  # docs/native-smoke-checklist.md and covered by the weekly manual checklist.
+# Native shell smoke (LOA-49): tauri-driver drives the page on Windows/Linux.
+  # macOS has no WKWebView WebDriver, so its leg is a boot-level smoke (process
+  # alive + real window + screenshot artifact); page-level macOS checks remain
+  # in docs/native-smoke-checklist.md.
   native-smoke:
     name: Native smoke (${{ matrix.os }})
     timeout-minutes: 30
@@ -128,7 +129,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest]
+        os: [ubuntu-latest, windows-latest, macos-latest]
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
@@ -138,6 +139,7 @@ jobs:
         if: runner.os == 'Linux'
         run: sudo apt-get install -y -qq webkit2gtk-driver xvfb
       - name: Install tauri-driver (cached binary)
+        if: runner.os != 'macOS'
         uses: taiki-e/cache-cargo-install-action@v2
         with:
           tool: tauri-driver@2.0.6
@@ -171,9 +173,19 @@ jobs:
         run: |
           if [ "$RUNNER_OS" = "Linux" ]; then
             xvfb-run --auto-servernum node native-smoke/smoke.mjs
-          else
+          elif [ "$RUNNER_OS" = "Windows" ]; then
             node native-smoke/smoke.mjs
+          else
+            node native-smoke/macos-boot.mjs
           fi
+      - name: Upload macOS boot screenshot
+        if: runner.os == 'macOS' && always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: macos-boot-screenshot
+          path: apps/desktop/native-results/macos-boot.png
+          if-no-files-found: ignore
+          retention-days: 7
       - name: Upload native failure artifacts
         if: failure()
         uses: actions/upload-artifact@v4
