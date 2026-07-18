@@ -36,6 +36,8 @@ jobs:
         run: pnpm governance:check
       - name: Rename protocol self-test (§9.4)
         run: pnpm rename:check
+      - name: Security config check (§5.10)
+        run: pnpm security:check
       - name: DCO sign-off (PR commits)
         if: github.event_name == 'pull_request'
         run: |
@@ -126,8 +128,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Placeholder
-        run: echo "Bundle budget gate lands with loam-bench (E29); §5.9 budgets recorded there."
+      - uses: ./.github/actions/setup-workspace
+      - name: Cold-path bundle content check (§5.9)
+        run: pnpm bundle:check
 
   perf:
     name: Perf smoke
