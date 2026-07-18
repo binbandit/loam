@@ -38,6 +38,8 @@ jobs:
         run: pnpm rename:check
       - name: Security config check (§5.10)
         run: pnpm security:check
+      - name: Native checklist completeness (§5.12)
+        run: pnpm checklist:check
       - name: DCO sign-off (PR commits)
         if: github.event_name == 'pull_request'
         run: |
@@ -78,6 +80,47 @@ jobs:
             apps/desktop/playwright-report/
             apps/desktop/test-results/
             target/nextest/ci/junit.xml
+          if-no-files-found: ignore
+          retention-days: 7
+
+# Native shell smoke via tauri-driver (LOA-49). Windows + Linux only: macOS
+  # has no WKWebView WebDriver support — that accepted gap is documented in
+  # docs/native-smoke-checklist.md and covered by the weekly manual checklist.
+  native-smoke:
+    name: Native smoke (${{ matrix.os }})
+    needs: lint
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-workspace
+      - uses: ./.github/actions/setup-native
+      - name: Install WebKitGTK driver and Xvfb
+        if: runner.os == 'Linux'
+        run: sudo apt-get install -y -qq webkit2gtk-driver xvfb
+      - name: Install tauri-driver
+        run: cargo install tauri-driver --locked
+      - name: Build the shell
+        run: |
+          pnpm --filter @loam-app/desktop build
+          cargo build --release -p loam-desktop
+      - name: Run native smoke
+        working-directory: apps/desktop
+        run: |
+          if [ "$RUNNER_OS" = "Linux" ]; then
+            xvfb-run --auto-servernum node native-smoke/smoke.mjs
+          else
+            node native-smoke/smoke.mjs
+          fi
+      - name: Upload native failure artifacts
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: native-smoke-${{ matrix.os }}
+          path: apps/desktop/native-results/
           if-no-files-found: ignore
           retention-days: 7
 

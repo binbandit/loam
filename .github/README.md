@@ -8,6 +8,7 @@ The §5.13 gate order, wired per LOA-9: **lint/format → tests (ubuntu/macos/wi
 - Caching: the pnpm store is keyed by `pnpm-lock.yaml` (actions/setup-node) and the Rust cache by `Cargo.lock` + the pinned toolchain (actions-rust-lang/setup-rust-toolchain), so lockfile or toolchain changes always miss.
 - `concurrency` cancels superseded runs per ref; `main` runs are never cancelled.
 - On failure, Playwright reports and the nextest `ci`-profile JUnit file are uploaded as artifacts (7-day retention); GitHub's default secret redaction applies and artifact paths are scoped to test output only.
-- `.github/actions/setup-workspace` is the shared Node/pnpm/dependency setup used by every job.
+- `.github/actions/setup-workspace` is the shared Node/pnpm/dependency setup used by every job; `.github/actions/setup-native` adds the pinned Rust toolchain and Linux WebKit build dependencies.
+- **Native smoke** (`native-smoke` job): tauri-driver boots and closes the packaged shell on **Windows and Linux only**. **macOS is deliberately not automated — WKWebView has no WebDriver support** (accepted §5.12 gap); it is covered instead by the weekly manual checklist in `docs/native-smoke-checklist.md`, whose completeness is linted in CI (`pnpm checklist:check`). Native failures upload a screenshot, page source, and the tauri-driver log.
 
 Issue templates, dependency automation (Renovate), and release workflows (release-please, signing) arrive with later E00/E26 stories.

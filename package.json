@@ -29,7 +29,8 @@
     "licenses:audit": "node scripts/check-js-licenses.mjs && cargo deny check licenses bans sources",
     "rename:check": "bash scripts/rename.sh --self-test",
     "bundle:check": "pnpm --filter @loam-app/desktop build && node scripts/check-bundle.mjs",
-    "security:check": "node scripts/check-security-config.mjs"
+    "security:check": "node scripts/check-security-config.mjs",
+    "checklist:check": "node scripts/check-native-checklist.mjs"
   },
   "devDependencies": {
     "@biomejs/biome": "2.5.4",
