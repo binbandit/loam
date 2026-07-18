@@ -1,0 +1,14 @@
+[package]
+name = "loam-bench"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+authors.workspace = true
+license.workspace = true
+description = "Performance harness for Loam product SLOs"
+
+[dependencies]
+loam-core = { path = "../loam-core" }
+
+[lints]
+workspace = true

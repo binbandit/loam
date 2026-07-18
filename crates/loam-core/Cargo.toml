@@ -1,0 +1,11 @@
+[package]
+name = "loam-core"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+authors.workspace = true
+license.workspace = true
+description = "Pure Rust engine for the Loam knowledge base"
+
+[lints]
+workspace = true
