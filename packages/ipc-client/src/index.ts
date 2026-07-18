@@ -1,2 +1,2 @@
-export type { IpcTransport } from "./transport";
+export type { IpcTransport, VaultInfo } from "./transport";
 export { createMockTransport, createTransport, hasNativeShell } from "./transport";

@@ -1,12 +1,24 @@
 /**
- * Minimal IPC transport seam (LOA-21). The generated typed client and the full
- * browser mock land with E06; the shape here only guarantees that the frontend
- * never touches Tauri globals directly and can always run in a plain browser.
+ * Minimal IPC transport seam (LOA-21/LOA-48). The generated typed client and
+ * the full browser mock land with E06; the shape here only guarantees that the
+ * frontend never touches Tauri globals directly and can always run in a plain
+ * browser.
  */
+
+/** Mirror of the shell's `VaultInfo` (serde camelCase). Replaced by E06. */
+export interface VaultInfo {
+  id: string;
+  root: string;
+  name: string;
+  focusedExisting: boolean;
+}
+
 export interface IpcTransport {
   readonly kind: "native" | "mock";
   /** Liveness probe used by the shell's first paint. */
   ping(): Promise<string>;
+  /** Open the native folder picker and open the chosen vault; null = cancelled. */
+  openVaultPicker(): Promise<VaultInfo | null>;
 }
 
 /** True when running inside a Tauri webview. The only Tauri-global probe allowed. */
@@ -18,6 +30,7 @@ export function createMockTransport(): IpcTransport {
   return {
     kind: "mock",
     ping: () => Promise.resolve("pong:mock"),
+    openVaultPicker: () => Promise.resolve(null),
   };
 }
 
@@ -25,6 +38,10 @@ function createNativeTransport(): IpcTransport {
   return {
     kind: "native",
     ping: () => Promise.resolve("pong:native"),
+    openVaultPicker: async () => {
+      const { invoke } = await import("@tauri-apps/api/core");
+      return invoke<VaultInfo | null>("vault_pick_and_open");
+    },
   };
 }
 
