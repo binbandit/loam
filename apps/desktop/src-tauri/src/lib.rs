@@ -94,8 +94,14 @@ pub fn run() {
         .setup(|app| {
             // loam://open deep links (registered scheme; handled Rust-side).
             use tauri_plugin_deep_link::DeepLinkExt;
+            // Dev-time scheme registration is best-effort: on bare CI runners
+            // (no xdg/registry desktop integration) it fails with ENOENT, and
+            // a scheme miss must never prevent the app from starting. Caught
+            // by the native smoke harness: the setup-hook `?` killed the app.
             #[cfg(any(target_os = "linux", windows))]
-            app.deep_link().register_all()?;
+            if let Err(error) = app.deep_link().register_all() {
+                eprintln!("loam:// scheme registration failed (non-fatal): {error}");
+            }
             let handle = app.handle().clone();
             app.deep_link().on_open_url(move |event| {
                 for url in event.urls() {
