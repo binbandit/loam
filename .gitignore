@@ -1,0 +1,9 @@
+node_modules/
+.pnpm-store/
+target/
+dist/
+coverage/
+playwright-report/
+test-results/
+.turbo/
+.DS_Store
