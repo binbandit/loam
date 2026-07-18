@@ -2,7 +2,8 @@ node_modules/
 .pnpm-store/
 target/
 dist/
-coverage/
+/coverage/
+packages/ui/coverage/
 playwright-report/
 test-results/
 .turbo/
