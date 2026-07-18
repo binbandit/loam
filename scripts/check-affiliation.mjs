@@ -1,5 +1,5 @@
 import { execFileSync } from "node:child_process";
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 
 // §1.5 trademark rule: "Obsidian" and "Linear" may appear only as nominative
@@ -32,6 +32,8 @@ const files = execFileSync(
 
 const failures = [];
 for (const file of files) {
+  // `git ls-files` still lists tracked files deleted from the working tree.
+  if (!existsSync(resolve(root, file))) continue;
   const lines = readFileSync(resolve(root, file), "utf8").split("\n");
   lines.forEach((line, index) => {
     if (denialContext.test(line)) return;

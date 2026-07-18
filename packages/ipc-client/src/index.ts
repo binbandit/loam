@@ -1,1 +1,2 @@
-export const PACKAGE_NAME = "@loam-app/ipc-client";
+export type { IpcTransport } from "./transport";
+export { createMockTransport, createTransport, hasNativeShell } from "./transport";

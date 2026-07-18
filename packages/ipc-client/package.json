@@ -9,5 +9,9 @@
     "build": "node ../../scripts/workspace-task.mjs build ipc-client",
     "test": "node ../../scripts/workspace-task.mjs test ipc-client",
     "typecheck": "tsc --noEmit"
-  }
+  },
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "types": "./src/index.ts"
 }

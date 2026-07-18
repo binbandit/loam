@@ -22,4 +22,4 @@ This is a volunteer-run open-source project. We aim to acknowledge reports and k
 ## Scope notes
 
 - Community plugins run with app privileges by design (documented in the plugin docs); reports about the *plugin platform's* safety rails (restricted mode, permission surfacing, registry checks) are in scope, while vulnerabilities in individual third-party plugins should go to their authors.
-- A full threat-model document lands in `docs/security.md` as the plugin runtime and sync features are built.
+- The native trust boundary (webview capabilities, CSP, what the shell will never grant) is documented in [`docs/security.md`](docs/security.md) and enforced by `pnpm security:check` in CI; the full threat model grows there as the plugin runtime and sync features are built.

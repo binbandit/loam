@@ -21,6 +21,8 @@ pnpm test
 pnpm lint
 pnpm format:check
 pnpm toolchain:check
+pnpm --filter @loam-app/desktop dev:native   # run the Tauri desktop shell
+pnpm --filter @loam-app/desktop build:native # unsigned production bundles
 ```
 
 Application behavior is added incrementally through the M0 and M1 Linear delivery plan.

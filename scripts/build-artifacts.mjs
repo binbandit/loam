@@ -1,5 +1,13 @@
 import { execFileSync, spawnSync } from "node:child_process";
-import { existsSync, mkdirSync, rmSync, statSync, writeFileSync } from "node:fs";
+import {
+  copyFileSync,
+  existsSync,
+  mkdirSync,
+  readdirSync,
+  rmSync,
+  statSync,
+  writeFileSync,
+} from "node:fs";
 import { join, resolve } from "node:path";
 
 const root = resolve(import.meta.dirname, "..");
@@ -68,29 +76,60 @@ artifacts.push({
   bytes: statSync(join(outDir, webName)).size,
 });
 
-// Native desktop bundle: blocked on the Tauri shell (E01). Emit an explicit
-// dependency marker instead of silently skipping.
+// Native desktop bundle: real since LOA-21 landed the Tauri shell. Unsigned
+// development bundles only; signing/notarization is E26.
 const tauriConf = join(root, "apps/desktop/src-tauri/tauri.conf.json");
 if (existsSync(tauriConf)) {
-  throw new Error(
-    "Tauri shell detected (E01 landed): replace this marker path with a real `tauri build` invocation.",
-  );
+  const native = spawnSync("pnpm", ["--filter", "@loam-app/desktop", "exec", "tauri", "build"], {
+    cwd: root,
+    stdio: "inherit",
+  });
+  if (native.status !== 0) process.exit(native.status ?? 1);
+  const bundleRoot = join(root, "target", "release", "bundle");
+  const bundleExtensions = [".dmg", ".deb", ".rpm", ".AppImage", ".msi", ".exe"];
+  const found = [];
+  const walk = (dir) => {
+    for (const entry of readdirSync(dir, { withFileTypes: true })) {
+      const path = join(dir, entry.name);
+      if (entry.isDirectory() && !entry.name.endsWith(".app")) walk(path);
+      else if (entry.isFile() && bundleExtensions.some((ext) => entry.name.endsWith(ext))) {
+        found.push(path);
+      }
+    }
+  };
+  walk(bundleRoot);
+  if (found.length === 0) {
+    throw new Error(`tauri build succeeded but no bundles were found under ${bundleRoot}`);
+  }
+  for (const bundle of found) {
+    const ext = bundle.slice(bundle.lastIndexOf("."));
+    const kindSuffix = ext.slice(1).toLowerCase();
+    const name = `${artifactName(`desktop-${kindSuffix}`, os, arch, sha)}${ext}`;
+    copyFileSync(bundle, join(outDir, name));
+    artifacts.push({
+      file: name,
+      kind: "desktop-bundle",
+      status: "built",
+      bytes: statSync(join(outDir, name)).size,
+    });
+  }
+} else {
+  const markerName = `${artifactName("desktop", os, arch, sha)}.skipped.json`;
+  const marker = {
+    status: "skipped",
+    reason: "E01 dependency: Tauri shell not yet present (apps/desktop/src-tauri/tauri.conf.json)",
+    os,
+    arch,
+    commit: sha,
+  };
+  writeFileSync(join(outDir, markerName), `${JSON.stringify(marker, null, 2)}\n`);
+  artifacts.push({
+    file: markerName,
+    kind: "desktop-bundle",
+    status: "skipped",
+    bytes: statSync(join(outDir, markerName)).size,
+  });
 }
-const markerName = `${artifactName("desktop", os, arch, sha)}.skipped.json`;
-const marker = {
-  status: "skipped",
-  reason: "E01 dependency: Tauri shell not yet present (apps/desktop/src-tauri/tauri.conf.json)",
-  os,
-  arch,
-  commit: sha,
-};
-writeFileSync(join(outDir, markerName), `${JSON.stringify(marker, null, 2)}\n`);
-artifacts.push({
-  file: markerName,
-  kind: "desktop-bundle",
-  status: "skipped",
-  bytes: statSync(join(outDir, markerName)).size,
-});
 
 // Machine-readable size metadata for later §5.9 budget enforcement (<30 MB installer).
 writeFileSync(

@@ -25,7 +25,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-workspace
-      - uses: actions-rust-lang/setup-rust-toolchain@v1 # toolchain from rust-toolchain.toml; cache keyed by Cargo.lock + toolchain
+      - uses: ./.github/actions/setup-native # rust-toolchain.toml + Linux WebKit deps; cache keyed by Cargo.lock + toolchain
       - name: Lint (Biome, typecheck, Clippy -D warnings)
         run: pnpm lint
       - name: Format check (Biome, rustfmt)
@@ -53,7 +53,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-workspace
-      - uses: actions-rust-lang/setup-rust-toolchain@v1
+      - uses: ./.github/actions/setup-native
       - uses: taiki-e/install-action@v2
         with:
           tool: cargo-nextest
@@ -86,7 +86,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-workspace
-      - uses: actions-rust-lang/setup-rust-toolchain@v1
+      - uses: actions-rust-lang/setup-rust-toolchain@v1 # loam-core only; no Tauri system deps needed
         with:
           components: llvm-tools
       - uses: taiki-e/install-action@v2
@@ -151,6 +151,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-workspace
+      - uses: ./.github/actions/setup-native
       - name: Build unsigned dev artifacts (or emit E01 skip markers)
         run: node scripts/build-artifacts.mjs
       - name: Publish artifacts (trusted workflows only)
