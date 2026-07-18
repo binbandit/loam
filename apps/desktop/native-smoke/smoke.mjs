@@ -97,14 +97,24 @@ driver.stderr.on("data", appendDriverLog);
 const wait = (ms) => new Promise((resolveWait) => setTimeout(resolveWait, ms));
 
 async function webdriver(method, path, body) {
-  const response = await fetch(`http://127.0.0.1:${DRIVER_PORT}${path}`, {
-    method,
-    headers: { "content-type": "application/json" },
-    body: body === undefined ? undefined : JSON.stringify(body),
-    // Fail fast with attribution instead of undici's 5-minute stall when the
-    // driver chain hangs (seen on Linux: session creation never answered).
-    signal: AbortSignal.timeout(60_000),
-  });
+  let response;
+  try {
+    response = await fetch(`http://127.0.0.1:${DRIVER_PORT}${path}`, {
+      method,
+      headers: { "content-type": "application/json" },
+      body: body === undefined ? undefined : JSON.stringify(body),
+      // Fail fast instead of undici's 5-minute stall when the driver chain
+      // hangs (seen on Linux: session creation never answered).
+      signal: AbortSignal.timeout(60_000),
+    });
+  } catch (error) {
+    // Attribute timeouts to the exact endpoint; a bare DOMException tells the
+    // log reader nothing.
+    if (error instanceof DOMException && error.name === "TimeoutError") {
+      throw new Error(`${method} ${path} timed out after 60s (driver chain hung)`);
+    }
+    throw error;
+  }
   const json = await response.json();
   if (!response.ok) {
     throw new Error(`${method} ${path} failed: ${JSON.stringify(json.value ?? json)}`);
