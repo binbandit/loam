@@ -37,4 +37,10 @@ Dev (`devCsp`): same policy plus the Vite dev server (`http://localhost:5173`, `
 
 ## Runtime verification status
 
-Structural guarantees are enforced by `pnpm security:check` in CI. Runtime negative tests — attempting an out-of-scope file read and an external fetch from inside the real webview — land with the tauri-driver harness (LOA-49) since they need a native window to drive.
+Three layers enforce this boundary today, all in CI:
+
+1. **Structural** — `pnpm security:check` validates the capability manifests, plugin crate list, CSP source allow-lists, platform exactness, and asset-protocol state against this document's claims.
+2. **IPC bridge (AC1/AC2)** — Rust tests in `apps/desktop/src-tauri/src/lib.rs` drive the real invoke pipeline (Tauri mock runtime with the **real generated context**, so the shipped ACL is enforced) on a webview labeled `main`: `plugin:fs|read_text_file` of an outside path, `plugin:shell|execute`/`open`, and `plugin:process|exit` are all rejected; an ungranted core plugin (`plugin:image|new`) is denied by the ACL; and a granted command (`plugin:app|version`) succeeds as the positive control proving the denials are real.
+3. **CSP (AC3)** — a Playwright test (`apps/desktop/e2e/csp.spec.ts`) serializes the production `csp` from `tauri.conf.json`, applies it to the built app in a real browser engine, and proves the app boots while an external `fetch` is blocked by CSP (with an instrumented route making any leak loud).
+
+Remaining gap, deliberately deferred to LOA-49: the same probes executed inside the *platform* webviews (WKWebView/WebView2/WebKitGTK) via tauri-driver, which needs a driven native window and Windows/Linux runners.
