@@ -20,6 +20,14 @@ defaults:
   run:
     shell: bash
 
+# Local-first, private by default (§2) applies to our tooling too: no tool
+# telemetry in any environment. DO_NOT_TRACK is the cross-tool standard;
+# explicit flags cover tools that predate it. Astro is preemptive for E27.
+env:
+  DO_NOT_TRACK: "1"
+  TURBO_TELEMETRY_DISABLED: "1"
+  ASTRO_TELEMETRY_DISABLED: "1"
+
 jobs:
   lint:
     name: Lint & format

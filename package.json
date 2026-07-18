@@ -30,7 +30,8 @@
     "rename:check": "bash scripts/rename.sh --self-test",
     "bundle:check": "pnpm --filter @loam-app/desktop build && node scripts/check-bundle.mjs",
     "security:check": "node scripts/check-security-config.mjs",
-    "checklist:check": "node scripts/check-native-checklist.mjs"
+    "checklist:check": "node scripts/check-native-checklist.mjs",
+    "postinstall": "turbo telemetry disable || exit 0"
   },
   "devDependencies": {
     "@biomejs/biome": "2.5.4",

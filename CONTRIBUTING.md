@@ -13,6 +13,8 @@ pnpm dev
 
 Toolchain versions are pinned in `.node-version`, `package.json` (`packageManager`), and `rust-toolchain.toml`. `pnpm toolchain:check` verifies your environment matches.
 
+Loam is private by default (§2), and that includes our tooling: `pnpm install` disables Turborepo telemetry on your machine (postinstall), and CI sets `DO_NOT_TRACK=1` plus explicit opt-out flags for every tool. If you add a tool that phones home, disable its telemetry in the same commit.
+
 ## Quality gates
 
 Run these before pushing; CI enforces the same commands:
