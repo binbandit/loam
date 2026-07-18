@@ -93,10 +93,12 @@ fn rows(menu: &'static str) -> impl Iterator<Item = &'static CommandRow> {
 /// macOS app menu). Called from `run()` only — native menu construction must
 /// happen on the main thread.
 pub fn build<R: Runtime>(app: &AppHandle<R>) -> tauri::Result<Menu<R>> {
-    let mut menu = MenuBuilder::new(app);
+    // Shadowed (not `mut`): the macOS app menu is the only platform-specific
+    // top-level entry, and `mut` would be unused on the other platforms.
+    let menu = MenuBuilder::new(app);
 
     #[cfg(target_os = "macos")]
-    {
+    let menu = {
         let mut app_menu = SubmenuBuilder::new(app, "Loam").about(None).separator();
         for row in rows("app") {
             app_menu = app_menu.item(&command_item(app, row)?);
@@ -111,8 +113,8 @@ pub fn build<R: Runtime>(app: &AppHandle<R>) -> tauri::Result<Menu<R>> {
             .separator()
             .quit()
             .build()?;
-        menu = menu.item(&app_menu);
-    }
+        menu.item(&app_menu)
+    };
 
     let mut file = SubmenuBuilder::new(app, "File");
     for row in rows("file") {
