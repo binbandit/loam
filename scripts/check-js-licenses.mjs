@@ -78,6 +78,8 @@ selfTest();
 const result = spawnSync("pnpm", ["licenses", "list", "--prod", "--json"], {
   cwd: root,
   encoding: "utf8",
+  // pnpm is a .cmd shim on Windows, resolvable only through a shell.
+  shell: process.platform === "win32",
   maxBuffer: 64 * 1024 * 1024,
 });
 if (result.status !== 0) {

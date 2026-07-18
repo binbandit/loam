@@ -28,7 +28,12 @@ const gates = [
 
 const failures = [];
 for (const gate of gates) {
-  const result = spawnSync(gate.command, gate.args, { cwd: root, encoding: "utf8" });
+  const result = spawnSync(gate.command, gate.args, {
+    cwd: root,
+    encoding: "utf8",
+    // pnpm is a .cmd shim on Windows, resolvable only through a shell.
+    shell: process.platform === "win32",
+  });
   const output = `${result.stdout ?? ""}${result.stderr ?? ""}`;
   if (result.status === 0) {
     failures.push(`${gate.name}: expected a nonzero exit, but the gate passed the bad fixture`);

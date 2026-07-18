@@ -3,6 +3,8 @@ import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 
 const root = resolve(import.meta.dirname, "..");
+// pnpm is a .cmd shim on Windows, resolvable only through a shell.
+const isWindows = process.platform === "win32";
 const manifest = JSON.parse(readFileSync(resolve(root, "package.json"), "utf8"));
 const pinned = {
   node: readFileSync(resolve(root, ".node-version"), "utf8").trim(),
@@ -13,7 +15,7 @@ const pinned = {
 };
 const installed = {
   node: process.versions.node,
-  pnpm: execFileSync("pnpm", ["--version"], { encoding: "utf8" }).trim(),
+  pnpm: execFileSync("pnpm", ["--version"], { encoding: "utf8", shell: isWindows }).trim(),
   rust: execFileSync("rustc", ["--version"], { encoding: "utf8" }).split(" ")[1],
 };
 

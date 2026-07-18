@@ -57,6 +57,8 @@ const artifacts = [];
 const build = spawnSync("pnpm", ["--filter", "@loam-app/desktop", "build"], {
   cwd: root,
   stdio: "inherit",
+  // pnpm is a .cmd shim on Windows, resolvable only through a shell.
+  shell: process.platform === "win32",
 });
 if (build.status !== 0) process.exit(build.status ?? 1);
 const webName = `${artifactName("web", os, arch, sha)}.tar.gz`;
@@ -83,6 +85,7 @@ if (existsSync(tauriConf)) {
   const native = spawnSync("pnpm", ["--filter", "@loam-app/desktop", "exec", "tauri", "build"], {
     cwd: root,
     stdio: "inherit",
+    shell: process.platform === "win32",
   });
   if (native.status !== 0) process.exit(native.status ?? 1);
   const bundleRoot = join(root, "target", "release", "bundle");
