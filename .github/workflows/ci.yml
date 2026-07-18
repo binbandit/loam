@@ -9,10 +9,12 @@ on:
 permissions:
   contents: read
 
-# A superseding commit cancels obsolete in-progress runs on the same ref; main is never cancelled.
+# A superseding commit cancels obsolete in-progress runs on the same ref —
+# including main: only the newest push's verdict matters, and cancelled runs
+# stop billing immediately.
 concurrency:
   group: ci-${{ github.ref }}
-  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+  cancel-in-progress: true
 
 defaults:
   run:
