@@ -62,14 +62,13 @@ const build = spawnSync("pnpm", ["--filter", "@loam-app/desktop", "build"], {
 });
 if (build.status !== 0) process.exit(build.status ?? 1);
 const webName = `${artifactName("web", os, arch, sha)}.tar.gz`;
-const tar = spawnSync(
-  "tar",
-  ["czf", join(outDir, webName), "-C", join(root, "apps/desktop/dist"), "."],
-  {
-    cwd: root,
-    stdio: "inherit",
-  },
-);
+// The archive path must be RELATIVE (cwd-scoped): GNU tar parses a colon in
+// the `f` argument as legacy remote host:file syntax, so `D:\...` breaks on
+// Windows ("Cannot connect to D: resolve failed").
+const tar = spawnSync("tar", ["czf", webName, "-C", join(root, "apps/desktop/dist"), "."], {
+  cwd: outDir,
+  stdio: "inherit",
+});
 if (tar.status !== 0) process.exit(tar.status ?? 1);
 artifacts.push({
   file: webName,
