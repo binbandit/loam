@@ -167,10 +167,12 @@ try {
   });
   sessionId = session.sessionId;
 
+  // Wait for the app to render first — the title is empty until the page
+  // loads, so asserting it before readiness is a race.
+  await findReadyMain(expectFail ? "does-not-exist" : "app-main");
+
   const title = await webdriver("GET", `/session/${sessionId}/title`);
   if (title !== "Loam") throw new Error(`unexpected window title: ${title}`);
-
-  await findReadyMain(expectFail ? "does-not-exist" : "app-main");
 
   await webdriver("DELETE", `/session/${sessionId}`);
   sessionId = null;
