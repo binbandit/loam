@@ -1,0 +1,162 @@
+# §5.13 gate order: lint/format → tests → license audit → bundle budget → perf → build artifacts.
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+# A superseding commit cancels obsolete in-progress runs on the same ref; main is never cancelled.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  lint:
+    name: Lint & format
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-workspace
+      - uses: actions-rust-lang/setup-rust-toolchain@v1 # toolchain from rust-toolchain.toml; cache keyed by Cargo.lock + toolchain
+      - name: Lint (Biome, typecheck, Clippy -D warnings)
+        run: pnpm lint
+      - name: Format check (Biome, rustfmt)
+        run: pnpm format:check
+      - name: Quality gates reject bad fixtures
+        run: pnpm gates:check
+      - name: Governance (licenses, DCO self-test, affiliation scan)
+        run: pnpm governance:check
+      - name: Rename protocol self-test (§9.4)
+        run: pnpm rename:check
+      - name: DCO sign-off (PR commits)
+        if: github.event_name == 'pull_request'
+        run: |
+          git fetch --no-tags origin "${{ github.base_ref }}"
+          node scripts/check-dco.mjs "origin/${{ github.base_ref }}..HEAD"
+
+  test:
+    name: Test (${{ matrix.os }})
+    needs: lint
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-workspace
+      - uses: actions-rust-lang/setup-rust-toolchain@v1
+      - uses: taiki-e/install-action@v2
+        with:
+          tool: cargo-nextest
+      - name: Unit and workspace tests
+        run: pnpm test
+        env:
+          NEXTEST_PROFILE: ci
+      - name: Install Playwright browser
+        run: pnpm --filter @loam-app/desktop exec playwright install ${{ runner.os == 'Linux' && '--with-deps' || '' }} chromium
+      - name: Browser smoke (Playwright)
+        run: pnpm test:e2e
+        env:
+          CI: "true"
+      - name: Upload failure reports
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-reports-${{ matrix.os }}
+          path: |
+            apps/desktop/playwright-report/
+            apps/desktop/test-results/
+            target/nextest/ci/junit.xml
+          if-no-files-found: ignore
+          retention-days: 7
+
+  coverage:
+    name: Coverage gates
+    needs: lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-workspace
+      - uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          components: llvm-tools
+      - uses: taiki-e/install-action@v2
+        with:
+          tool: cargo-nextest,cargo-llvm-cov
+      - name: Collect coverage and enforce §5.12 gates
+        run: pnpm coverage
+      - name: Upload coverage reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-reports
+          path: |
+            coverage/
+            packages/ui/coverage/coverage-summary.json
+            packages/ui/coverage/lcov.info
+          if-no-files-found: ignore
+          retention-days: 7
+
+  license-audit:
+    name: License audit
+    needs: [test, coverage]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-workspace
+      - uses: actions-rust-lang/setup-rust-toolchain@v1
+      - uses: taiki-e/install-action@v2
+        with:
+          tool: cargo-deny
+      - name: Audit JS and Rust dependency licenses (offline)
+        run: pnpm licenses:audit
+
+  bundle-budget:
+    name: Bundle budget
+    needs: license-audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Placeholder
+        run: echo "Bundle budget gate lands with loam-bench (E29); §5.9 budgets recorded there."
+
+  perf:
+    name: Perf smoke
+    needs: bundle-budget
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Placeholder
+        run: echo "Perf gate lands with loam-bench (E29)."
+
+# Unsigned development artifacts (LOA-11). No signing secrets exist in this
+  # workflow at all; publication is additionally gated to trusted (same-repo) runs.
+  build-artifacts:
+    name: Build artifacts (${{ matrix.os }})
+    needs: perf
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-workspace
+      - name: Build unsigned dev artifacts (or emit E01 skip markers)
+        run: node scripts/build-artifacts.mjs
+      - name: Publish artifacts (trusted workflows only)
+        if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+        uses: actions/upload-artifact@v4
+        with:
+          name: dev-artifacts-${{ matrix.os }}
+          path: dist/artifacts/
+          retention-days: 7

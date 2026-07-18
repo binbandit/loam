@@ -1,0 +1,17 @@
+# Negative fixture: identical to /deny.toml but with AGPL-3.0-only removed from
+# the allow list, so the workspace's own crates must be rejected. Proves the
+# cargo-deny gate actually denies non-allowed licenses. Used by `pnpm gates:check`.
+
+[graph]
+all-features = true
+
+[licenses]
+version = 2
+allow = [
+  "MIT",
+  "ISC",
+  "Apache-2.0",
+  "BSD-2-Clause",
+  "BSD-3-Clause",
+]
+exceptions = []

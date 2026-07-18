@@ -1,0 +1,38 @@
+{
+  "name": "loam",
+  "version": "0.0.0",
+  "private": true,
+  "description": "An open-source, local-first knowledge base.",
+  "license": "AGPL-3.0-only",
+  "packageManager": "pnpm@11.13.1",
+  "engines": {
+    "node": ">=26.5.0 <27",
+    "pnpm": ">=11.13.1 <12"
+  },
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "test": "pnpm workspace:check && pnpm toolchain:check && turbo run test && cargo nextest run --workspace",
+    "lint": "pnpm workspace:check && biome check . && turbo run typecheck && cargo clippy --workspace --all-targets -- -D warnings",
+    "typecheck": "turbo run typecheck",
+    "format": "biome format --write . && cargo fmt --all",
+    "format:check": "biome format . && cargo fmt --all --check",
+    "gates:check": "node scripts/check-quality-gates.mjs",
+    "governance:check": "node scripts/check-licenses.mjs && node scripts/check-dco.mjs --self-test && node scripts/check-affiliation.mjs",
+    "workspace:check": "node scripts/check-workspace.mjs",
+    "toolchain:check": "node scripts/check-toolchain.mjs",
+    "test:e2e": "pnpm --filter @loam-app/desktop test:e2e",
+    "coverage": "pnpm coverage:ts && pnpm coverage:rust && node scripts/check-coverage.mjs",
+    "coverage:ts": "pnpm --filter @loam-app/ui test:coverage",
+    "coverage:rust": "node scripts/coverage-rust.mjs",
+    "coverage:check": "node scripts/check-coverage.mjs",
+    "licenses:audit": "node scripts/check-js-licenses.mjs && cargo deny check licenses bans sources",
+    "rename:check": "bash scripts/rename.sh --self-test"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.5.4",
+    "@types/node": "^26.1.1",
+    "turbo": "2.10.5",
+    "typescript": "7.0.2"
+  }
+}

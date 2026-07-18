@@ -1,0 +1,4 @@
+{
+  "MIT": [{ "name": "friendly-lib", "versions": ["1.0.0"], "license": "MIT" }],
+  "BUSL-1.1": [{ "name": "source-available-db", "versions": ["3.0.0"], "license": "BUSL-1.1" }]
+}

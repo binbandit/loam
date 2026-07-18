@@ -1,0 +1,13 @@
+name: Setup workspace
+description: Install pinned Node + pnpm and workspace dependencies with store caching
+
+runs:
+  using: composite
+  steps:
+    - uses: pnpm/action-setup@v4 # reads the pinned version from package.json#packageManager
+    - uses: actions/setup-node@v4
+      with:
+        node-version-file: .node-version
+        cache: pnpm # store cache keyed by pnpm-lock.yaml — a lockfile change misses by design
+    - run: pnpm install --frozen-lockfile
+      shell: bash
