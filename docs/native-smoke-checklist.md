@@ -1,6 +1,6 @@
 # macOS native smoke checklist (weekly)
 
-macOS has **no WKWebView WebDriver support**, so tauri-driver cannot automate the shell there — this scripted/manual checklist is the accepted §5.12 substitute, run weekly on real hardware and before every release. Windows/Linux are automated in CI (`native-smoke` job). `pnpm checklist:check` lints this file for completeness.
+macOS has **no WKWebView WebDriver support**, so tauri-driver cannot automate page-level checks there. CI runs an automated **boot smoke** on macOS (process alive + window on screen + screenshot artifact); everything below the boot level in this scripted/manual checklist is the accepted §5.12 substitute, run weekly on real hardware and before every release. Windows/Linux are fully automated in CI (`native-smoke` job). `pnpm checklist:check` lints this file for completeness.
 
 > Always test a build that embeds the frontend: the **bundled `Loam.app`** (`target/release/bundle/macos/Loam.app`) or a binary built with `--features custom-protocol`. A bare `cargo build` binary points its webview at the Vite dev URL and renders a blank window — this masqueraded as a "bundle-only" limitation until the native smoke harness isolated it (LOA-49).
 
