@@ -77,7 +77,18 @@ jobs:
         with:
           tool: cargo-nextest
       - name: Unit and workspace tests
-        run: pnpm test
+        run: |
+          if [ "$RUNNER_OS" = "Windows" ]; then
+            # 0xC0000142 process-init failures are a known Windows-runner
+            # transient; real test failures fail all three attempts.
+            for attempt in 1 2 3; do
+              pnpm test && break
+              [ "$attempt" = 3 ] && exit 1
+              echo "::warning::pnpm test attempt $attempt failed; retrying"
+            done
+          else
+            pnpm test
+          fi
         env:
           NEXTEST_PROFILE: ci
       - name: Cache Playwright browsers
