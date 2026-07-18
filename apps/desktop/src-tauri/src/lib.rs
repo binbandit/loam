@@ -117,12 +117,16 @@ pub fn run() {
             panic!("failed to start the {} shell: {error}", loam_core::APP_NAME)
         })
         .run(|app, event| {
-            // macOS dock reopen with no windows: recreate the first-run window.
-            // All other close/quit routing is the deterministic platform
-            // default — the app exits with its last window on every platform.
+            // macOS dock reopen with no windows: recreate the first-run window
+            // (`RunEvent::Reopen` only exists on macOS). All other close/quit
+            // routing is the deterministic platform default — the app exits
+            // with its last window on every platform.
+            #[cfg(target_os = "macos")]
             if let tauri::RunEvent::Reopen { .. } = event {
                 windows::reopen_first_run(app).ok();
             }
+            #[cfg(not(target_os = "macos"))]
+            let _ = (app, event);
         });
 }
 
