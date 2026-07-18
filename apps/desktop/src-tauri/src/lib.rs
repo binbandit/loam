@@ -2,6 +2,12 @@
 //! exposes no Tauri types; the webview talks to the shell only through typed
 //! IPC commands (E06).
 
+pub mod menu;
+pub mod routes;
+pub mod windows;
+
+use tauri::Manager as _;
+
 /// The embedded app context (config, assets, capability ACL). Single macro
 /// call site: the macro embeds the macOS Info.plist and collides with itself
 /// if expanded twice in one crate.
@@ -9,12 +15,114 @@ fn context<R: tauri::Runtime>() -> tauri::Context<R> {
     tauri::generate_context!()
 }
 
+/// Open (or focus) the window for the vault at `path` (§5.4 `vault_open`).
+/// Every entry route (picker, drag-drop, CLI, `loam://`) funnels through the
+/// same normalizer (LOA-48).
+#[tauri::command]
+fn vault_open<R: tauri::Runtime>(
+    app: tauri::AppHandle<R>,
+    path: String,
+) -> Result<windows::VaultInfo, routes::OpenError> {
+    routes::open_path_input(&app, &path)
+}
+
+/// Native folder picker entry (§3.1). The dialog plugin is driven from Rust —
+/// the webview holds no dialog permission and invokes only this typed command.
+/// `None` means the user cancelled.
+#[tauri::command]
+async fn vault_pick_and_open<R: tauri::Runtime>(
+    app: tauri::AppHandle<R>,
+) -> Result<Option<windows::VaultInfo>, routes::OpenError> {
+    use tauri_plugin_dialog::DialogExt;
+    match app.dialog().file().blocking_pick_folder() {
+        Some(folder) => {
+            let path = folder
+                .into_path()
+                .map_err(|_| routes::OpenError::NotAccessible)?;
+            routes::open_path_input(&app, &path.to_string_lossy()).map(Some)
+        }
+        None => Ok(None),
+    }
+}
+
+/// Shared shell setup: state, plugins, and command surface. Applied to the
+/// real builder in `run()` and to the mock-runtime builder in tests, so both
+/// register the exact same invoke surface (and the same ACL denials).
+fn configure<R: tauri::Runtime>(builder: tauri::Builder<R>) -> tauri::Builder<R> {
+    builder
+        .manage(windows::VaultWindows::default())
+        .plugin(tauri_plugin_dialog::init())
+        .plugin(tauri_plugin_deep_link::init())
+        .invoke_handler(tauri::generate_handler![vault_open, vault_pick_and_open])
+}
+
 /// Start the desktop shell.
 pub fn run() {
-    tauri::Builder::default()
-        .run(context())
+    configure(tauri::Builder::default())
+        // Menus are attached only here: native menu construction must run on
+        // the main thread, which tests (mock runtime, worker threads) are not.
+        .menu(menu::build)
+        .on_menu_event(|app, event| {
+            // "Open vault…" is handled natively (the picker lives Rust-side);
+            // every other row forwards its command ID to the frontend.
+            if event.id().as_ref() == "file.open-vault" {
+                let handle = app.clone();
+                tauri::async_runtime::spawn(async move {
+                    if let Err(error) = vault_pick_and_open(handle).await {
+                        eprintln!("open vault failed: {error}");
+                    }
+                });
+            } else {
+                menu::forward_event(app, event.id().as_ref());
+            }
+        })
+        // Drag-dropping a folder onto the first-run window opens it (§3.1).
+        .on_window_event(|window, event| {
+            if window.label() != windows::FIRST_RUN_LABEL {
+                return;
+            }
+            if let tauri::WindowEvent::DragDrop(tauri::DragDropEvent::Drop { paths, .. }) = event {
+                for path in paths {
+                    if let Err(error) =
+                        routes::open_path_input(window.app_handle(), &path.to_string_lossy())
+                    {
+                        eprintln!("dropped path was not opened: {error}");
+                    }
+                }
+            }
+        })
+        .setup(|app| {
+            // loam://open deep links (registered scheme; handled Rust-side).
+            use tauri_plugin_deep_link::DeepLinkExt;
+            #[cfg(any(target_os = "linux", windows))]
+            app.deep_link().register_all()?;
+            let handle = app.handle().clone();
+            app.deep_link().on_open_url(move |event| {
+                for url in event.urls() {
+                    if let Err(error) = routes::open_uri_input(&handle, url.as_str()) {
+                        eprintln!("deep link rejected: {error}");
+                    }
+                }
+            });
+            // Initial CLI path argument.
+            if let Some(path) = routes::cli_path_argument(std::env::args())
+                && let Err(error) = routes::open_path_input(app.handle(), &path)
+            {
+                eprintln!("CLI vault path was not opened: {error}");
+            }
+            Ok(())
+        })
+        .build(context())
         .unwrap_or_else(|error| {
             panic!("failed to start the {} shell: {error}", loam_core::APP_NAME)
+        })
+        .run(|app, event| {
+            // macOS dock reopen with no windows: recreate the first-run window.
+            // All other close/quit routing is the deterministic platform
+            // default — the app exits with its last window on every platform.
+            if let tauri::RunEvent::Reopen { .. } = event {
+                windows::reopen_first_run(app).ok();
+            }
         });
 }
 
@@ -27,17 +135,24 @@ mod tests {
     use tauri::ipc::{CallbackFn, InvokeBody, InvokeResponseBody};
     use tauri::test::{INVOKE_KEY, MockRuntime, get_ipc_response, mock_builder};
     use tauri::webview::InvokeRequest;
-    use tauri::WebviewWindow;
+    use tauri::{Manager, WebviewWindow};
 
-    fn main_webview() -> WebviewWindow<MockRuntime> {
-        let app = mock_builder()
+    fn mock_app() -> tauri::App<MockRuntime> {
+        crate::configure(mock_builder())
             .build(crate::context())
-            .expect("mock app with the real context should build");
+            .expect("mock app with the real context should build")
+    }
+
+    fn main_webview_on(app: &tauri::App<MockRuntime>) -> WebviewWindow<MockRuntime> {
         // Label "main" matches capabilities/default.json `windows`, so the
         // shipped ACL governs this webview exactly as in production.
-        tauri::WebviewWindowBuilder::new(&app, "main", tauri::WebviewUrl::default())
+        tauri::WebviewWindowBuilder::new(app, "main", tauri::WebviewUrl::default())
             .build()
             .expect("mock webview window builds")
+    }
+
+    fn main_webview() -> WebviewWindow<MockRuntime> {
+        main_webview_on(&mock_app())
     }
 
     fn invoke(
@@ -97,6 +212,82 @@ mod tests {
         let webview = main_webview();
         let denied = invoke(&webview, "plugin:image|new", serde_json::json!({}));
         assert!(denied.is_err(), "core:image is not granted: {denied:?}");
+        // Registered Rust-side plugins (dialog, deep-link) are still denied to
+        // the webview: no capability grants them.
+        for cmd in ["plugin:dialog|open", "plugin:deep-link|is_registered"] {
+            let denied = invoke(&webview, cmd, serde_json::json!({}));
+            assert!(denied.is_err(), "{cmd} must be ACL-denied: {denied:?}");
+        }
+    }
+
+    /// LOA-41 AC1/AC2/AC4/AC5: vault window lifecycle through the real
+    /// `vault_open` command surface.
+    #[test]
+    fn vault_windows_open_focus_and_stay_independent() {
+        let mock = mock_app();
+        let webview = main_webview_on(&mock);
+        let app = webview.app_handle();
+        let vault_a = tempfile::tempdir().expect("vault a");
+        let vault_b = tempfile::tempdir().expect("vault b");
+        let entries_before = std::fs::read_dir(vault_a.path()).expect("readable").count();
+
+        let open = |path: &std::path::Path| {
+            crate::vault_open(app.clone(), path.to_string_lossy().into_owned())
+                .expect("vault_open succeeds")
+        };
+
+        // AC1: two vaults, two separate windows.
+        let first = open(vault_a.path());
+        assert!(!first.focused_existing);
+        let second = open(vault_b.path());
+        assert!(!second.focused_existing);
+        assert_ne!(first.id, second.id);
+        assert_eq!(crate::windows::open_vault_count(app), 2);
+
+        // AC2: reopening vault A focuses the existing window, creates nothing.
+        let again = open(vault_a.path());
+        assert!(again.focused_existing);
+        assert_eq!(again.id, first.id);
+        assert_eq!(crate::windows::open_vault_count(app), 2);
+
+        // AC4: closing vault A's window leaves vault B registered and its
+        // window focusable. The mock runtime delivers no window events, so the
+        // Destroyed cleanup (wired in open_or_focus) is invoked directly.
+        assert_eq!(crate::windows::registered_vault_count(app), 2);
+        let key_a = crate::windows::vault_key(&vault_a.path().canonicalize().expect("canon a"));
+        app.get_webview_window("vault-1")
+            .expect("window a")
+            .destroy()
+            .expect("destroy a");
+        crate::windows::on_vault_window_destroyed(app, &key_a);
+        assert_eq!(crate::windows::registered_vault_count(app), 1);
+        app.get_webview_window("vault-2")
+            .expect("window b survives a's close")
+            .set_focus()
+            .expect("focus b");
+
+        // Reopening vault A after its close creates a fresh window, not a
+        // zombie focus.
+        let reopened = open(vault_a.path());
+        assert!(!reopened.focused_existing);
+        assert_eq!(crate::windows::registered_vault_count(app), 2);
+
+        // AC5: nothing was ever written into the vault itself.
+        let entries_after = std::fs::read_dir(vault_a.path()).expect("readable").count();
+        assert_eq!(entries_before, entries_after);
+    }
+
+    /// Invalid paths are rejected before any window is created.
+    #[test]
+    fn vault_open_rejects_missing_and_non_directory_paths() {
+        let webview = main_webview();
+        let app = webview.app_handle();
+        let missing = crate::vault_open(app.clone(), "/definitely/not/a/vault".into());
+        assert!(missing.is_err());
+        let file = tempfile::NamedTempFile::new().expect("temp file");
+        let not_dir = crate::vault_open(app.clone(), file.path().to_string_lossy().into_owned());
+        assert!(not_dir.is_err());
+        assert_eq!(crate::windows::open_vault_count(app), 0);
     }
 
     /// Positive control: a command covered by the granted permission set works,

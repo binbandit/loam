@@ -1,5 +1,7 @@
 import { createTransport } from "@loam-app/ipc-client";
 import { useEffect, useState } from "react";
+import { Titlebar } from "./Titlebar";
+import "./tokens.css";
 
 const transport = createTransport();
 
@@ -19,8 +21,26 @@ export function App() {
   }, []);
 
   return (
-    <main data-ready={ready ? "true" : "false"} data-transport={transport.kind}>
-      <h1>Loam</h1>
-    </main>
+    <>
+      <Titlebar vaultName="Loam" />
+      <main
+        data-testid="app-main"
+        data-ready={ready ? "true" : "false"}
+        data-transport={transport.kind}
+      >
+        <h1>Loam</h1>
+        {/* First-run entry (§4.4): no wizard, one action. */}
+        <button
+          type="button"
+          className="open-vault"
+          data-testid="open-vault"
+          onClick={() => {
+            void transport.openVaultPicker();
+          }}
+        >
+          Open folder
+        </button>
+      </main>
+    </>
   );
 }

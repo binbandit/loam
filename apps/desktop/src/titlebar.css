@@ -1,0 +1,64 @@
+/*
+ * Slim custom titlebar (LOA-44, §3.5). Fallback-first: the solid token
+ * background is the base rule, and translucency + backdrop blur are applied
+ * only inside @supports — platforms without backdrop-filter (older WebKitGTK)
+ * keep the solid background (AC4).
+ */
+.titlebar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 38px;
+  padding: 0 12px;
+  background: var(--loam-bg-panel);
+  border-bottom: 1px solid var(--loam-border-subtle);
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+@supports (backdrop-filter: blur(12px)) or (-webkit-backdrop-filter: blur(12px)) {
+  .titlebar {
+    background: color-mix(in srgb, var(--loam-bg-panel) 82%, transparent);
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+  }
+}
+
+/* macOS overlay titlebar: reserve space so the native traffic lights are
+ * never obscured (AC2). */
+.titlebar[data-platform="macos"] {
+  padding-left: 78px;
+}
+
+.titlebar__vault {
+  display: inline-flex;
+  align-items: center;
+  height: 26px;
+  padding: 0 8px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--loam-text-primary);
+  font-size: 13px;
+  font-weight: 550;
+  /* Hover changes color only — geometry is fixed, nothing shifts (AC5). */
+  transition: background-color var(--dur-fast) var(--ease);
+}
+
+.titlebar__vault:hover {
+  background: var(--loam-bg-hover);
+}
+
+.titlebar__vault:focus-visible {
+  outline: 1.5px solid #707ee8;
+  outline-offset: 1px;
+}
+
+.titlebar__breadcrumb {
+  color: var(--loam-text-tertiary);
+  font-size: 12.5px;
+}
+
+.titlebar__spacer {
+  flex: 1;
+}

@@ -27,7 +27,8 @@ What is deliberately absent:
 - **No filesystem permissions.** `tauri-plugin-fs` is not shipped. Vault file access will arrive only through typed E06 commands (`note_read`, `note_write`, …) whose implementations in `loam-core` enforce vault-root scoping — that is the §5.10 "fs scoped to opened vault roots + app-data" guarantee: the scope check lives in Rust, not in a grant to the webview.
 - **No shell/process execution.** `tauri-plugin-shell`/`tauri-plugin-process` are not shipped and no generic "run command" bridge exists.
 - **No asset protocol.** `assetProtocol.enable: false` with an empty scope.
-- Any non-`core:*` permission or new plugin crate fails `security:check` and requires a security review to land.
+- **Rust-side-only plugins (LOA-48).** `tauri-plugin-dialog` (folder picker) and `tauri-plugin-deep-link` (`loam://` scheme) are registered, but **no capability grants the webview any of their permissions** — the webview can only call the typed `vault_pick_and_open` / `vault_open` commands, and IPC tests assert `plugin:dialog|*` / `plugin:deep-link|*` invokes are ACL-denied. Deep-link URIs are parsed as untrusted input with stable error codes.
+- Any non-`core:*` permission or fs/shell/process plugin crate fails `security:check` and requires a security review to land.
 
 ## CSP (default-deny)
 

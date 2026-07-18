@@ -1,0 +1,35 @@
+/*
+ * Minimal §4.2 token subset for the shell chrome (LOA-44). The full design
+ * system arrives in packages/ui (E07) and replaces this file; values below are
+ * copied verbatim from SPEC.md §4.2 so the swap is a no-op.
+ */
+:root {
+  --loam-bg-app: #0b0c0f;
+  --loam-bg-panel: #101216;
+  --loam-bg-hover: rgba(255, 255, 255, 0.045);
+  --loam-border-subtle: rgba(255, 255, 255, 0.06);
+  --loam-text-primary: #eeeff3;
+  --loam-text-secondary: #9ea3ae;
+  --loam-text-tertiary: #686e7a;
+  --dur-fast: 100ms;
+  --ease: cubic-bezier(0.2, 0, 0, 1);
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    --loam-bg-app: #fafafb;
+    --loam-bg-panel: #ffffff;
+    --loam-bg-hover: rgba(0, 0, 0, 0.045);
+    --loam-border-subtle: rgba(0, 0, 0, 0.06);
+    --loam-text-primary: #1b1d22;
+    --loam-text-secondary: #5f6570;
+    --loam-text-tertiary: #9096a1;
+  }
+}
+
+body {
+  margin: 0;
+  background: var(--loam-bg-app);
+  color: var(--loam-text-primary);
+  font-family: "Inter", -apple-system, system-ui, sans-serif;
+}
