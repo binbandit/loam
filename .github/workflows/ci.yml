@@ -160,10 +160,12 @@ jobs:
           }
           Expand-Archive edgedriver.zip -DestinationPath "$env:RUNNER_TEMP\edgedriver" -Force
           "LOAM_NATIVE_DRIVER=$env:RUNNER_TEMP\edgedriver\msedgedriver.exe" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
-      - name: Build the shell (debug — matches Tauri's WebDriver reference setup)
+      # custom-protocol embeds the built frontend; a bare cargo binary serves
+      # devUrl and renders a blank window (root cause of earlier smoke reds).
+      - name: Build the shell with embedded frontend
         run: |
           pnpm --filter @loam-app/desktop build
-          cargo build -p loam-desktop
+          cargo build -p loam-desktop --features custom-protocol
       - name: Run native smoke
         working-directory: apps/desktop
         run: |

@@ -21,6 +21,12 @@ loam-core = { path = "../../../crates/loam-core" }
 tauri-plugin-dialog = "2.7.1"
 tauri-plugin-deep-link = "2.4.9"
 
+[features]
+# Embed the built frontend (production asset serving). Without it a bare
+# `cargo build` binary points the webview at devUrl — a white window anywhere
+# the Vite dev server isn't running. The tauri CLI enables this on `build`.
+custom-protocol = ["tauri/custom-protocol"]
+
 [lints]
 workspace = true
 
