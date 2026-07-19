@@ -15,6 +15,11 @@ pub use model::{
 use comrak::nodes::{AstNode, NodeValue, Sourcepos};
 use comrak::{Arena, Options};
 
+/// Version of the extraction behavior (grammar config + scanners). Bump on
+/// any change that alters extracted output — the index (D5) records it and
+/// triggers a full rebuild when it no longer matches.
+pub const PARSER_VERSION: u32 = 1;
+
 /// The one true comrak configuration (D4): CommonMark + GFM + the §3.3 set
 /// comrak supports natively. Custom Loam syntax (`==highlight==`,
 /// `%%comments%%`, callout normalization, embeds, block IDs) is layered in

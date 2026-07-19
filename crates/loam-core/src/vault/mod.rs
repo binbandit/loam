@@ -35,7 +35,7 @@ pub use ops::{
 pub use paths::{
     PathError, VaultRelPath, WINDOWS_MAX_PATH, extended_length_string, to_extended_length,
 };
-pub use tree::{EntryKind, TreeEntry, TreeError, VaultTree, enumerate};
+pub use tree::{EntryKind, TreeEntry, TreeError, VaultTree, enumerate, is_builtin_ignored};
 pub use watch::{
     AppWriteRegistry, Backend, DEBOUNCE, EventKind, POLL_INTERVAL, RawEvent, VaultEvent,
     VaultWatcher, WatchError, classify, is_ignorable_path, normalize, start_watching,

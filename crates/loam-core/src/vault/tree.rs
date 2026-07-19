@@ -14,6 +14,15 @@ use super::open::VaultCounts;
 /// Built-in ignores (§3.1). `.loamignore` support is P1; these are always on.
 const BUILTIN_IGNORES: &[&str] = &[".git", "node_modules", ".obsidian", ".loam"];
 
+/// Does any segment of this vault-relative path fall under a built-in
+/// ignored directory? Used by enumeration here and by the incremental
+/// indexer for watcher event paths.
+pub fn is_builtin_ignored(logical_path: &str) -> bool {
+    logical_path
+        .split('/')
+        .any(|segment| BUILTIN_IGNORES.contains(&segment))
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize)]
 #[serde(rename_all = "kebab-case")]
 pub enum EntryKind {
