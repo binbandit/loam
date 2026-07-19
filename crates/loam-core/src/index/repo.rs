@@ -296,6 +296,18 @@ impl IndexReader {
         })
     }
 
+    /// Tags of one note, in source order (feeds the search indexer).
+    pub fn tags_of(&self, path: &str) -> Result<Vec<String>, QueryError> {
+        self.with_conn(|conn| {
+            let mut statement = conn.prepare_cached(
+                "SELECT t.name FROM tags t JOIN files f ON f.id = t.file_id
+                 WHERE f.path = ?1 ORDER BY t.start",
+            )?;
+            let rows = statement.query_map(params![path], |row| row.get(0))?;
+            rows.collect::<Result<_, _>>().map_err(QueryError::from)
+        })
+    }
+
     /// Vault-wide tags with usage counts, name-ordered (§3.5 tags panel).
     pub fn tags_list(&self) -> Result<Vec<TagCount>, QueryError> {
         self.with_conn(|conn| {

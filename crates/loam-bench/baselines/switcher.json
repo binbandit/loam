@@ -1,0 +1,7 @@
+{
+  "records": 10000,
+  "iterations": 40,
+  "firstBatchP95Ms": 5.0,
+  "totalP95Ms": 20.0,
+  "emptyQueryP95Ms": 1.0
+}

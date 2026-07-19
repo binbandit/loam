@@ -4,6 +4,7 @@
 
 pub mod index;
 pub mod parse;
+pub mod search;
 pub mod vault;
 
 /// The current product display name.

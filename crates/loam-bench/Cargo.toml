@@ -9,6 +9,8 @@ description = "Performance harness for Loam product SLOs"
 
 [dependencies]
 loam-core = { path = "../loam-core" }
+serde = { version = "1.0.229", features = ["derive"] }
+serde_json = "1.0.150"
 
 [lints]
 workspace = true

@@ -16,10 +16,12 @@ caseless = "0.2.2"
 comrak = { version = "0.54.0", default-features = false }
 notify = "8.2.0"
 notify-debouncer-full = "0.7.0"
+nucleo-matcher = "0.3.1"
 rusqlite = { version = "0.40.1", features = ["bundled"] }
 rusqlite_migration = "2.6.0"
 serde = { version = "1.0.229", features = ["derive"] }
 serde_json = "1.0.150"
+tantivy = "0.26.1"
 thiserror = "2.0.19"
 time = { version = "0.3.53", features = ["serde-well-known", "formatting", "parsing"] }
 trash = "5.2.6"
@@ -30,4 +32,5 @@ yaml-rust2 = "0.11.0"
 [dev-dependencies]
 proptest = "1.11.0"
 rusqlite = { version = "0.40.1", features = ["bundled"] }
+tantivy = "0.26.1"
 tempfile = "3.27.0"
