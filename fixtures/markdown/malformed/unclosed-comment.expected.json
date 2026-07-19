@@ -1,0 +1,76 @@
+{
+  "extraction": {
+    "blocks": [],
+    "diagnostics": [
+      {
+        "code": "unclosed-comment",
+        "message": "`%%` has no closing `%%`; the rest of the note is a comment",
+        "range": {
+          "end": 178,
+          "start": 57
+        },
+        "severity": "warning"
+      }
+    ],
+    "frontmatter": null,
+    "headings": [
+      {
+        "level": 1,
+        "range": {
+          "end": 18,
+          "start": 0
+        },
+        "text": "Unclosed comment"
+      }
+    ],
+    "links": [
+      {
+        "components": {
+          "block": null,
+          "heading": null,
+          "note": "Indexed Link"
+        },
+        "embed": false,
+        "range": {
+          "end": 54,
+          "start": 38
+        },
+        "style": "wiki",
+        "target": "Indexed Link",
+        "text": "Indexed Link"
+      }
+    ],
+    "rawFrontmatter": null,
+    "spans": [
+      {
+        "kind": "heading",
+        "level": 1,
+        "range": {
+          "end": 18,
+          "start": 0
+        }
+      },
+      {
+        "kind": "wikilink",
+        "range": {
+          "end": 54,
+          "start": 38
+        }
+      },
+      {
+        "kind": "comment",
+        "range": {
+          "end": 178,
+          "start": 57
+        }
+      }
+    ],
+    "tags": []
+  },
+  "lezer": null,
+  "meta": {
+    "license": "MIT",
+    "provenance": "original"
+  },
+  "rendering": null
+}

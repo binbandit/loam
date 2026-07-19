@@ -1,0 +1,98 @@
+{
+  "extraction": {
+    "blocks": [],
+    "diagnostics": [],
+    "frontmatter": null,
+    "headings": [
+      {
+        "level": 1,
+        "range": {
+          "end": 7,
+          "start": 0
+        },
+        "text": "Tasks"
+      }
+    ],
+    "links": [],
+    "rawFrontmatter": null,
+    "spans": [
+      {
+        "kind": "heading",
+        "level": 1,
+        "range": {
+          "end": 7,
+          "start": 0
+        }
+      },
+      {
+        "checked": false,
+        "depth": 0,
+        "kind": "task",
+        "range": {
+          "end": 24,
+          "start": 9
+        }
+      },
+      {
+        "checked": true,
+        "depth": 0,
+        "kind": "task",
+        "range": {
+          "end": 80,
+          "start": 25
+        }
+      },
+      {
+        "checked": false,
+        "depth": 1,
+        "kind": "task",
+        "range": {
+          "end": 60,
+          "start": 43
+        }
+      },
+      {
+        "checked": true,
+        "depth": 1,
+        "kind": "task",
+        "range": {
+          "end": 80,
+          "start": 63
+        }
+      },
+      {
+        "depth": 0,
+        "kind": "listItem",
+        "range": {
+          "end": 110,
+          "start": 81
+        }
+      },
+      {
+        "checked": true,
+        "depth": 0,
+        "kind": "task",
+        "range": {
+          "end": 130,
+          "start": 111
+        }
+      },
+      {
+        "checked": false,
+        "depth": 0,
+        "kind": "task",
+        "range": {
+          "end": 150,
+          "start": 131
+        }
+      }
+    ],
+    "tags": []
+  },
+  "lezer": null,
+  "meta": {
+    "license": "MIT",
+    "provenance": "original"
+  },
+  "rendering": null
+}

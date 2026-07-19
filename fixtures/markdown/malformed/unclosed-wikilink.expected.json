@@ -1,0 +1,55 @@
+{
+  "extraction": {
+    "blocks": [],
+    "diagnostics": [
+      {
+        "code": "unclosed-wikilink",
+        "message": "`[[` has no closing `]]`; left as plain text",
+        "range": {
+          "end": 57,
+          "start": 25
+        },
+        "severity": "warning"
+      },
+      {
+        "code": "unclosed-embed",
+        "message": "`![[` has no closing `]]`; left as plain text",
+        "range": {
+          "end": 97,
+          "start": 68
+        },
+        "severity": "warning"
+      }
+    ],
+    "frontmatter": null,
+    "headings": [
+      {
+        "level": 1,
+        "range": {
+          "end": 21,
+          "start": 0
+        },
+        "text": "Unclosed delimiters"
+      }
+    ],
+    "links": [],
+    "rawFrontmatter": null,
+    "spans": [
+      {
+        "kind": "heading",
+        "level": 1,
+        "range": {
+          "end": 21,
+          "start": 0
+        }
+      }
+    ],
+    "tags": []
+  },
+  "lezer": null,
+  "meta": {
+    "license": "MIT",
+    "provenance": "original"
+  },
+  "rendering": null
+}

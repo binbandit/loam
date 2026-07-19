@@ -1,0 +1,64 @@
+{
+  "extraction": {
+    "blocks": [],
+    "diagnostics": [],
+    "frontmatter": null,
+    "headings": [
+      {
+        "level": 1,
+        "range": {
+          "end": 11,
+          "start": 0
+        },
+        "text": "Footnotes"
+      }
+    ],
+    "links": [],
+    "rawFrontmatter": null,
+    "spans": [
+      {
+        "kind": "heading",
+        "level": 1,
+        "range": {
+          "end": 11,
+          "start": 0
+        }
+      },
+      {
+        "kind": "footnote",
+        "range": {
+          "end": 24,
+          "start": 20
+        }
+      },
+      {
+        "kind": "footnote",
+        "range": {
+          "end": 48,
+          "start": 36
+        }
+      },
+      {
+        "kind": "footnote",
+        "range": {
+          "end": 68,
+          "start": 51
+        }
+      },
+      {
+        "kind": "footnote",
+        "range": {
+          "end": 124,
+          "start": 69
+        }
+      }
+    ],
+    "tags": []
+  },
+  "lezer": null,
+  "meta": {
+    "license": "MIT",
+    "provenance": "original"
+  },
+  "rendering": null
+}

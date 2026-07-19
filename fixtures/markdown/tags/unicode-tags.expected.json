@@ -1,0 +1,149 @@
+{
+  "extraction": {
+    "blocks": [],
+    "diagnostics": [],
+    "frontmatter": null,
+    "headings": [
+      {
+        "level": 1,
+        "range": {
+          "end": 18,
+          "start": 0
+        },
+        "text": "Tags #on-heading"
+      }
+    ],
+    "links": [],
+    "rawFrontmatter": null,
+    "spans": [
+      {
+        "kind": "heading",
+        "level": 1,
+        "range": {
+          "end": 18,
+          "start": 0
+        }
+      },
+      {
+        "kind": "tag",
+        "range": {
+          "end": 18,
+          "start": 7
+        }
+      },
+      {
+        "kind": "tag",
+        "range": {
+          "end": 30,
+          "start": 26
+        }
+      },
+      {
+        "kind": "tag",
+        "range": {
+          "end": 51,
+          "start": 42
+        }
+      },
+      {
+        "kind": "tag",
+        "range": {
+          "end": 78,
+          "start": 68
+        }
+      },
+      {
+        "kind": "tag",
+        "range": {
+          "end": 95,
+          "start": 83
+        }
+      },
+      {
+        "kind": "tag",
+        "range": {
+          "end": 113,
+          "start": 100
+        }
+      },
+      {
+        "kind": "tag",
+        "range": {
+          "end": 219,
+          "start": 210
+        }
+      },
+      {
+        "kind": "tag",
+        "range": {
+          "end": 257,
+          "start": 251
+        }
+      }
+    ],
+    "tags": [
+      {
+        "name": "on-heading",
+        "range": {
+          "end": 18,
+          "start": 7
+        }
+      },
+      {
+        "name": "tag",
+        "range": {
+          "end": 30,
+          "start": 26
+        }
+      },
+      {
+        "name": "area/sub",
+        "range": {
+          "end": 51,
+          "start": 42
+        }
+      },
+      {
+        "name": "日本語",
+        "range": {
+          "end": 78,
+          "start": 68
+        }
+      },
+      {
+        "name": "café-notes",
+        "range": {
+          "end": 95,
+          "start": 83
+        }
+      },
+      {
+        "name": "Straße_prep",
+        "range": {
+          "end": 113,
+          "start": 100
+        }
+      },
+      {
+        "name": "trailing",
+        "range": {
+          "end": 219,
+          "start": 210
+        }
+      },
+      {
+        "name": "final",
+        "range": {
+          "end": 257,
+          "start": 251
+        }
+      }
+    ]
+  },
+  "lezer": null,
+  "meta": {
+    "license": "MIT",
+    "provenance": "original"
+  },
+  "rendering": null
+}

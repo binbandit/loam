@@ -1,0 +1,53 @@
+{
+  "extraction": {
+    "blocks": [],
+    "diagnostics": [
+      {
+        "code": "frontmatter-parse-error",
+        "message": "Frontmatter could not be parsed: illegal placement of ':' indicator at byte 29 line 2 column 5",
+        "range": {
+          "end": 62,
+          "start": 33
+        },
+        "severity": "warning"
+      }
+    ],
+    "frontmatter": null,
+    "headings": [
+      {
+        "level": 1,
+        "range": {
+          "end": 79,
+          "start": 64
+        },
+        "text": "Body survives"
+      }
+    ],
+    "links": [],
+    "rawFrontmatter": "---\ntitle: [unclosed bracket\ntags: still: not: valid: yaml\n---\n\n",
+    "spans": [
+      {
+        "kind": "frontmatter",
+        "range": {
+          "end": 62,
+          "start": 0
+        }
+      },
+      {
+        "kind": "heading",
+        "level": 1,
+        "range": {
+          "end": 79,
+          "start": 64
+        }
+      }
+    ],
+    "tags": []
+  },
+  "lezer": null,
+  "meta": {
+    "license": "MIT",
+    "provenance": "original"
+  },
+  "rendering": null
+}

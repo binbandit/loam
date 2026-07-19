@@ -1,0 +1,126 @@
+{
+  "extraction": {
+    "blocks": [
+      {
+        "id": "quote-1",
+        "range": {
+          "end": 53,
+          "start": 45
+        }
+      },
+      {
+        "id": "item2",
+        "range": {
+          "end": 88,
+          "start": 82
+        }
+      }
+    ],
+    "diagnostics": [],
+    "frontmatter": null,
+    "headings": [
+      {
+        "level": 1,
+        "range": {
+          "end": 11,
+          "start": 0
+        },
+        "text": "Block IDs"
+      }
+    ],
+    "links": [
+      {
+        "components": {
+          "block": "quote-1",
+          "heading": null,
+          "note": "Other Note"
+        },
+        "embed": false,
+        "range": {
+          "end": 229,
+          "start": 206
+        },
+        "style": "wiki",
+        "target": "Other Note#^quote-1",
+        "text": "Other Note#^quote-1"
+      }
+    ],
+    "rawFrontmatter": null,
+    "spans": [
+      {
+        "kind": "heading",
+        "level": 1,
+        "range": {
+          "end": 11,
+          "start": 0
+        }
+      },
+      {
+        "kind": "blockId",
+        "range": {
+          "end": 53,
+          "start": 45
+        }
+      },
+      {
+        "depth": 0,
+        "kind": "listItem",
+        "range": {
+          "end": 88,
+          "start": 55
+        }
+      },
+      {
+        "kind": "blockId",
+        "range": {
+          "end": 88,
+          "start": 82
+        }
+      },
+      {
+        "depth": 0,
+        "kind": "listItem",
+        "range": {
+          "end": 113,
+          "start": 89
+        }
+      },
+      {
+        "kind": "math",
+        "range": {
+          "end": 136,
+          "start": 131
+        }
+      },
+      {
+        "kind": "math",
+        "range": {
+          "end": 147,
+          "start": 141
+        }
+      },
+      {
+        "kind": "codeBlock",
+        "language": "text",
+        "range": {
+          "end": 193,
+          "start": 154
+        }
+      },
+      {
+        "kind": "wikilink",
+        "range": {
+          "end": 229,
+          "start": 206
+        }
+      }
+    ],
+    "tags": []
+  },
+  "lezer": null,
+  "meta": {
+    "license": "MIT",
+    "provenance": "original"
+  },
+  "rendering": null
+}

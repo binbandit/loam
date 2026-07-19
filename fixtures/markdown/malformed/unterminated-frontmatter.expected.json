@@ -1,0 +1,46 @@
+{
+  "extraction": {
+    "blocks": [],
+    "diagnostics": [
+      {
+        "code": "unterminated-frontmatter",
+        "message": "`---` on the first line is not closed; frontmatter was not parsed",
+        "range": {
+          "end": 3,
+          "start": 0
+        },
+        "severity": "warning"
+      }
+    ],
+    "frontmatter": null,
+    "headings": [
+      {
+        "level": 1,
+        "range": {
+          "end": 63,
+          "start": 25
+        },
+        "text": "Body swallowed by the open delimiter"
+      }
+    ],
+    "links": [],
+    "rawFrontmatter": null,
+    "spans": [
+      {
+        "kind": "heading",
+        "level": 1,
+        "range": {
+          "end": 63,
+          "start": 25
+        }
+      }
+    ],
+    "tags": []
+  },
+  "lezer": null,
+  "meta": {
+    "license": "MIT",
+    "provenance": "original"
+  },
+  "rendering": null
+}

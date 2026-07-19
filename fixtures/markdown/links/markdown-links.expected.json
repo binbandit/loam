@@ -1,0 +1,91 @@
+{
+  "extraction": {
+    "blocks": [],
+    "diagnostics": [],
+    "frontmatter": null,
+    "headings": [
+      {
+        "level": 1,
+        "range": {
+          "end": 16,
+          "start": 0
+        },
+        "text": "Markdown links"
+      }
+    ],
+    "links": [
+      {
+        "components": null,
+        "embed": false,
+        "range": {
+          "end": 67,
+          "start": 27
+        },
+        "style": "markdown",
+        "target": "https://example.com",
+        "text": "site"
+      },
+      {
+        "components": null,
+        "embed": false,
+        "range": {
+          "end": 102,
+          "start": 81
+        },
+        "style": "markdown",
+        "target": "notes/idea.md",
+        "text": "note"
+      },
+      {
+        "components": null,
+        "embed": false,
+        "range": {
+          "end": 129,
+          "start": 121
+        },
+        "style": "markdown",
+        "target": "https://example.com/ref",
+        "text": "ref"
+      }
+    ],
+    "rawFrontmatter": null,
+    "spans": [
+      {
+        "kind": "heading",
+        "level": 1,
+        "range": {
+          "end": 16,
+          "start": 0
+        }
+      },
+      {
+        "kind": "link",
+        "range": {
+          "end": 67,
+          "start": 27
+        }
+      },
+      {
+        "kind": "link",
+        "range": {
+          "end": 102,
+          "start": 81
+        }
+      },
+      {
+        "kind": "link",
+        "range": {
+          "end": 129,
+          "start": 121
+        }
+      }
+    ],
+    "tags": []
+  },
+  "lezer": null,
+  "meta": {
+    "license": "MIT",
+    "provenance": "original"
+  },
+  "rendering": null
+}

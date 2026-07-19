@@ -1,0 +1,116 @@
+{
+  "extraction": {
+    "blocks": [],
+    "diagnostics": [],
+    "frontmatter": null,
+    "headings": [
+      {
+        "level": 1,
+        "range": {
+          "end": 25,
+          "start": 0
+        },
+        "text": "Highlights and comments"
+      }
+    ],
+    "links": [
+      {
+        "components": {
+          "block": null,
+          "heading": null,
+          "note": "Visible Link"
+        },
+        "embed": false,
+        "range": {
+          "end": 370,
+          "start": 354
+        },
+        "style": "wiki",
+        "target": "Visible Link",
+        "text": "Visible Link"
+      }
+    ],
+    "rawFrontmatter": null,
+    "spans": [
+      {
+        "kind": "heading",
+        "level": 1,
+        "range": {
+          "end": 25,
+          "start": 0
+        }
+      },
+      {
+        "kind": "highlight",
+        "range": {
+          "end": 49,
+          "start": 29
+        }
+      },
+      {
+        "kind": "highlight",
+        "range": {
+          "end": 80,
+          "start": 54
+        }
+      },
+      {
+        "kind": "inlineCode",
+        "range": {
+          "end": 71,
+          "start": 65
+        }
+      },
+      {
+        "kind": "highlight",
+        "range": {
+          "end": 130,
+          "start": 100
+        }
+      },
+      {
+        "kind": "comment",
+        "range": {
+          "end": 231,
+          "start": 216
+        }
+      },
+      {
+        "kind": "comment",
+        "range": {
+          "end": 333,
+          "start": 242
+        }
+      },
+      {
+        "kind": "wikilink",
+        "range": {
+          "end": 370,
+          "start": 354
+        }
+      },
+      {
+        "kind": "tag",
+        "range": {
+          "end": 387,
+          "start": 375
+        }
+      }
+    ],
+    "tags": [
+      {
+        "name": "visible-tag",
+        "range": {
+          "end": 387,
+          "start": 375
+        }
+      }
+    ]
+  },
+  "lezer": null,
+  "meta": {
+    "license": "MIT",
+    "provenance": "original"
+  },
+  "rendering": null
+}

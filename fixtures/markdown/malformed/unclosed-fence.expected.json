@@ -1,0 +1,44 @@
+{
+  "extraction": {
+    "blocks": [],
+    "diagnostics": [],
+    "frontmatter": null,
+    "headings": [
+      {
+        "level": 1,
+        "range": {
+          "end": 16,
+          "start": 0
+        },
+        "text": "Unclosed fence"
+      }
+    ],
+    "links": [],
+    "rawFrontmatter": null,
+    "spans": [
+      {
+        "kind": "heading",
+        "level": 1,
+        "range": {
+          "end": 16,
+          "start": 0
+        }
+      },
+      {
+        "kind": "codeBlock",
+        "language": "rust",
+        "range": {
+          "end": 99,
+          "start": 18
+        }
+      }
+    ],
+    "tags": []
+  },
+  "lezer": null,
+  "meta": {
+    "license": "MIT",
+    "provenance": "original"
+  },
+  "rendering": null
+}

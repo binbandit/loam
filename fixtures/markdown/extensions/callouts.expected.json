@@ -1,0 +1,132 @@
+{
+  "extraction": {
+    "blocks": [],
+    "diagnostics": [],
+    "frontmatter": null,
+    "headings": [
+      {
+        "level": 1,
+        "range": {
+          "end": 10,
+          "start": 0
+        },
+        "text": "Callouts"
+      }
+    ],
+    "links": [],
+    "rawFrontmatter": null,
+    "spans": [
+      {
+        "kind": "heading",
+        "level": 1,
+        "range": {
+          "end": 10,
+          "start": 0
+        }
+      },
+      {
+        "calloutType": "note",
+        "custom": false,
+        "depth": 0,
+        "fold": null,
+        "kind": "callout",
+        "range": {
+          "end": 62,
+          "start": 12
+        },
+        "title": "A plain note callout"
+      },
+      {
+        "calloutType": "abstract",
+        "custom": false,
+        "depth": 0,
+        "fold": null,
+        "kind": "callout",
+        "range": {
+          "end": 119,
+          "start": 64
+        },
+        "title": "Alias resolves to abstract"
+      },
+      {
+        "calloutType": "warning",
+        "custom": false,
+        "depth": 0,
+        "fold": "folded",
+        "kind": "callout",
+        "range": {
+          "end": 174,
+          "start": 121
+        },
+        "title": "Folded warning"
+      },
+      {
+        "calloutType": "tip",
+        "custom": false,
+        "depth": 0,
+        "fold": "expanded",
+        "kind": "callout",
+        "range": {
+          "end": 218,
+          "start": 176
+        },
+        "title": "Expanded tip"
+      },
+      {
+        "calloutType": "danger",
+        "custom": false,
+        "depth": 0,
+        "fold": null,
+        "kind": "callout",
+        "range": {
+          "end": 250,
+          "start": 220
+        },
+        "title": null
+      },
+      {
+        "calloutType": "quirky-custom",
+        "custom": true,
+        "depth": 0,
+        "fold": null,
+        "kind": "callout",
+        "range": {
+          "end": 311,
+          "start": 252
+        },
+        "title": "Custom type"
+      },
+      {
+        "calloutType": "question",
+        "custom": false,
+        "depth": 0,
+        "fold": null,
+        "kind": "callout",
+        "range": {
+          "end": 389,
+          "start": 313
+        },
+        "title": "Outer question"
+      },
+      {
+        "calloutType": "todo",
+        "custom": false,
+        "depth": 1,
+        "fold": "folded",
+        "kind": "callout",
+        "range": {
+          "end": 389,
+          "start": 344
+        },
+        "title": "Nested folded todo"
+      }
+    ],
+    "tags": []
+  },
+  "lezer": null,
+  "meta": {
+    "license": "MIT",
+    "provenance": "original"
+  },
+  "rendering": null
+}

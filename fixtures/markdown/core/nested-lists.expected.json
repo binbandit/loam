@@ -1,0 +1,92 @@
+{
+  "extraction": {
+    "blocks": [],
+    "diagnostics": [],
+    "frontmatter": null,
+    "headings": [
+      {
+        "level": 1,
+        "range": {
+          "end": 14,
+          "start": 0
+        },
+        "text": "Nested lists"
+      }
+    ],
+    "links": [],
+    "rawFrontmatter": null,
+    "spans": [
+      {
+        "kind": "heading",
+        "level": 1,
+        "range": {
+          "end": 14,
+          "start": 0
+        }
+      },
+      {
+        "depth": 0,
+        "kind": "listItem",
+        "range": {
+          "end": 66,
+          "start": 16
+        }
+      },
+      {
+        "depth": 1,
+        "kind": "listItem",
+        "range": {
+          "end": 52,
+          "start": 26
+        }
+      },
+      {
+        "depth": 2,
+        "kind": "listItem",
+        "range": {
+          "end": 52,
+          "start": 42
+        }
+      },
+      {
+        "depth": 1,
+        "kind": "listItem",
+        "range": {
+          "end": 66,
+          "start": 55
+        }
+      },
+      {
+        "depth": 0,
+        "kind": "listItem",
+        "range": {
+          "end": 130,
+          "start": 67
+        }
+      },
+      {
+        "depth": 1,
+        "kind": "listItem",
+        "range": {
+          "end": 130,
+          "start": 77
+        }
+      },
+      {
+        "depth": 2,
+        "kind": "listItem",
+        "range": {
+          "end": 130,
+          "start": 107
+        }
+      }
+    ],
+    "tags": []
+  },
+  "lezer": null,
+  "meta": {
+    "license": "MIT",
+    "provenance": "original"
+  },
+  "rendering": null
+}

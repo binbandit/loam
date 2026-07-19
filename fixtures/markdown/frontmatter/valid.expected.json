@@ -1,0 +1,105 @@
+{
+  "extraction": {
+    "blocks": [],
+    "diagnostics": [],
+    "frontmatter": {
+      "aliases": [
+        "VF",
+        "Valid FM"
+      ],
+      "properties": [
+        {
+          "key": "title",
+          "range": {
+            "end": 28,
+            "start": 4
+          },
+          "value": {
+            "type": "text",
+            "value": "Valid Frontmatter"
+          }
+        },
+        {
+          "key": "tags",
+          "range": {
+            "end": 60,
+            "start": 29
+          },
+          "value": {
+            "type": "list",
+            "value": [
+              {
+                "type": "text",
+                "value": "alpha"
+              },
+              {
+                "type": "text",
+                "value": "beta/nested"
+              }
+            ]
+          }
+        },
+        {
+          "key": "aliases",
+          "range": {
+            "end": 86,
+            "start": 61
+          },
+          "value": {
+            "type": "list",
+            "value": [
+              {
+                "type": "text",
+                "value": "VF"
+              },
+              {
+                "type": "text",
+                "value": "Valid FM"
+              }
+            ]
+          }
+        }
+      ],
+      "tags": [
+        "alpha",
+        "beta/nested"
+      ]
+    },
+    "headings": [
+      {
+        "level": 1,
+        "range": {
+          "end": 110,
+          "start": 92
+        },
+        "text": "Body starts here"
+      }
+    ],
+    "links": [],
+    "rawFrontmatter": "---\ntitle: Valid Frontmatter\ntags:\n  - alpha\n  - beta/nested\naliases: [VF, \"Valid FM\"]\n---\n\n",
+    "spans": [
+      {
+        "kind": "frontmatter",
+        "range": {
+          "end": 90,
+          "start": 0
+        }
+      },
+      {
+        "kind": "heading",
+        "level": 1,
+        "range": {
+          "end": 110,
+          "start": 92
+        }
+      }
+    ],
+    "tags": []
+  },
+  "lezer": null,
+  "meta": {
+    "license": "MIT",
+    "provenance": "original"
+  },
+  "rendering": null
+}

@@ -1,0 +1,117 @@
+{
+  "extraction": {
+    "blocks": [],
+    "diagnostics": [],
+    "frontmatter": null,
+    "headings": [
+      {
+        "level": 1,
+        "range": {
+          "end": 11,
+          "start": 0
+        },
+        "text": "Top level"
+      },
+      {
+        "level": 2,
+        "range": {
+          "end": 56,
+          "start": 13
+        },
+        "text": "Nested emphasis with strong inside"
+      },
+      {
+        "level": 3,
+        "range": {
+          "end": 158,
+          "start": 120
+        },
+        "text": "Deep > heading with # literal hash"
+      }
+    ],
+    "links": [],
+    "rawFrontmatter": null,
+    "spans": [
+      {
+        "kind": "heading",
+        "level": 1,
+        "range": {
+          "end": 11,
+          "start": 0
+        }
+      },
+      {
+        "kind": "heading",
+        "level": 2,
+        "range": {
+          "end": 56,
+          "start": 13
+        }
+      },
+      {
+        "kind": "emphasis",
+        "range": {
+          "end": 56,
+          "start": 23
+        }
+      },
+      {
+        "kind": "strong",
+        "range": {
+          "end": 48,
+          "start": 38
+        }
+      },
+      {
+        "kind": "inlineCode",
+        "range": {
+          "end": 81,
+          "start": 68
+        }
+      },
+      {
+        "kind": "strong",
+        "range": {
+          "end": 91,
+          "start": 83
+        }
+      },
+      {
+        "kind": "emphasis",
+        "range": {
+          "end": 101,
+          "start": 93
+        }
+      },
+      {
+        "kind": "emphasis",
+        "range": {
+          "end": 117,
+          "start": 107
+        }
+      },
+      {
+        "kind": "strong",
+        "range": {
+          "end": 116,
+          "start": 108
+        }
+      },
+      {
+        "kind": "heading",
+        "level": 3,
+        "range": {
+          "end": 158,
+          "start": 120
+        }
+      }
+    ],
+    "tags": []
+  },
+  "lezer": null,
+  "meta": {
+    "license": "MIT",
+    "provenance": "original"
+  },
+  "rendering": null
+}

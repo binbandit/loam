@@ -1,0 +1,65 @@
+{
+  "extraction": {
+    "blocks": [],
+    "diagnostics": [
+      {
+        "code": "empty-link-target",
+        "message": "link has an empty target",
+        "range": {
+          "end": 33,
+          "start": 19
+        },
+        "severity": "warning"
+      }
+    ],
+    "frontmatter": null,
+    "headings": [
+      {
+        "level": 1,
+        "range": {
+          "end": 15,
+          "start": 0
+        },
+        "text": "Empty targets"
+      }
+    ],
+    "links": [
+      {
+        "components": null,
+        "embed": false,
+        "range": {
+          "end": 33,
+          "start": 19
+        },
+        "style": "markdown",
+        "target": "",
+        "text": "click here"
+      }
+    ],
+    "rawFrontmatter": null,
+    "spans": [
+      {
+        "kind": "heading",
+        "level": 1,
+        "range": {
+          "end": 15,
+          "start": 0
+        }
+      },
+      {
+        "kind": "link",
+        "range": {
+          "end": 33,
+          "start": 19
+        }
+      }
+    ],
+    "tags": []
+  },
+  "lezer": null,
+  "meta": {
+    "license": "MIT",
+    "provenance": "original"
+  },
+  "rendering": null
+}

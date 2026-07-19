@@ -1,0 +1,93 @@
+{
+  "extraction": {
+    "blocks": [],
+    "diagnostics": [],
+    "frontmatter": null,
+    "headings": [
+      {
+        "level": 1,
+        "range": {
+          "end": 13,
+          "start": 0
+        },
+        "text": "GFM inlines"
+      }
+    ],
+    "links": [
+      {
+        "components": null,
+        "embed": false,
+        "range": {
+          "end": 45,
+          "start": 21
+        },
+        "style": "markdown",
+        "target": "https://example.com/auto",
+        "text": "https://example.com/auto"
+      }
+    ],
+    "rawFrontmatter": null,
+    "spans": [
+      {
+        "kind": "heading",
+        "level": 1,
+        "range": {
+          "end": 13,
+          "start": 0
+        }
+      },
+      {
+        "kind": "link",
+        "range": {
+          "end": 45,
+          "start": 21
+        }
+      },
+      {
+        "kind": "strikethrough",
+        "range": {
+          "end": 68,
+          "start": 50
+        }
+      },
+      {
+        "depth": 0,
+        "kind": "blockquote",
+        "range": {
+          "end": 133,
+          "start": 96
+        }
+      },
+      {
+        "depth": 0,
+        "kind": "listItem",
+        "range": {
+          "end": 133,
+          "start": 98
+        }
+      },
+      {
+        "depth": 1,
+        "kind": "listItem",
+        "range": {
+          "end": 133,
+          "start": 110
+        }
+      },
+      {
+        "kind": "strikethrough",
+        "range": {
+          "end": 133,
+          "start": 123
+        }
+      }
+    ],
+    "tags": []
+  },
+  "lezer": null,
+  "meta": {
+    "license": "MIT",
+    "provenance": "original"
+  },
+  "rendering": null
+}

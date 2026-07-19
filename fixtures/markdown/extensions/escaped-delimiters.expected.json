@@ -1,0 +1,72 @@
+{
+  "extraction": {
+    "blocks": [],
+    "diagnostics": [],
+    "frontmatter": null,
+    "headings": [
+      {
+        "level": 1,
+        "range": {
+          "end": 20,
+          "start": 0
+        },
+        "text": "Escaped delimiters"
+      }
+    ],
+    "links": [],
+    "rawFrontmatter": null,
+    "spans": [
+      {
+        "kind": "heading",
+        "level": 1,
+        "range": {
+          "end": 20,
+          "start": 0
+        }
+      },
+      {
+        "kind": "highlight",
+        "range": {
+          "end": 130,
+          "start": 117
+        }
+      },
+      {
+        "kind": "highlight",
+        "range": {
+          "end": 183,
+          "start": 171
+        }
+      },
+      {
+        "kind": "codeBlock",
+        "language": "text",
+        "range": {
+          "end": 281,
+          "start": 228
+        }
+      },
+      {
+        "kind": "inlineCode",
+        "range": {
+          "end": 308,
+          "start": 290
+        }
+      },
+      {
+        "kind": "inlineCode",
+        "range": {
+          "end": 332,
+          "start": 313
+        }
+      }
+    ],
+    "tags": []
+  },
+  "lezer": null,
+  "meta": {
+    "license": "MIT",
+    "provenance": "original"
+  },
+  "rendering": null
+}

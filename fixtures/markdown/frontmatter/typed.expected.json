@@ -1,0 +1,192 @@
+{
+  "extraction": {
+    "blocks": [],
+    "diagnostics": [],
+    "frontmatter": {
+      "aliases": [
+        "TV",
+        "Typed Values"
+      ],
+      "properties": [
+        {
+          "key": "title",
+          "range": {
+            "end": 23,
+            "start": 4
+          },
+          "value": {
+            "type": "text",
+            "value": "Typed values"
+          }
+        },
+        {
+          "key": "rating",
+          "range": {
+            "end": 33,
+            "start": 24
+          },
+          "value": {
+            "type": "number",
+            "value": 4.0
+          }
+        },
+        {
+          "key": "weight",
+          "range": {
+            "end": 45,
+            "start": 34
+          },
+          "value": {
+            "type": "number",
+            "value": 2.5
+          }
+        },
+        {
+          "key": "draft",
+          "range": {
+            "end": 58,
+            "start": 46
+          },
+          "value": {
+            "type": "checkbox",
+            "value": false
+          }
+        },
+        {
+          "key": "published",
+          "range": {
+            "end": 74,
+            "start": 59
+          },
+          "value": {
+            "type": "checkbox",
+            "value": true
+          }
+        },
+        {
+          "key": "due",
+          "range": {
+            "end": 90,
+            "start": 75
+          },
+          "value": {
+            "type": "date",
+            "value": "2026-08-01"
+          }
+        },
+        {
+          "key": "updated",
+          "range": {
+            "end": 119,
+            "start": 91
+          },
+          "value": {
+            "type": "datetime",
+            "value": "2026-07-18T09:30:00"
+          }
+        },
+        {
+          "key": "tags",
+          "range": {
+            "end": 147,
+            "start": 120
+          },
+          "value": {
+            "type": "list",
+            "value": [
+              {
+                "type": "text",
+                "value": "projects"
+              },
+              {
+                "type": "text",
+                "value": "deep/nest"
+              }
+            ]
+          }
+        },
+        {
+          "key": "aliases",
+          "range": {
+            "end": 182,
+            "start": 148
+          },
+          "value": {
+            "type": "list",
+            "value": [
+              {
+                "type": "text",
+                "value": "TV"
+              },
+              {
+                "type": "text",
+                "value": "Typed Values"
+              }
+            ]
+          }
+        },
+        {
+          "key": "empty-one",
+          "range": {
+            "end": 193,
+            "start": 183
+          },
+          "value": {
+            "type": "empty"
+          }
+        },
+        {
+          "key": "notes",
+          "range": {
+            "end": 228,
+            "start": 194
+          },
+          "value": {
+            "type": "text",
+            "value": "plain text with 2026 inside"
+          }
+        }
+      ],
+      "tags": [
+        "projects",
+        "deep/nest"
+      ]
+    },
+    "headings": [
+      {
+        "level": 1,
+        "range": {
+          "end": 240,
+          "start": 234
+        },
+        "text": "Body"
+      }
+    ],
+    "links": [],
+    "rawFrontmatter": "---\ntitle: Typed values\nrating: 4\nweight: 2.5\ndraft: false\npublished: true\ndue: 2026-08-01\nupdated: 2026-07-18T09:30:00\ntags: [projects, deep/nest]\naliases:\n  - TV\n  - \"Typed Values\"\nempty-one:\nnotes: plain text with 2026 inside\n---\n\n",
+    "spans": [
+      {
+        "kind": "frontmatter",
+        "range": {
+          "end": 232,
+          "start": 0
+        }
+      },
+      {
+        "kind": "heading",
+        "level": 1,
+        "range": {
+          "end": 240,
+          "start": 234
+        }
+      }
+    ],
+    "tags": []
+  },
+  "lezer": null,
+  "meta": {
+    "license": "MIT",
+    "provenance": "original"
+  },
+  "rendering": null
+}

@@ -1,0 +1,143 @@
+{
+  "extraction": {
+    "blocks": [],
+    "diagnostics": [],
+    "frontmatter": null,
+    "headings": [
+      {
+        "level": 1,
+        "range": {
+          "end": 8,
+          "start": 0
+        },
+        "text": "Embeds"
+      }
+    ],
+    "links": [
+      {
+        "components": {
+          "block": null,
+          "heading": null,
+          "note": "Note One"
+        },
+        "embed": true,
+        "range": {
+          "end": 34,
+          "start": 21
+        },
+        "style": "wiki",
+        "target": "Note One",
+        "text": "Note One"
+      },
+      {
+        "components": {
+          "block": null,
+          "heading": "Section Two",
+          "note": "Note One"
+        },
+        "embed": true,
+        "range": {
+          "end": 83,
+          "start": 58
+        },
+        "style": "wiki",
+        "target": "Note One#Section Two",
+        "text": "Note One#Section Two"
+      },
+      {
+        "components": {
+          "block": "blk-1",
+          "heading": null,
+          "note": "Note One"
+        },
+        "embed": true,
+        "range": {
+          "end": 120,
+          "start": 100
+        },
+        "style": "wiki",
+        "target": "Note One#^blk-1",
+        "text": "Note One#^blk-1"
+      },
+      {
+        "components": {
+          "block": null,
+          "heading": null,
+          "note": "diagram.png"
+        },
+        "embed": true,
+        "range": {
+          "end": 155,
+          "start": 135
+        },
+        "style": "wiki",
+        "target": "diagram.png",
+        "text": "300"
+      },
+      {
+        "components": null,
+        "embed": true,
+        "range": {
+          "end": 204,
+          "start": 175
+        },
+        "style": "markdown",
+        "target": "assets/photo.png",
+        "text": "alt text"
+      }
+    ],
+    "rawFrontmatter": null,
+    "spans": [
+      {
+        "kind": "heading",
+        "level": 1,
+        "range": {
+          "end": 8,
+          "start": 0
+        }
+      },
+      {
+        "kind": "embed",
+        "range": {
+          "end": 34,
+          "start": 21
+        }
+      },
+      {
+        "kind": "embed",
+        "range": {
+          "end": 83,
+          "start": 58
+        }
+      },
+      {
+        "kind": "embed",
+        "range": {
+          "end": 120,
+          "start": 100
+        }
+      },
+      {
+        "kind": "embed",
+        "range": {
+          "end": 155,
+          "start": 135
+        }
+      },
+      {
+        "kind": "embed",
+        "range": {
+          "end": 204,
+          "start": 175
+        }
+      }
+    ],
+    "tags": []
+  },
+  "lezer": null,
+  "meta": {
+    "license": "MIT",
+    "provenance": "original"
+  },
+  "rendering": null
+}

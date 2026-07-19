@@ -1,0 +1,57 @@
+{
+  "extraction": {
+    "blocks": [],
+    "diagnostics": [],
+    "frontmatter": null,
+    "headings": [
+      {
+        "level": 1,
+        "range": {
+          "end": 7,
+          "start": 0
+        },
+        "text": "Table"
+      }
+    ],
+    "links": [],
+    "rawFrontmatter": null,
+    "spans": [
+      {
+        "kind": "heading",
+        "level": 1,
+        "range": {
+          "end": 7,
+          "start": 0
+        }
+      },
+      {
+        "kind": "table",
+        "range": {
+          "end": 112,
+          "start": 9
+        }
+      },
+      {
+        "kind": "emphasis",
+        "range": {
+          "end": 74,
+          "start": 70
+        }
+      },
+      {
+        "kind": "inlineCode",
+        "range": {
+          "end": 82,
+          "start": 79
+        }
+      }
+    ],
+    "tags": []
+  },
+  "lezer": null,
+  "meta": {
+    "license": "MIT",
+    "provenance": "original"
+  },
+  "rendering": null
+}

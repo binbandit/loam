@@ -1,0 +1,84 @@
+{
+  "extraction": {
+    "blocks": [],
+    "diagnostics": [],
+    "frontmatter": null,
+    "headings": [
+      {
+        "level": 1,
+        "range": {
+          "end": 15,
+          "start": 0
+        },
+        "text": "Nested quotes"
+      }
+    ],
+    "links": [],
+    "rawFrontmatter": null,
+    "spans": [
+      {
+        "kind": "heading",
+        "level": 1,
+        "range": {
+          "end": 15,
+          "start": 0
+        }
+      },
+      {
+        "depth": 0,
+        "kind": "blockquote",
+        "range": {
+          "end": 149,
+          "start": 17
+        }
+      },
+      {
+        "depth": 1,
+        "kind": "blockquote",
+        "range": {
+          "end": 80,
+          "start": 33
+        }
+      },
+      {
+        "kind": "emphasis",
+        "range": {
+          "end": 62,
+          "start": 52
+        }
+      },
+      {
+        "depth": 2,
+        "kind": "blockquote",
+        "range": {
+          "end": 80,
+          "start": 67
+        }
+      },
+      {
+        "depth": 0,
+        "kind": "listItem",
+        "range": {
+          "end": 149,
+          "start": 85
+        }
+      },
+      {
+        "checked": false,
+        "depth": 1,
+        "kind": "task",
+        "range": {
+          "end": 149,
+          "start": 114
+        }
+      }
+    ],
+    "tags": []
+  },
+  "lezer": null,
+  "meta": {
+    "license": "MIT",
+    "provenance": "original"
+  },
+  "rendering": null
+}

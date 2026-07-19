@@ -1,0 +1,58 @@
+{
+  "extraction": {
+    "blocks": [],
+    "diagnostics": [],
+    "frontmatter": null,
+    "headings": [
+      {
+        "level": 1,
+        "range": {
+          "end": 16,
+          "start": 0
+        },
+        "text": "Code exclusion"
+      }
+    ],
+    "links": [],
+    "rawFrontmatter": null,
+    "spans": [
+      {
+        "kind": "heading",
+        "level": 1,
+        "range": {
+          "end": 16,
+          "start": 0
+        }
+      },
+      {
+        "kind": "codeBlock",
+        "language": "markdown",
+        "range": {
+          "end": 142,
+          "start": 18
+        }
+      },
+      {
+        "kind": "inlineCode",
+        "range": {
+          "end": 172,
+          "start": 151
+        }
+      },
+      {
+        "kind": "inlineCode",
+        "range": {
+          "end": 194,
+          "start": 177
+        }
+      }
+    ],
+    "tags": []
+  },
+  "lezer": null,
+  "meta": {
+    "license": "MIT",
+    "provenance": "original"
+  },
+  "rendering": null
+}

@@ -1,0 +1,80 @@
+{
+  "extraction": {
+    "blocks": [],
+    "diagnostics": [],
+    "frontmatter": null,
+    "headings": [
+      {
+        "level": 1,
+        "range": {
+          "end": 23,
+          "start": 0
+        },
+        "text": "Café ☕ und Straße"
+      }
+    ],
+    "links": [
+      {
+        "components": null,
+        "embed": false,
+        "range": {
+          "end": 186,
+          "start": 142
+        },
+        "style": "markdown",
+        "target": "https://example.com/übersicht",
+        "text": "Übersicht"
+      }
+    ],
+    "rawFrontmatter": null,
+    "spans": [
+      {
+        "kind": "heading",
+        "level": 1,
+        "range": {
+          "end": 23,
+          "start": 0
+        }
+      },
+      {
+        "kind": "strong",
+        "range": {
+          "end": 44,
+          "start": 31
+        }
+      },
+      {
+        "checked": true,
+        "depth": 0,
+        "kind": "task",
+        "range": {
+          "end": 116,
+          "start": 94
+        }
+      },
+      {
+        "checked": false,
+        "depth": 0,
+        "kind": "task",
+        "range": {
+          "end": 140,
+          "start": 117
+        }
+      },
+      {
+        "kind": "link",
+        "range": {
+          "end": 186,
+          "start": 142
+        }
+      }
+    ],
+    "tags": []
+  },
+  "lezer": null,
+  "meta": {
+    "license": "MIT",
+    "provenance": "original"
+  },
+  "rendering": null
+}

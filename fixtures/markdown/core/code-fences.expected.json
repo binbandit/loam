@@ -1,0 +1,60 @@
+{
+  "extraction": {
+    "blocks": [],
+    "diagnostics": [],
+    "frontmatter": null,
+    "headings": [
+      {
+        "level": 1,
+        "range": {
+          "end": 8,
+          "start": 0
+        },
+        "text": "Fences"
+      }
+    ],
+    "links": [],
+    "rawFrontmatter": null,
+    "spans": [
+      {
+        "kind": "heading",
+        "level": 1,
+        "range": {
+          "end": 8,
+          "start": 0
+        }
+      },
+      {
+        "kind": "codeBlock",
+        "language": "rust",
+        "range": {
+          "end": 67,
+          "start": 10
+        }
+      },
+      {
+        "kind": "codeBlock",
+        "language": null,
+        "range": {
+          "end": 94,
+          "start": 69
+        }
+      },
+      {
+        "kind": "codeBlock",
+        "language": "python",
+        "range": {
+          "end": 147,
+          "start": 96
+        }
+      }
+    ],
+    "tags": []
+  },
+  "lezer": null,
+  "meta": {
+    "license": "MIT",
+    "provenance": "original"
+  },
+  "rendering": null
+}

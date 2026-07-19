@@ -1,0 +1,125 @@
+{
+  "extraction": {
+    "blocks": [],
+    "diagnostics": [],
+    "frontmatter": null,
+    "headings": [
+      {
+        "level": 1,
+        "range": {
+          "end": 11,
+          "start": 0
+        },
+        "text": "Wikilinks"
+      }
+    ],
+    "links": [
+      {
+        "components": {
+          "block": null,
+          "heading": null,
+          "note": "Target Note"
+        },
+        "embed": false,
+        "range": {
+          "end": 34,
+          "start": 19
+        },
+        "style": "wiki",
+        "target": "Target Note",
+        "text": "Target Note"
+      },
+      {
+        "components": {
+          "block": null,
+          "heading": null,
+          "note": "Target Note"
+        },
+        "embed": false,
+        "range": {
+          "end": 75,
+          "start": 47
+        },
+        "style": "wiki",
+        "target": "Target Note",
+        "text": "display text"
+      },
+      {
+        "components": {
+          "block": null,
+          "heading": "Section",
+          "note": "Target Note"
+        },
+        "embed": false,
+        "range": {
+          "end": 114,
+          "start": 91
+        },
+        "style": "wiki",
+        "target": "Target Note#Section",
+        "text": "Target Note#Section"
+      },
+      {
+        "components": {
+          "block": null,
+          "heading": null,
+          "note": "Résumé ☕"
+        },
+        "embed": false,
+        "range": {
+          "end": 143,
+          "start": 127
+        },
+        "style": "wiki",
+        "target": "Résumé ☕",
+        "text": "Résumé ☕"
+      }
+    ],
+    "rawFrontmatter": null,
+    "spans": [
+      {
+        "kind": "heading",
+        "level": 1,
+        "range": {
+          "end": 11,
+          "start": 0
+        }
+      },
+      {
+        "kind": "wikilink",
+        "range": {
+          "end": 34,
+          "start": 19
+        }
+      },
+      {
+        "kind": "wikilink",
+        "range": {
+          "end": 75,
+          "start": 47
+        }
+      },
+      {
+        "kind": "wikilink",
+        "range": {
+          "end": 114,
+          "start": 91
+        }
+      },
+      {
+        "kind": "wikilink",
+        "range": {
+          "end": 143,
+          "start": 127
+        }
+      }
+    ],
+    "tags": []
+  },
+  "lezer": null,
+  "meta": {
+    "license": "MIT",
+    "provenance": "original"
+  },
+  "rendering": null
+}
