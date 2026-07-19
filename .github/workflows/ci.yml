@@ -261,13 +261,17 @@ jobs:
 
   perf:
     name: Perf smoke
-    timeout-minutes: 5
+    timeout-minutes: 20
     needs: bundle-budget
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Placeholder
-        run: echo "Perf gate lands with loam-bench (E29)."
+      - uses: ./.github/actions/setup-native
+      # Switcher SLO + regression gates (LOA-93, §5.9): p95 first-batch,
+      # total, and empty-query latencies on the bench-10k record set, gated
+      # against absolute SLOs and baselines/switcher.json × 1.10.
+      - name: Switcher bench gates (bench-10k)
+        run: cargo run --release -p loam-bench -- switcher --check
 
 # Unsigned development artifacts (LOA-11). No signing secrets exist in this
   # workflow at all; publication is additionally gated to trusted (same-repo) runs.
