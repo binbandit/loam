@@ -174,16 +174,24 @@ jobs:
           if [ "$RUNNER_OS" = "Linux" ]; then
             xvfb-run --auto-servernum node native-smoke/smoke.mjs
           elif [ "$RUNNER_OS" = "Windows" ]; then
-            node native-smoke/smoke.mjs
+            # Full WebDriver leg is upstream-blocked on Windows (see
+            # windows-boot.mjs header); LOAM_SMOKE_WEBDRIVER=1 re-attempts it.
+            if [ "$LOAM_SMOKE_WEBDRIVER" = "1" ]; then
+              node native-smoke/smoke.mjs
+            else
+              node native-smoke/windows-boot.mjs
+            fi
           else
             node native-smoke/macos-boot.mjs
           fi
-      - name: Upload macOS boot screenshot
-        if: runner.os == 'macOS' && always()
+      - name: Upload boot screenshots
+        if: runner.os != 'Linux' && always()
         uses: actions/upload-artifact@v4
         with:
-          name: macos-boot-screenshot
-          path: apps/desktop/native-results/macos-boot.png
+          name: boot-screenshot-${{ matrix.os }}
+          path: |
+            apps/desktop/native-results/macos-boot.png
+            apps/desktop/native-results/windows-boot.png
           if-no-files-found: ignore
           retention-days: 7
       - name: Upload native failure artifacts
