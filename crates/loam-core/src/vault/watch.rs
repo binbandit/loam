@@ -379,6 +379,18 @@ mod tests {
         (watcher, rx)
     }
 
+    /// FSEvents can replay pre-arm history (seed writes) after the watcher
+    /// starts, especially on slow CI machines: drain it before acting.
+    fn drain(rx: &mpsc::Receiver<Vec<VaultEvent>>, settle: Duration) {
+        let deadline = Instant::now() + settle;
+        while Instant::now() < deadline {
+            if rx.recv_timeout(Duration::from_millis(100)).is_err() {
+                // One quiet window is enough.
+                return;
+            }
+        }
+    }
+
     /// AC3: the classic atomic-save trace (temp write + rename over the real
     /// file) normalizes to exactly one logical modification.
     #[test]
@@ -460,8 +472,9 @@ mod tests {
         let (_dir, root) = vault();
         std::fs::write(root.join("Note.md"), "v1").expect("seed");
         let (_watcher, rx) = channel_watcher(&root, Backend::Native, AppWriteRegistry::new());
-        // Give the backend a beat to arm before the edit.
+        // Arm, then drain any replayed pre-arm history (seed write).
         std::thread::sleep(Duration::from_millis(300));
+        drain(&rx, Duration::from_secs(2));
 
         let started = Instant::now();
         std::fs::write(root.join("Note.md"), "external v2").expect("external edit");
@@ -472,6 +485,11 @@ mod tests {
 
         assert_eq!(events.len(), 1, "one normalized event: {events:?}");
         assert_eq!(events[0].path, "Note.md");
+        // FSEvents may coalesce the seed-create with the edit into Created.
+        assert!(
+            matches!(events[0].kind, EventKind::Created | EventKind::Modified),
+            "logical change kind: {events:?}"
+        );
         assert_eq!(events[0].origin, ChangeOrigin::External);
         assert!(
             elapsed < Duration::from_secs(1),
@@ -488,6 +506,7 @@ mod tests {
         let registry = AppWriteRegistry::new();
         let (_watcher, rx) = channel_watcher(&root, Backend::Native, registry.clone());
         std::thread::sleep(Duration::from_millis(300));
+        drain(&rx, Duration::from_secs(2));
 
         // The shell wires the writer's sink to the registry like this:
         struct RegistrySink(AppWriteRegistry);
@@ -526,6 +545,7 @@ mod tests {
             AppWriteRegistry::new(),
         );
         std::thread::sleep(Duration::from_millis(600));
+        drain(&rx, Duration::from_secs(2));
 
         let started = Instant::now();
         std::fs::write(root.join("Note.md"), "poll v2").expect("edit");
