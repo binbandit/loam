@@ -1,17 +1,11 @@
 /**
- * Minimal IPC transport seam (LOA-21/LOA-48). The generated typed client and
- * the full browser mock land with E06; the shape here only guarantees that the
- * frontend never touches Tauri globals directly and can always run in a plain
- * browser.
+ * IPC transport seam (LOA-21/LOA-48, typed by E06). The generated client
+ * (`./generated/bindings`) is the full typed command surface; this seam
+ * exists so the frontend never touches Tauri globals directly and can always
+ * run in a plain browser (the complete in-memory mock lands with LOA-64).
  */
 
-/** Mirror of the shell's `VaultInfo` (serde camelCase). Replaced by E06. */
-export interface VaultInfo {
-  id: string;
-  root: string;
-  name: string;
-  focusedExisting: boolean;
-}
+import type { LoamError, VaultInfo } from "./generated/bindings";
 
 export interface IpcTransport {
   readonly kind: "native" | "mock";
@@ -24,6 +18,14 @@ export interface IpcTransport {
 /** True when running inside a Tauri webview. The only Tauri-global probe allowed. */
 export function hasNativeShell(): boolean {
   return typeof window !== "undefined" && "__TAURI_INTERNALS__" in window;
+}
+
+/** Contract errors surface as thrown `LoamIpcError`s at the transport seam. */
+export class LoamIpcError extends Error {
+  constructor(readonly detail: LoamError) {
+    super(detail.error);
+    this.name = "LoamIpcError";
+  }
 }
 
 export function createMockTransport(): IpcTransport {
@@ -39,8 +41,12 @@ function createNativeTransport(): IpcTransport {
     kind: "native",
     ping: () => Promise.resolve("pong:native"),
     openVaultPicker: async () => {
-      const { invoke } = await import("@tauri-apps/api/core");
-      return invoke<VaultInfo | null>("vault_pick_and_open");
+      const { commands } = await import("./generated/bindings");
+      const result = await commands.vaultPickAndOpen();
+      if (result.status === "error") {
+        throw new LoamIpcError(result.error);
+      }
+      return result.data;
     },
   };
 }

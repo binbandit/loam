@@ -1,0 +1,108 @@
+{
+  "commands": [
+    {
+      "args": "vaultId: string, parent: string, name: string",
+      "error": "LoamError",
+      "name": "folderCreate",
+      "result": "VaultPath"
+    },
+    {
+      "args": "vaultId: string, folder: string, title: string",
+      "error": "LoamError",
+      "name": "noteCreate",
+      "result": "NoteRef"
+    },
+    {
+      "args": "vaultId: string, path: string",
+      "error": "LoamError",
+      "name": "noteDuplicate",
+      "result": "NoteRef"
+    },
+    {
+      "args": "vaultId: string, path: string",
+      "error": "LoamError",
+      "name": "noteRead",
+      "result": "NoteDoc"
+    },
+    {
+      "args": "vaultId: string, from: string, to: string",
+      "error": "LoamError",
+      "name": "noteRename",
+      "result": "null"
+    },
+    {
+      "args": "vaultId: string, path: string",
+      "error": "LoamError",
+      "name": "noteTrash",
+      "result": "null"
+    },
+    {
+      "args": "vaultId: string, path: string, content: string, baseHash: string | null",
+      "error": "LoamError",
+      "name": "noteWrite",
+      "result": "WriteResult"
+    },
+    {
+      "args": "path: string",
+      "error": "LoamError",
+      "name": "vaultOpen",
+      "result": "VaultInfo"
+    },
+    {
+      "args": "",
+      "error": "LoamError",
+      "name": "vaultPickAndOpen",
+      "result": "{ id: string, name: string, readOnly: boolean, transientIdentity: boolean, counts: VaultCounts, indexStatus: IndexStatus, } | null"
+    }
+  ],
+  "contract": "loam-ipc",
+  "errorVariants": [
+    "already-exists",
+    "conflict",
+    "corrupt-identity",
+    "io",
+    "materialization-required",
+    "not-a-file",
+    "not-a-vault",
+    "not-found",
+    "not-utf8",
+    "outside-vault",
+    "read-only",
+    "unknown-vault"
+  ],
+  "events": [
+    {
+      "channel": "vault://conflict",
+      "payload": "EventEnvelope<ConflictPayload>"
+    },
+    {
+      "channel": "vault://file-changed",
+      "payload": "EventEnvelope<VaultEvent>"
+    },
+    {
+      "channel": "vault://index-progress",
+      "payload": "EventEnvelope<IndexProgress>"
+    }
+  ],
+  "milestone": "M0",
+  "transport": "JSON payloads (MessagePack/raw IPC only as a future measured optimization for graph/search)",
+  "types": [
+    "ChangeOrigin",
+    "ConflictPayload",
+    "EventEnvelope",
+    "EventKind",
+    "HashHex",
+    "IndexProgress",
+    "IndexStatus",
+    "LoamError",
+    "NoteDoc",
+    "NoteMeta",
+    "NoteRef",
+    "SizePolicy",
+    "VaultCounts",
+    "VaultEvent",
+    "VaultInfo",
+    "VaultPath",
+    "WriteResult"
+  ]
+}

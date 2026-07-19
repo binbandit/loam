@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "node ../../scripts/workspace-task.mjs dev ipc-client",
     "build": "node ../../scripts/workspace-task.mjs build ipc-client",
-    "test": "node ../../scripts/workspace-task.mjs test ipc-client",
+    "test": "vitest run",
     "typecheck": "tsc --noEmit"
   },
   "exports": {
@@ -16,5 +16,8 @@
   "types": "./src/index.ts",
   "dependencies": {
     "@tauri-apps/api": "2.11.1"
+  },
+  "devDependencies": {
+    "vitest": "4.1.10"
   }
 }
