@@ -2,6 +2,8 @@
 //!
 //! Tauri-specific types and behavior belong in the desktop shell.
 
+pub mod vault;
+
 /// The current product display name.
 pub const APP_NAME: &str = "Loam";
 
