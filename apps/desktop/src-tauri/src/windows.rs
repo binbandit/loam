@@ -270,10 +270,24 @@ pub fn open_vault_count<R: Runtime>(app: &AppHandle<R>) -> usize {
         .count()
 }
 
+/// The window label currently serving a vault key, if any.
+pub fn label_for_key<R: Runtime>(app: &AppHandle<R>, key: &str) -> Option<String> {
+    app.state::<VaultWindows>()
+        .inner
+        .lock()
+        .expect("registry lock")
+        .label_by_key
+        .get(key)
+        .cloned()
+}
+
 /// Registry cleanup when a vault window is destroyed. Called by the window
 /// event handler; public so tests (whose mock runtime delivers no window
-/// events) can simulate the event and verify the cleanup contract.
+/// events) can simulate the event and verify the cleanup contract. Also
+/// disposes the vault's event bridge and capability root (LOA-60): event
+/// lifetime follows window lifetime.
 pub fn on_vault_window_destroyed<R: Runtime>(app: &AppHandle<R>, key: &str) {
+    let label = label_for_key(app, key);
     if let Some(registry) = app.try_state::<VaultWindows>() {
         registry
             .inner
@@ -281,6 +295,12 @@ pub fn on_vault_window_destroyed<R: Runtime>(app: &AppHandle<R>, key: &str) {
             .expect("registry lock")
             .label_by_key
             .remove(key);
+    }
+    if let (Some(label), Some(bridges)) = (label, app.try_state::<crate::events::EventBridges>())
+        && let Some(vault_id) = crate::events::stop_bridge_for_window(&bridges, &label)
+        && let Some(vaults) = app.try_state::<crate::commands::VaultRegistry>()
+    {
+        vaults.remove(&vault_id);
     }
 }
 
