@@ -274,8 +274,10 @@ fn json_snapshots_are_deterministic() {
         std::fs::create_dir_all(snapshot_path.parent().expect("parent")).expect("mkdir");
         std::fs::write(&snapshot_path, first.clone() + "\n").expect("write snapshot");
     }
+    // Normalize CRLF: Windows checkouts may rewrite line endings.
     let committed = std::fs::read_to_string(&snapshot_path)
-        .expect("snapshot committed — regenerate with LOAM_UPDATE_FIXTURES=1");
+        .expect("snapshot committed — regenerate with LOAM_UPDATE_FIXTURES=1")
+        .replace("\r\n", "\n");
     assert_eq!(
         committed.trim_end(),
         first,

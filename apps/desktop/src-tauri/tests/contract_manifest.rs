@@ -11,7 +11,10 @@ use std::path::PathBuf;
 fn bindings() -> String {
     let path = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
         .join("../../../packages/ipc-client/src/generated/bindings.ts");
-    std::fs::read_to_string(path).expect("generated bindings committed")
+    // Normalize CRLF: Windows checkouts may rewrite line endings.
+    std::fs::read_to_string(path)
+        .expect("generated bindings committed")
+        .replace("\r\n", "\n")
 }
 
 fn manifest_path() -> PathBuf {
@@ -150,8 +153,10 @@ fn manifest_is_complete_deterministic_and_snapshotted() {
     if std::env::var("LOAM_UPDATE_FIXTURES").is_ok_and(|v| v == "1") {
         std::fs::write(&path, &rendered).expect("write manifest");
     }
+    // Normalize CRLF: Windows checkouts may rewrite line endings.
     let committed = std::fs::read_to_string(&path)
-        .expect("manifest committed — regenerate with LOAM_UPDATE_FIXTURES=1");
+        .expect("manifest committed — regenerate with LOAM_UPDATE_FIXTURES=1")
+        .replace("\r\n", "\n");
     // AC4: mismatches fail with the full readable JSON diff below.
     similar_assert(&committed, &rendered);
 }

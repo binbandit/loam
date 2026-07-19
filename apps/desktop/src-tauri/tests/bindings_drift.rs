@@ -29,8 +29,10 @@ fn generation_produces_no_diff() {
         std::fs::create_dir_all(committed_file.parent().expect("parent")).expect("mkdir");
         std::fs::write(&committed_file, &generated).expect("write bindings");
     }
+    // Normalize CRLF: Windows checkouts may rewrite line endings.
     let committed = std::fs::read_to_string(&committed_file)
-        .expect("bindings.ts committed — regenerate with LOAM_UPDATE_FIXTURES=1");
+        .expect("bindings.ts committed — regenerate with LOAM_UPDATE_FIXTURES=1")
+        .replace("\r\n", "\n");
     assert_eq!(
         committed, generated,
         "generated TypeScript client diverged from packages/ipc-client/src/generated/bindings.ts; \
