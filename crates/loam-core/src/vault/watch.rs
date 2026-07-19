@@ -298,13 +298,17 @@ fn to_raw_trace(root: &Path, batch: &[notify_debouncer_full::DebouncedEvent]) ->
 
     let rel = |p: &PathBuf| -> Option<String> {
         let relative = p.strip_prefix(root).ok()?;
-        Some(
-            relative
-                .to_string_lossy()
-                .replace('\\', "/")
-                .nfc()
-                .collect(),
-        )
+        let normalized: String = relative
+            .to_string_lossy()
+            .replace('\\', "/")
+            .nfc()
+            .collect();
+        // Events for the vault root itself (empty relative path) carry no
+        // file-level meaning; FSEvents emits them around watch start.
+        if normalized.is_empty() {
+            return None;
+        }
+        Some(normalized)
     };
 
     let mut trace = Vec::new();

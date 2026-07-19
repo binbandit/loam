@@ -139,7 +139,7 @@ mod tests {
                 p.strip_prefix(root)
                     .expect("under root")
                     .to_string_lossy()
-                    .into_owned()
+                    .replace('\\', "/")
             })
             .collect();
         names.sort();
