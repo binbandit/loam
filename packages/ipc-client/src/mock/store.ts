@@ -95,14 +95,14 @@ export class MockVaultStore {
     return { notes, folders: folders.size, attachments };
   }
 
-  /** Native collision policy: `Title.md`, `Title 2.md`, `Title 3.md`… */
+  /** Native §3.8 collision policy: `Title.md`, `Title 1.md`, `Title 2.md`… */
   uniqueName(folder: string, title: string, extension: string | null): string {
     const join = (name: string) => (folder === "" ? name : `${folder}/${name}`);
     const withExtension = (name: string) => (extension ? `${name}.${extension}` : name);
     if (!this.files.has(join(withExtension(title)))) {
       return join(withExtension(title));
     }
-    for (let candidate = 2; ; candidate += 1) {
+    for (let candidate = 1; ; candidate += 1) {
       const name = join(withExtension(`${title} ${candidate}`));
       if (!this.files.has(name)) {
         return name;
