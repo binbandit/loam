@@ -91,6 +91,8 @@ jobs:
           fi
         env:
           NEXTEST_PROFILE: ci
+          # Runner trash is disposable: exercise the real OS-trash integration.
+          LOAM_TEST_REAL_TRASH: "1"
       - name: Cache Playwright browsers
         uses: actions/cache@v4
         with:
