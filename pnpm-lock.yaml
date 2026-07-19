@@ -62,6 +62,10 @@ importers:
       '@tauri-apps/api':
         specifier: 2.11.1
         version: 2.11.1
+    devDependencies:
+      vitest:
+        specifier: 4.1.10
+        version: 4.1.10(@types/node@26.1.1)(@vitest/coverage-v8@4.1.10)(jsdom@29.1.1)(vite@8.1.5(@types/node@26.1.1))
 
   packages/markdown-wasm: {}
 

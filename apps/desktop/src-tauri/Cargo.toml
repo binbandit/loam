@@ -20,6 +20,10 @@ serde_json = "1"
 loam-core = { path = "../../../crates/loam-core" }
 tauri-plugin-dialog = "2.7.1"
 tauri-plugin-deep-link = "2.4.9"
+tracing = "0.1.44"
+tauri-specta = { version = "2.0.0-rc.25", features = ["derive", "typescript"] }
+specta = { version = "2.0.0-rc.25", features = ["derive"] }
+specta-typescript = "0.0.12"
 
 [features]
 # Embed the built frontend (production asset serving). Without it a bare
@@ -31,5 +35,8 @@ custom-protocol = ["tauri/custom-protocol"]
 workspace = true
 
 [dev-dependencies]
+serde_json = "1"
+serial_test = "3.5.0"
 tauri = { version = "2.11.5", features = ["test"] }
 tempfile = "3.27.0"
+tracing-subscriber = "0.3.23"
