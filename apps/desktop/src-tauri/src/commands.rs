@@ -306,15 +306,30 @@ mod tests {
                 "note_rename",
                 serde_json::json!({ "vaultId": id, "from": "Fresh.md", "to": "area/Fresh.md" }),
             ),
-            (
-                "note_duplicate",
-                serde_json::json!({ "vaultId": id, "path": "note.md" }),
-            ),
         ] {
             let result = invoke(&webview, cmd, body);
             assert!(result.is_ok(), "{cmd} invocable: {result:?}");
         }
         assert!(vault.path().join("area/Fresh.md").exists(), "ops landed");
+
+        // Duplicate returns the collision-policy name (`note 1.md`) — use the
+        // RETURNED path rather than assuming it.
+        let duplicated = invoke(
+            &webview,
+            "note_duplicate",
+            serde_json::json!({ "vaultId": id, "path": "note.md" }),
+        )
+        .expect("note_duplicate invocable");
+        let duplicated: serde_json::Value = match duplicated {
+            tauri::ipc::InvokeResponseBody::Json(json) => {
+                serde_json::from_str(&json).expect("json")
+            }
+            other => panic!("json response expected: {other:?}"),
+        };
+        let copy_path = duplicated["path"].as_str().expect("path").to_string();
+        assert_eq!(copy_path, "note 1.md", "§3.8 collision policy");
+        assert!(vault.path().join(&copy_path).exists());
+
         // note_trash goes through the OS trash — exercised directly with the
         // recording provider in loam-core's suite; here we prove the command
         // resolves and traces (real trash is CI-gated via LOAM_TEST_REAL_TRASH).
@@ -322,7 +337,7 @@ mod tests {
             let result = invoke(
                 &webview,
                 "note_trash",
-                serde_json::json!({ "vaultId": id, "path": "note 2.md" }),
+                serde_json::json!({ "vaultId": id, "path": copy_path }),
             );
             assert!(result.is_ok(), "note_trash invocable: {result:?}");
         }
