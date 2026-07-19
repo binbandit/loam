@@ -1,3 +1,9 @@
 # Fixture corpora are byte-exact (fixtures/README.md): no line-ending
 # conversion on any platform, ever.
 fixtures/** -text
+
+# Snapshot-compared files: byte-exact comparisons in tests; keep LF on every
+# platform (Windows runners default to autocrlf=true).
+crates/loam-core/tests/snapshots/** text eol=lf
+packages/ipc-client/src/generated/** text eol=lf
+docs/ipc-contract-manifest.json text eol=lf
