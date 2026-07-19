@@ -1,0 +1,84 @@
+{
+  "conflict": {
+    "base": "base",
+    "disk": "disk",
+    "diskHash": "ab12cd",
+    "mine": "mine",
+    "path": "notes/idea.md"
+  },
+  "envelopedEvent": {
+    "payload": {
+      "origin": "external",
+      "path": "notes/idea.md",
+      "type": "deleted"
+    },
+    "seq": 7,
+    "vaultId": "6f2b1e04-9c1c-4f8e-9a2e-3d3f8a1b2c4d"
+  },
+  "errors": [
+    {
+      "error": "not-found",
+      "path": "notes/idea.md"
+    },
+    {
+      "diskHash": "ab12cd",
+      "error": "conflict",
+      "path": "notes/idea.md"
+    },
+    {
+      "error": "io",
+      "kind": "permission-denied",
+      "path": "notes/idea.md"
+    },
+    {
+      "error": "corrupt-identity"
+    }
+  ],
+  "eventModified": {
+    "origin": "external",
+    "path": "notes/idea.md",
+    "type": "modified"
+  },
+  "eventRenamed": {
+    "from": "old.md",
+    "origin": "app",
+    "path": "notes/idea.md",
+    "type": "renamed"
+  },
+  "indexProgress": {
+    "done": 3,
+    "total": 9
+  },
+  "noteDoc": {
+    "content": "# Hi\n",
+    "hash": "ab12cd",
+    "meta": {
+      "modifiedMs": 1752000000000,
+      "readMs": 2,
+      "readOnly": false,
+      "size": 5,
+      "sizePolicy": "normal"
+    },
+    "path": "notes/idea.md"
+  },
+  "noteRef": {
+    "path": "notes/idea.md",
+    "title": "Idea"
+  },
+  "vaultInfo": {
+    "counts": {
+      "attachments": 2,
+      "folders": 1,
+      "notes": 3
+    },
+    "id": "6f2b1e04-9c1c-4f8e-9a2e-3d3f8a1b2c4d",
+    "indexStatus": "notIndexed",
+    "name": "My Vault",
+    "readOnly": false,
+    "transientIdentity": false
+  },
+  "writeResult": {
+    "hash": "ab12cd",
+    "path": "notes/idea.md"
+  }
+}

@@ -3,6 +3,7 @@
 //! Tauri-specific types and behavior belong in the desktop shell.
 
 pub mod index;
+pub mod ipc;
 pub mod parse;
 pub mod search;
 pub mod vault;

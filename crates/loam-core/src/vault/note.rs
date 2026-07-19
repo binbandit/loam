@@ -23,6 +23,13 @@ impl ContentHash {
         Self(blake3::hash(bytes).to_hex().to_string())
     }
 
+    /// Rehydrate a hash previously produced by [`ContentHash::of`] (e.g. a
+    /// `base_hash` arriving over IPC). The value is compared, never trusted
+    /// as content.
+    pub fn from_hex(hex: impl Into<String>) -> Self {
+        Self(hex.into())
+    }
+
     pub fn as_str(&self) -> &str {
         &self.0
     }
