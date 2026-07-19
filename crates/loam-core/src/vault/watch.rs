@@ -188,14 +188,22 @@ impl AppWriteRegistry {
             .insert(path.to_string(), (hash, Instant::now()));
     }
 
-    /// True (and consumes the registration) when `current_hash` matches a
-    /// fresh app write for `path`.
+    /// True when `current_hash` matches a fresh app write for `path`.
+    ///
+    /// Deliberately NON-consuming: FSEvents can split one logical write into
+    /// several raw batches (or replay pre-arm history late), and consuming on
+    /// first match misclassified the follow-up batch as External. Entries
+    /// expire by TTL instead — safe, because while an entry is fresh a
+    /// matching hash means the on-disk content is byte-identical to what the
+    /// app itself wrote, so suppression can never hide real information. A
+    /// genuine external edit changes the hash and is never suppressed.
     pub fn is_app_echo(&self, path: &str, current_hash: &ContentHash) -> bool {
         let mut inner = self.inner.lock().expect("registry lock");
         match inner.get(path) {
-            Some((hash, at)) if hash == current_hash && at.elapsed() < APP_WRITE_TTL => {
+            Some((hash, at)) if hash == current_hash && at.elapsed() < APP_WRITE_TTL => true,
+            Some((_, at)) if at.elapsed() >= APP_WRITE_TTL => {
                 inner.remove(path);
-                true
+                false
             }
             _ => false,
         }
