@@ -137,6 +137,17 @@ describe("mock transport", () => {
     expect(cross.status).toBe("error");
   });
 
+  /** Collision naming matches the native §3.8 policy exactly. */
+  it("collision names follow the native policy", async () => {
+    const { mock, info } = await openFixture();
+    const first = await mock.commands.noteCreate(info.id, "", "welcome");
+    if (first.status !== "ok") throw new Error("create");
+    expect(first.data.path).toBe("welcome 1.md");
+    const second = await mock.commands.noteDuplicate(info.id, "welcome.md");
+    if (second.status !== "ok") throw new Error("duplicate");
+    expect(second.data.path).toBe("welcome 2.md");
+  });
+
   /** Controllable latency so the mock never masks latency tests. */
   it("supports controllable latency", async () => {
     const mock = createMockIpc({ latencyMs: 30 });
