@@ -13,7 +13,7 @@
     "dev": "turbo run dev",
     "build": "turbo run build",
     "test": "pnpm workspace:check && pnpm toolchain:check && turbo run test && cargo nextest run --workspace",
-    "lint": "pnpm workspace:check && biome check . && turbo run typecheck && cargo clippy --workspace --all-targets -- -D warnings",
+    "lint": "pnpm workspace:check && biome check . && turbo run typecheck && cargo clippy --workspace --all-targets -- -D warnings && node scripts/check-hardcoded-colors.mjs",
     "typecheck": "turbo run typecheck",
     "format": "biome format --write . && cargo fmt --all",
     "format:check": "biome format . && cargo fmt --all --check",
@@ -22,6 +22,10 @@
     "workspace:check": "node scripts/check-workspace.mjs",
     "toolchain:check": "node scripts/check-toolchain.mjs",
     "test:e2e": "pnpm --filter @loam-app/desktop test:e2e",
+    "stories": "pnpm --filter @loam-app/ui exec ladle serve",
+    "visual:check": "node scripts/visual-regression.mjs --self-test",
+    "visual:update": "node scripts/visual-regression.mjs --update",
+    "visual:determinism": "node scripts/visual-regression.mjs --determinism",
     "coverage": "pnpm coverage:ts && pnpm coverage:rust && node scripts/check-coverage.mjs",
     "coverage:ts": "pnpm --filter @loam-app/ui test:coverage",
     "coverage:rust": "node scripts/coverage-rust.mjs",
@@ -37,6 +41,9 @@
   "devDependencies": {
     "@biomejs/biome": "2.5.4",
     "@types/node": "^26.1.1",
+    "pixelmatch": "^7.2.0",
+    "playwright": "^1.61.1",
+    "pngjs": "^7.0.0",
     "turbo": "2.10.5",
     "typescript": "7.0.2"
   }
