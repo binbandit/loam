@@ -9,3 +9,5 @@ test-results/
 .turbo/
 .DS_Store
 native-results/
+packages/ui/build/
+packages/ui/visual-artifacts/

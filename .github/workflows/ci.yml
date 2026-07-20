@@ -120,6 +120,39 @@ jobs:
           if-no-files-found: ignore
           retention-days: 7
 
+  # Visual regression (LOA-53, §5.12): every packages/ui story snapshotted in
+  # dark + light against committed baselines. macOS only — baselines are
+  # captured on macOS, and font antialiasing differs per OS. The run also
+  # self-tests that a forced perturbation fails and produces diff artifacts.
+  visual:
+    name: Visual regression
+    timeout-minutes: 20
+    needs: lint
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-workspace
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        with:
+          path: ~/Library/Caches/ms-playwright
+          key: playwright-visual-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
+          restore-keys: playwright-visual-${{ runner.os }}-
+      - name: Install Playwright browser
+        run: pnpm exec playwright install chromium
+      - name: Story snapshots vs baselines (+ diff self-test)
+        run: pnpm visual:check
+      - name: Determinism check (capture twice, compare hashes)
+        run: pnpm visual:determinism
+      - name: Upload visual diffs
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: visual-diffs
+          path: packages/ui/visual-artifacts/
+          if-no-files-found: ignore
+          retention-days: 7
+
 # Native shell smoke (LOA-49): tauri-driver drives the page on Windows/Linux.
   # macOS has no WKWebView WebDriver, so its leg is a boot-level smoke (process
   # alive + real window + screenshot artifact); page-level macOS checks remain
