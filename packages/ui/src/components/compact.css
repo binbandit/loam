@@ -1,0 +1,305 @@
+/**
+ * Tabs & compact controls (§4.3, LOA-45): tabs (app + panel), breadcrumb,
+ * badge/chip, segmented control, slider, kbd. Token-only styling; logical
+ * properties keep the layouts RTL-ready.
+ */
+
+.loam-tab:focus-visible,
+.loam-chip__remove:focus-visible,
+.loam-segmented__item:focus-visible,
+.loam-slider__thumb:focus-visible,
+.loam-breadcrumb__link:focus-visible {
+  outline: 1.5px solid var(--loam-accent);
+  outline-offset: 1px;
+}
+
+/* ── Tabs ───────────────────────────────────────────────────────────────── */
+.loam-tabs__list {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--loam-space-2);
+}
+.loam-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--loam-space-6);
+  border: none;
+  background: transparent;
+  color: var(--loam-text-secondary);
+  font-family: var(--loam-font-ui);
+  font-feature-settings: var(--loam-font-features-ui);
+  font-size: var(--loam-type-base-size);
+  line-height: var(--loam-type-base-line);
+  font-weight: var(--loam-type-base-weight);
+  cursor: default;
+  user-select: none;
+  max-width: 200px;
+  transition:
+    background-color var(--dur-fast) var(--loam-ease),
+    color var(--dur-fast) var(--loam-ease);
+}
+.loam-tab > span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.loam-tab:hover {
+  color: var(--loam-text-primary);
+}
+.loam-tab[data-selected] {
+  color: var(--loam-text-primary);
+  font-weight: var(--loam-type-emphasis-weight);
+}
+.loam-tab[data-disabled] {
+  color: var(--loam-text-disabled);
+}
+/* App-level tabs: filled rows (editor tab bar). */
+.loam-tabs__list[data-variant="app"] .loam-tab {
+  height: 28px;
+  padding: 0 var(--loam-space-12);
+  border-radius: var(--loam-radius-button);
+}
+.loam-tabs__list[data-variant="app"] .loam-tab:hover {
+  background: var(--loam-bg-hover);
+}
+.loam-tabs__list[data-variant="app"] .loam-tab[data-selected] {
+  background: var(--loam-bg-raised);
+}
+/* Panel-level tabs: underline text tabs (right panel sections). */
+.loam-tabs__list[data-variant="panel"] {
+  gap: var(--loam-space-16);
+  border-block-end: 1px solid var(--loam-border-subtle);
+}
+.loam-tabs__list[data-variant="panel"] .loam-tab {
+  height: 28px;
+  padding: 0;
+}
+.loam-tabs__indicator {
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  height: 2px;
+  width: var(--active-tab-width);
+  translate: var(--active-tab-left) 0;
+  background: var(--loam-accent);
+  transition:
+    translate var(--dur-base) var(--loam-ease),
+    width var(--dur-base) var(--loam-ease);
+}
+.loam-tabs__panel {
+  outline: none;
+}
+
+/* ── Breadcrumb ─────────────────────────────────────────────────────────── */
+.loam-breadcrumb {
+  font-family: var(--loam-font-ui);
+  font-size: var(--loam-type-secondary-size);
+  line-height: var(--loam-type-secondary-line);
+}
+.loam-breadcrumb__list {
+  display: flex;
+  align-items: center;
+  gap: var(--loam-space-4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.loam-breadcrumb__item {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--loam-space-4);
+  min-width: 0;
+}
+.loam-breadcrumb__link {
+  color: var(--loam-text-secondary);
+  text-decoration: none;
+  border-radius: var(--loam-radius-input);
+  /* Truncation is visual only — the accessible name stays complete. */
+  max-width: 160px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  transition: color var(--dur-fast) var(--loam-ease);
+}
+.loam-breadcrumb__link:hover {
+  color: var(--loam-text-primary);
+}
+.loam-breadcrumb__item[aria-current] .loam-breadcrumb__link,
+.loam-breadcrumb__link[aria-current] {
+  color: var(--loam-text-primary);
+}
+.loam-breadcrumb__sep {
+  flex: none;
+  color: var(--loam-text-tertiary);
+}
+[dir="rtl"] .loam-breadcrumb__sep {
+  scale: -1 1;
+}
+
+/* ── Badge & chip ───────────────────────────────────────────────────────── */
+.loam-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--loam-space-4);
+  padding: 0 var(--loam-space-6);
+  border-radius: var(--loam-radius-popover);
+  font-family: var(--loam-font-ui);
+  font-size: var(--loam-type-micro-size);
+  line-height: var(--loam-type-micro-line);
+  font-weight: var(--loam-type-micro-weight);
+  font-feature-settings: var(--loam-font-features-tnum);
+}
+.loam-badge[data-variant="neutral"] {
+  background: var(--loam-bg-active);
+  color: var(--loam-text-secondary);
+}
+.loam-badge[data-variant="accent"] {
+  background: var(--loam-accent-subtle);
+  color: var(--loam-accent-text);
+}
+.loam-badge[data-variant="success"] {
+  background: var(--loam-bg-active);
+  color: var(--loam-success);
+}
+.loam-badge[data-variant="warning"] {
+  background: var(--loam-bg-active);
+  color: var(--loam-warning);
+}
+.loam-badge[data-variant="danger"] {
+  background: var(--loam-bg-active);
+  color: var(--loam-danger);
+}
+
+.loam-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--loam-space-4);
+  height: 20px;
+  padding-inline: var(--loam-space-8) var(--loam-space-4);
+  border: 1px solid var(--loam-border);
+  border-radius: 10px;
+  background: var(--loam-bg-raised);
+  color: var(--loam-text-primary);
+  font-family: var(--loam-font-ui);
+  font-size: var(--loam-type-secondary-size);
+  line-height: var(--loam-type-secondary-line);
+}
+.loam-chip__remove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 14px;
+  height: 14px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--loam-text-tertiary);
+  cursor: default;
+  transition:
+    background-color var(--dur-fast) var(--loam-ease),
+    color var(--dur-fast) var(--loam-ease);
+}
+.loam-chip__remove:hover {
+  background: var(--loam-bg-active);
+  color: var(--loam-text-primary);
+}
+
+/* ── Segmented control ──────────────────────────────────────────────────── */
+.loam-segmented {
+  display: inline-flex;
+  gap: var(--loam-space-2);
+  padding: var(--loam-space-2);
+  border-radius: var(--loam-radius-button);
+  background: var(--loam-bg-active);
+}
+.loam-segmented__item {
+  height: 24px;
+  padding: 0 var(--loam-space-12);
+  border: none;
+  border-radius: var(--loam-radius-input);
+  background: transparent;
+  color: var(--loam-text-secondary);
+  font-family: var(--loam-font-ui);
+  font-size: var(--loam-type-secondary-size);
+  line-height: var(--loam-type-secondary-line);
+  font-weight: var(--loam-type-micro-weight);
+  cursor: default;
+  user-select: none;
+  transition:
+    background-color var(--dur-fast) var(--loam-ease),
+    color var(--dur-fast) var(--loam-ease);
+}
+.loam-segmented__item:hover {
+  color: var(--loam-text-primary);
+}
+.loam-segmented__item[data-pressed] {
+  background: var(--loam-bg-raised);
+  color: var(--loam-text-primary);
+}
+.loam-segmented__item[data-disabled] {
+  color: var(--loam-text-disabled);
+}
+
+/* ── Slider ─────────────────────────────────────────────────────────────── */
+.loam-slider {
+  display: flex;
+  align-items: center;
+  gap: var(--loam-space-12);
+  width: 100%;
+  font-family: var(--loam-font-ui);
+  font-size: var(--loam-type-secondary-size);
+  color: var(--loam-text-secondary);
+}
+.loam-slider__control {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  height: 16px;
+  touch-action: none;
+}
+.loam-slider__track {
+  position: relative;
+  width: 100%;
+  height: 2px;
+  border-radius: 1px;
+  background: var(--loam-bg-active);
+}
+.loam-slider__indicator {
+  border-radius: 1px;
+  background: var(--loam-accent);
+}
+.loam-slider__thumb {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--loam-accent-fg);
+  border: 1px solid var(--loam-border-strong);
+  box-shadow: var(--loam-shadow-popover);
+}
+.loam-slider__value {
+  flex: none;
+  min-width: 4ch;
+  text-align: end;
+  font-feature-settings: var(--loam-font-features-tnum);
+}
+
+/* ── Kbd glyph ──────────────────────────────────────────────────────────── */
+.loam-kbd {
+  display: inline-flex;
+  align-items: center;
+  gap: 1px;
+  padding: 0 var(--loam-space-4);
+  min-width: 16px;
+  justify-content: center;
+  border: 1px solid var(--loam-border);
+  border-block-end-width: 2px;
+  border-radius: var(--loam-radius-input);
+  background: var(--loam-bg-raised);
+  color: var(--loam-text-secondary);
+  font-family: var(--loam-font-ui);
+  font-size: var(--loam-type-micro-size);
+  line-height: var(--loam-type-micro-line);
+  font-weight: var(--loam-type-micro-weight);
+}

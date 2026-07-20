@@ -1,0 +1,349 @@
+/**
+ * Form-control primitives (§4.3, LOA-33). Styled exclusively with §4.2
+ * tokens — the hardcoded-color lint rejects raw colors here. State rules
+ * follow two invariants tested in components.test.tsx:
+ *   - focus styling exists only under `:focus-visible` (1.5 px accent ring);
+ *   - `:hover` and `[data-loading]` rules never change layout-affecting
+ *     properties.
+ */
+
+/* ── Shared focus ring (§4.6): 1.5 px accent, focus-visible only. ───────── */
+.loam-button:focus-visible,
+.loam-icon-button:focus-visible,
+.loam-input:focus-visible,
+.loam-textarea:focus-visible,
+.loam-checkbox:focus-visible,
+.loam-switch:focus-visible,
+.loam-radio:focus-visible {
+  outline: 1.5px solid var(--loam-accent);
+  outline-offset: 1px;
+}
+.loam-search:has(.loam-search__input:focus-visible) {
+  outline: 1.5px solid var(--loam-accent);
+  outline-offset: 1px;
+}
+
+/* ── Button (28 px) ─────────────────────────────────────────────────────── */
+.loam-button {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--loam-space-6);
+  height: 28px;
+  padding: 0 var(--loam-space-12);
+  border: 1px solid transparent;
+  border-radius: var(--loam-radius-button);
+  font-family: var(--loam-font-ui);
+  font-feature-settings: var(--loam-font-features-ui);
+  font-size: var(--loam-type-base-size);
+  line-height: var(--loam-type-base-line);
+  font-weight: var(--loam-type-emphasis-weight);
+  cursor: default;
+  user-select: none;
+  transition:
+    background-color var(--dur-fast) var(--loam-ease),
+    border-color var(--dur-fast) var(--loam-ease),
+    color var(--dur-fast) var(--loam-ease);
+}
+.loam-button[data-variant="primary"] {
+  background: var(--loam-accent);
+  color: var(--loam-accent-fg);
+}
+.loam-button[data-variant="primary"]:hover:enabled {
+  background: var(--loam-accent-hover);
+}
+.loam-button[data-variant="secondary"] {
+  background: var(--loam-bg-raised);
+  border-color: var(--loam-border);
+  color: var(--loam-text-primary);
+}
+.loam-button[data-variant="secondary"]:hover:enabled {
+  background: var(--loam-bg-hover);
+  border-color: var(--loam-border-strong);
+}
+.loam-button[data-variant="ghost"] {
+  background: transparent;
+  color: var(--loam-text-primary);
+}
+.loam-button[data-variant="ghost"]:hover:enabled {
+  background: var(--loam-bg-hover);
+}
+.loam-button[data-variant="danger"] {
+  background: var(--loam-danger);
+  color: var(--loam-accent-fg);
+}
+.loam-button[data-variant="danger"]:hover:enabled {
+  background: var(--loam-danger);
+  box-shadow: inset 0 0 0 100px var(--loam-bg-hover);
+}
+.loam-button:active:enabled {
+  box-shadow: inset 0 0 0 100px var(--loam-bg-active);
+}
+.loam-button:disabled,
+.loam-icon-button:disabled {
+  color: var(--loam-text-disabled);
+  cursor: not-allowed;
+}
+.loam-button:disabled:not([data-loading]) {
+  background: var(--loam-bg-raised);
+  border-color: var(--loam-border-subtle);
+}
+.loam-button__icon {
+  display: inline-flex;
+  align-items: center;
+}
+/* Loading (AC4): content fades, geometry is untouched; spinner overlays. */
+.loam-button[data-loading] > :not(.loam-button__spinner) {
+  opacity: 0;
+}
+.loam-button__spinner {
+  position: absolute;
+  inset: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.loam-spinner {
+  width: 12px;
+  height: 12px;
+  border: 1.5px solid var(--loam-border-strong);
+  border-top-color: var(--loam-accent);
+  border-radius: 50%;
+  animation: loam-spin 800ms linear infinite;
+}
+.loam-button[data-variant="primary"] .loam-spinner,
+.loam-button[data-variant="danger"] .loam-spinner {
+  border-color: var(--loam-accent-subtle);
+  border-top-color: var(--loam-accent-fg);
+}
+@keyframes loam-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .loam-spinner {
+    animation: none;
+  }
+}
+
+/* ── Icon button (26 px, label required) ────────────────────────────────── */
+.loam-icon-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  border: none;
+  border-radius: var(--loam-radius-button);
+  background: transparent;
+  color: var(--loam-text-secondary);
+  cursor: default;
+  transition:
+    background-color var(--dur-fast) var(--loam-ease),
+    color var(--dur-fast) var(--loam-ease);
+}
+.loam-icon-button:hover:enabled {
+  background: var(--loam-bg-hover);
+  color: var(--loam-text-primary);
+}
+.loam-icon-button:active:enabled {
+  background: var(--loam-bg-active);
+}
+
+/* ── Text inputs ────────────────────────────────────────────────────────── */
+.loam-input,
+.loam-textarea {
+  width: 100%;
+  padding: var(--loam-space-4) var(--loam-space-8);
+  border: 1px solid var(--loam-border);
+  border-radius: var(--loam-radius-input);
+  background: var(--loam-bg-raised);
+  color: var(--loam-text-primary);
+  font-family: var(--loam-font-ui);
+  font-feature-settings: var(--loam-font-features-ui);
+  font-size: var(--loam-type-base-size);
+  line-height: var(--loam-type-base-line);
+  font-weight: var(--loam-type-base-weight);
+  transition: border-color var(--dur-fast) var(--loam-ease);
+}
+.loam-input {
+  height: 28px;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+.loam-textarea {
+  min-height: 80px;
+  resize: vertical;
+}
+.loam-input::placeholder,
+.loam-textarea::placeholder,
+.loam-search__input::placeholder {
+  color: var(--loam-text-tertiary);
+}
+.loam-input:hover:enabled,
+.loam-textarea:hover:enabled {
+  border-color: var(--loam-border-strong);
+}
+.loam-input[data-invalid],
+.loam-textarea[data-invalid] {
+  border-color: var(--loam-danger);
+}
+.loam-input:disabled,
+.loam-textarea:disabled,
+.loam-search__input:disabled {
+  color: var(--loam-text-disabled);
+  background: var(--loam-bg-panel);
+  cursor: not-allowed;
+}
+
+/* ── Search field (inline ⌘-hint, §4.3) ─────────────────────────────────── */
+.loam-search {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--loam-space-6);
+  width: 100%;
+  height: 28px;
+  padding: 0 var(--loam-space-8);
+  border: 1px solid var(--loam-border);
+  border-radius: var(--loam-radius-input);
+  background: var(--loam-bg-raised);
+  transition: border-color var(--dur-fast) var(--loam-ease);
+}
+.loam-search:hover {
+  border-color: var(--loam-border-strong);
+}
+.loam-search[data-invalid] {
+  border-color: var(--loam-danger);
+}
+.loam-search__icon {
+  flex: none;
+  color: var(--loam-text-tertiary);
+}
+.loam-search__input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: var(--loam-text-primary);
+  font-family: var(--loam-font-ui);
+  font-feature-settings: var(--loam-font-features-ui);
+  font-size: var(--loam-type-base-size);
+  line-height: var(--loam-type-base-line);
+}
+
+/* Shortcut hint (buttons + search field). The full Kbd glyph lands in
+ * LOA-45; this is the inline-hint treatment only. */
+.loam-shortcut-hint {
+  flex: none;
+  padding: 0 var(--loam-space-4);
+  border-radius: var(--loam-radius-input);
+  background: var(--loam-bg-active);
+  color: var(--loam-text-tertiary);
+  font-family: var(--loam-font-ui);
+  font-size: var(--loam-type-micro-size);
+  line-height: var(--loam-type-micro-line);
+  font-weight: var(--loam-type-micro-weight);
+}
+.loam-button[data-variant="primary"] .loam-shortcut-hint,
+.loam-button[data-variant="danger"] .loam-shortcut-hint {
+  background: transparent;
+  color: var(--loam-accent-fg);
+  opacity: 0.75;
+}
+
+/* ── Choice controls (13 px, §4.3) ──────────────────────────────────────── */
+.loam-choice {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--loam-space-8);
+  color: var(--loam-text-primary);
+  font-family: var(--loam-font-ui);
+  font-size: var(--loam-type-base-size);
+  line-height: var(--loam-type-base-line);
+}
+.loam-choice:has(> :disabled) {
+  color: var(--loam-text-disabled);
+}
+
+.loam-checkbox,
+.loam-radio {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 13px;
+  height: 13px;
+  padding: 0;
+  border: 1px solid var(--loam-border-strong);
+  background: var(--loam-bg-raised);
+  transition:
+    background-color var(--dur-fast) var(--loam-ease),
+    border-color var(--dur-fast) var(--loam-ease);
+}
+.loam-checkbox {
+  border-radius: 3px;
+}
+.loam-checkbox[data-checked] {
+  background: var(--loam-accent);
+  border-color: var(--loam-accent);
+  color: var(--loam-accent-fg);
+}
+.loam-checkbox__indicator {
+  display: inline-flex;
+}
+
+.loam-radio {
+  border-radius: 50%;
+}
+.loam-radio[data-checked] {
+  border-color: var(--loam-accent);
+}
+.loam-radio__indicator {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--loam-accent);
+}
+.loam-radio-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--loam-space-8);
+}
+
+.loam-switch {
+  position: relative;
+  flex: none;
+  width: 22px;
+  height: 13px;
+  padding: 0;
+  border: none;
+  border-radius: 7px;
+  background: var(--loam-border-strong);
+  transition: background-color var(--dur-base) var(--loam-ease);
+}
+.loam-switch[data-checked] {
+  background: var(--loam-accent);
+}
+.loam-switch__thumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--loam-accent-fg);
+  transition: translate var(--dur-base) var(--loam-ease);
+}
+.loam-switch[data-checked] .loam-switch__thumb {
+  translate: 9px 0;
+}
+.loam-checkbox:disabled,
+.loam-radio:disabled,
+.loam-switch:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
