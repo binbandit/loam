@@ -71,6 +71,25 @@ const VERSION_FILE: &str = "schema-version";
 const INDEX_DIR: &str = "tantivy";
 const WRITER_HEAP: usize = 50_000_000;
 
+/// Clears the index directory for a rebuild. A just-dropped tantivy index
+/// may still be releasing segment files from background threads (observed
+/// as `DirectoryNotEmpty` under instrumented CI runs), so removal retries
+/// briefly before giving up.
+fn remove_index_dir(index_dir: &Path) -> std::io::Result<()> {
+    let mut last_error: Option<std::io::Error> = None;
+    for _attempt in 0..10 {
+        match std::fs::remove_dir_all(index_dir) {
+            Ok(()) => return Ok(()),
+            Err(error) if error.kind() == std::io::ErrorKind::NotFound => return Ok(()),
+            Err(error) => {
+                last_error = Some(error);
+                std::thread::sleep(std::time::Duration::from_millis(50));
+            }
+        }
+    }
+    Err(last_error.expect("retries imply an error"))
+}
+
 fn read_version(dir: &Path) -> Option<u32> {
     std::fs::read_to_string(dir.join(VERSION_FILE))
         .ok()
@@ -111,7 +130,7 @@ impl SearchIndex {
 
     fn create_fresh(search_dir: &Path, index_dir: &Path) -> Result<Self, SearchError> {
         if index_dir.exists() {
-            std::fs::remove_dir_all(index_dir)?;
+            remove_index_dir(index_dir)?;
         }
         std::fs::create_dir_all(index_dir)?;
         let index = Index::create_in_dir(index_dir, schema())?;
