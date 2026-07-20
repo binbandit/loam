@@ -12,17 +12,28 @@
     "test:coverage": "vitest run --coverage"
   },
   "devDependencies": {
+    "@ladle/react": "^5.1.1",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",
+    "@testing-library/user-event": "^14.6.1",
     "@types/node": "^26.1.1",
     "@types/react": "^19.2.17",
     "@types/react-dom": "^19.2.3",
     "@vitest/coverage-v8": "4.1.10",
+    "axe-core": "^4.12.1",
     "jsdom": "^29.1.1",
     "vitest": "4.1.10"
   },
   "dependencies": {
+    "@base-ui/react": "^1.6.0",
+    "@tanstack/react-virtual": "^3.14.6",
+    "lucide-react": "^1.25.0",
     "react": "19.2.7",
     "react-dom": "19.2.7"
+  },
+  "exports": {
+    ".": "./src/index.ts",
+    "./tokens.css": "./src/tokens/tokens.css",
+    "./fonts.css": "./src/tokens/fonts.css"
   }
 }
