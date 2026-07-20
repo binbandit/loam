@@ -1,0 +1,189 @@
+/**
+ * Overlays & feedback (§4.3/§4.4, LOA-39): modal, confirm dialog, toasts,
+ * empty state, progress. Token-only styling. Scrim/shadow tokens already
+ * carry the reduced-transparency fallbacks (tokens.css).
+ */
+
+/* ── Scrim backdrop (modal elevation, §4.2) ─────────────────────────────── */
+.loam-backdrop {
+  position: fixed;
+  inset: 0;
+  background: var(--loam-scrim);
+  transition: opacity var(--dur-base) var(--loam-ease);
+}
+.loam-backdrop[data-starting-style],
+.loam-backdrop[data-ending-style] {
+  opacity: 0;
+}
+
+/* ── Modal (radius 10, §4.2) ────────────────────────────────────────────── */
+.loam-modal {
+  position: fixed;
+  inset: 0;
+  margin: auto;
+  width: min(440px, calc(100vw - var(--loam-space-32)));
+  height: fit-content;
+  max-height: calc(100vh - var(--loam-space-40));
+  overflow: auto;
+  padding: var(--loam-space-20);
+  background: var(--loam-bg-overlay);
+  border: 1px solid var(--loam-border);
+  border-radius: var(--loam-radius-modal);
+  box-shadow: var(--loam-shadow-modal);
+  color: var(--loam-text-primary);
+  font-family: var(--loam-font-ui);
+  font-feature-settings: var(--loam-font-features-ui);
+  font-size: var(--loam-type-base-size);
+  line-height: var(--loam-type-base-line);
+  outline: none;
+  transition:
+    opacity var(--dur-base) var(--loam-ease),
+    scale var(--dur-base) var(--loam-ease);
+}
+.loam-modal[data-starting-style],
+.loam-modal[data-ending-style] {
+  opacity: 0;
+  scale: var(--loam-motion-scale-from);
+}
+.loam-modal__title {
+  margin: 0 0 var(--loam-space-8);
+  font-size: var(--loam-type-title-size);
+  line-height: var(--loam-type-title-line);
+  font-weight: var(--loam-type-title-weight);
+}
+.loam-modal__description {
+  margin: 0;
+  color: var(--loam-text-secondary);
+}
+.loam-modal__footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--loam-space-8);
+  margin-top: var(--loam-space-20);
+}
+
+/* ── Toasts (bottom-right, max 3, §4.3) ─────────────────────────────────── */
+.loam-toasts {
+  position: fixed;
+  right: var(--loam-space-16);
+  bottom: var(--loam-space-16);
+  display: flex;
+  flex-direction: column;
+  gap: var(--loam-space-8);
+  width: 320px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  z-index: 1;
+}
+.loam-toast {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--loam-space-8);
+  padding: var(--loam-space-12);
+  background: var(--loam-bg-overlay);
+  border: 1px solid var(--loam-border);
+  border-radius: var(--loam-radius-popover);
+  box-shadow: var(--loam-shadow-popover);
+  color: var(--loam-text-primary);
+  font-family: var(--loam-font-ui);
+  font-size: var(--loam-type-base-size);
+  line-height: var(--loam-type-base-line);
+  transition:
+    opacity var(--dur-base) var(--loam-ease),
+    transform var(--dur-base) var(--loam-ease);
+}
+.loam-toast[data-starting-style],
+.loam-toast[data-ending-style] {
+  opacity: 0;
+  transform: translateY(var(--loam-motion-translate));
+}
+/* Oldest toasts beyond the 3-cap are marked limited, not removed. */
+.loam-toast[data-limited] {
+  display: none;
+}
+.loam-toast__content {
+  flex: 1;
+  min-width: 0;
+}
+/* Base UI renders the title as a heading element; pin the UA size back to
+ * the base scale. */
+.loam-toast__title {
+  margin: 0;
+  font-size: var(--loam-type-base-size);
+  line-height: var(--loam-type-base-line);
+  font-weight: var(--loam-type-emphasis-weight);
+}
+.loam-toast__description {
+  margin: 0;
+  color: var(--loam-text-secondary);
+  font-size: var(--loam-type-secondary-size);
+  line-height: var(--loam-type-secondary-line);
+}
+.loam-toast__action {
+  flex: none;
+  align-self: center;
+}
+.loam-toast__close {
+  flex: none;
+}
+
+/* ── Empty state (§4.5: one line + one action) ──────────────────────────── */
+.loam-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--loam-space-12);
+  padding: var(--loam-space-32) var(--loam-space-24);
+  text-align: center;
+}
+.loam-empty__icon {
+  display: inline-flex;
+  color: var(--loam-text-tertiary);
+}
+.loam-empty__line {
+  margin: 0;
+  color: var(--loam-text-secondary);
+  font-family: var(--loam-font-ui);
+  font-size: var(--loam-type-base-size);
+  line-height: var(--loam-type-base-line);
+  max-width: 320px;
+}
+
+/* ── Progress (thin 2 px accent bar, §4.3) ──────────────────────────────── */
+.loam-progress {
+  display: block;
+  width: 100%;
+}
+.loam-progress__track {
+  display: block;
+  height: 2px;
+  overflow: hidden;
+  border-radius: 1px;
+  background: var(--loam-bg-active);
+}
+.loam-progress__indicator {
+  display: block;
+  height: 100%;
+  background: var(--loam-accent);
+  transition: width var(--dur-base) var(--loam-ease);
+}
+/* Indeterminate (network only, §4.3): sliding segment; static under
+ * reduced motion. */
+.loam-progress[data-indeterminate] .loam-progress__indicator {
+  width: 40%;
+  animation: loam-progress-slide 1200ms var(--loam-ease) infinite;
+}
+@keyframes loam-progress-slide {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(350%);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .loam-progress[data-indeterminate] .loam-progress__indicator {
+    animation: none;
+  }
+}

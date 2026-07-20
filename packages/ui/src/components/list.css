@@ -1,0 +1,185 @@
+/**
+ * Virtualized lists, rows, and tree (§4.3, LOA-50). Sidebar rows 28 px,
+ * omnibar/result rows 40 px, one shared 2 px accent drop indicator. Rows
+ * have fixed heights; rename inputs and drop indicators overlay without
+ * moving geometry (tested).
+ */
+
+.loam-virtual {
+  position: relative;
+  overflow: auto;
+  outline: none;
+}
+.loam-virtual:focus-visible {
+  outline: 1.5px solid var(--loam-accent);
+  outline-offset: -1.5px;
+}
+.loam-virtual__spacer {
+  position: relative;
+  width: 100%;
+}
+.loam-virtual__row {
+  position: absolute;
+  inset-inline: 0;
+  top: 0;
+}
+
+/* ── List row (sidebar, 28 px) ──────────────────────────────────────────── */
+.loam-list-row {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--loam-space-6);
+  height: var(--loam-row-sidebar);
+  padding-inline: var(--loam-space-8);
+  border-radius: var(--loam-radius-input);
+  color: var(--loam-text-primary);
+  font-family: var(--loam-font-ui);
+  font-feature-settings: var(--loam-font-features-ui);
+  font-size: var(--loam-type-base-size);
+  line-height: var(--loam-type-base-line);
+  user-select: none;
+  cursor: default;
+}
+.loam-list-row:hover {
+  background: var(--loam-bg-hover);
+}
+.loam-list-row[data-selected] {
+  background: var(--loam-bg-selected);
+}
+.loam-list-row[data-active] {
+  background: var(--loam-bg-hover);
+  box-shadow: inset 0 0 0 1.5px var(--loam-accent);
+}
+.loam-list-row[data-active][data-selected] {
+  background: var(--loam-bg-selected);
+}
+.loam-list-row__icon {
+  display: inline-flex;
+  flex: none;
+  color: var(--loam-text-secondary);
+}
+.loam-list-row__label {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.loam-list-row__detail {
+  flex: none;
+  color: var(--loam-text-tertiary);
+  font-size: var(--loam-type-secondary-size);
+}
+.loam-list-row__shortcut {
+  flex: none;
+  color: var(--loam-text-tertiary);
+  font-size: var(--loam-type-secondary-size);
+}
+/* Inline rename input replaces the label inside the fixed-height row. */
+.loam-list-row__rename {
+  flex: 1;
+  min-width: 0;
+  height: 20px;
+  padding: 0 var(--loam-space-4);
+  border: 1px solid var(--loam-accent);
+  border-radius: var(--loam-radius-input);
+  background: var(--loam-bg-raised);
+  color: var(--loam-text-primary);
+  font: inherit;
+  outline: none;
+}
+
+/* ── Result row (omnibar/search, 40 px) ─────────────────────────────────── */
+.loam-result-row {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--loam-space-8);
+  height: var(--loam-row-omnibar);
+  padding-inline: var(--loam-space-12);
+  border-radius: var(--loam-radius-input);
+  color: var(--loam-text-primary);
+  font-family: var(--loam-font-ui);
+  font-feature-settings: var(--loam-font-features-ui);
+  font-size: var(--loam-type-base-size);
+  line-height: var(--loam-type-base-line);
+  user-select: none;
+  cursor: default;
+}
+.loam-result-row:hover,
+.loam-result-row[data-active] {
+  background: var(--loam-bg-hover);
+}
+.loam-result-row[data-selected] {
+  background: var(--loam-bg-selected);
+}
+.loam-result-row__icon {
+  display: inline-flex;
+  flex: none;
+  color: var(--loam-text-secondary);
+}
+.loam-result-row__body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.loam-result-row__title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.loam-result-row__detail {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--loam-text-tertiary);
+  font-size: var(--loam-type-secondary-size);
+  line-height: var(--loam-type-secondary-line);
+}
+.loam-result-row__meta {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--loam-space-6);
+  color: var(--loam-text-tertiary);
+  font-size: var(--loam-type-secondary-size);
+}
+
+/* ── Shared drop indicator (2 px accent, §4.4) ──────────────────────────── */
+/* Absolutely positioned: indicating a drop never shifts row geometry. */
+.loam-drop-indicator {
+  position: absolute;
+  inset-inline: var(--loam-space-4);
+  height: 2px;
+  border-radius: 1px;
+  background: var(--loam-accent);
+  pointer-events: none;
+}
+[data-drop="above"] > .loam-drop-indicator {
+  top: -1px;
+}
+[data-drop="below"] > .loam-drop-indicator {
+  bottom: -1px;
+}
+[data-drop="into"] {
+  box-shadow: inset 0 0 0 1.5px var(--loam-accent);
+  background: var(--loam-accent-subtle);
+}
+
+/* ── Tree (file explorer) ───────────────────────────────────────────────── */
+.loam-tree-row__caret {
+  display: inline-flex;
+  flex: none;
+  width: 14px;
+  color: var(--loam-text-tertiary);
+  transition: rotate var(--dur-fast) var(--loam-ease);
+}
+.loam-tree-row__caret[data-expanded] {
+  rotate: 90deg;
+}
+.loam-tree-row__caret[data-leaf] {
+  visibility: hidden;
+}
