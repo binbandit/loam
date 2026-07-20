@@ -172,10 +172,30 @@ describe("mock transport", () => {
       "folderCreate",
       "noteRename",
       "noteDuplicate",
+      "vaultTree",
+      "workspaceRead",
+      "workspaceWrite",
+      "workspaceQuarantine",
       "noteTrash",
     ].sort();
     expect(Object.keys(mock.commands).sort()).toEqual(generatedSurface);
     const picked = await mock.commands.vaultPickAndOpen();
     expect(picked).toEqual({ status: "ok", data: null });
+  });
+});
+
+describe("mock transport (LOA-66)", () => {
+  it("opens the demo vault from the picker and creates an empty vault", async () => {
+    const { createMockTransport } = await import("../transport");
+    const transport = createMockTransport();
+    const demo = await transport.openVaultPicker();
+    expect(demo?.name).toBe("Loam Demo");
+    expect(demo?.counts.notes).toBeGreaterThan(0);
+    const fresh = await transport.createVault();
+    expect(fresh?.name).toBe("New Vault");
+    expect(fresh?.counts.notes).toBe(0);
+    // Any path opens (a vault IS a folder); unregistered ones start empty.
+    const adHoc = await transport.openVaultPath("/some/other/folder");
+    expect(adHoc.counts.notes).toBe(0);
   });
 });

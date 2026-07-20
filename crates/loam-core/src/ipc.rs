@@ -100,6 +100,63 @@ pub struct NoteDoc {
     pub meta: NoteMeta,
 }
 
+/// One `vault_tree` entry (§3.1). Paths are NFC vault-relative; kinds are
+/// kebab-tagged for the wire.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Type)]
+#[serde(rename_all = "camelCase")]
+pub struct TreeEntryDto {
+    pub path: VaultPath,
+    /// On-disk name form, exactly as stored (NFD survives on macOS).
+    pub name: String,
+    pub kind: TreeEntryKind,
+    #[specta(type = specta_typescript::Number)]
+    pub size: u64,
+    #[specta(type = Option<specta_typescript::Number>)]
+    pub modified_ms: Option<u64>,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Type)]
+#[serde(rename_all = "kebab-case")]
+pub enum TreeEntryKind {
+    Folder,
+    Markdown,
+    Other,
+    ExternalLink,
+}
+
+impl From<vault::TreeEntry> for TreeEntryDto {
+    fn from(entry: vault::TreeEntry) -> Self {
+        Self {
+            path: VaultPath(entry.logical_path),
+            name: entry.display_name,
+            kind: match entry.kind {
+                vault::EntryKind::Folder => TreeEntryKind::Folder,
+                vault::EntryKind::Markdown => TreeEntryKind::Markdown,
+                vault::EntryKind::Other => TreeEntryKind::Other,
+                vault::EntryKind::ExternalLink => TreeEntryKind::ExternalLink,
+            },
+            size: entry.size,
+            modified_ms: entry.modified_ms,
+        }
+    }
+}
+
+/// `vault_tree` result: the full deterministic enumeration (sorted by NFC
+/// logical path). The frontend derives hierarchy from the flat paths.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Type)]
+#[serde(rename_all = "camelCase")]
+pub struct VaultTreeDto {
+    pub entries: Vec<TreeEntryDto>,
+}
+
+impl From<vault::VaultTree> for VaultTreeDto {
+    fn from(tree: vault::VaultTree) -> Self {
+        Self {
+            entries: tree.entries.into_iter().map(TreeEntryDto::from).collect(),
+        }
+    }
+}
+
 /// `note_write` success payload: the new content hash to use as the next
 /// `base_hash`.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Type)]
@@ -357,6 +414,16 @@ impl LoamError {
     }
 
     /// Map a note/folder operation failure (LOA-30).
+    /// `vault_tree` failures are pure enumeration IO.
+    pub fn from_tree_error(error: vault::TreeError) -> Self {
+        match error {
+            vault::TreeError::Io(io) => LoamError::Io {
+                kind: io_kind(io.kind()),
+                path: None,
+            },
+        }
+    }
+
     pub fn from_ops_error(error: vault::OpsError, requested: &str) -> Self {
         let path = VaultPath(requested.to_string());
         match error {

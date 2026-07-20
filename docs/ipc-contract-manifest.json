@@ -53,6 +53,30 @@
       "error": "LoamError",
       "name": "vaultPickAndOpen",
       "result": "{ id: string, name: string, readOnly: boolean, transientIdentity: boolean, counts: VaultCounts, indexStatus: IndexStatus, } | null"
+    },
+    {
+      "args": "vaultId: string",
+      "error": "LoamError",
+      "name": "vaultTree",
+      "result": "VaultTreeDto"
+    },
+    {
+      "args": "vaultId: string",
+      "error": "LoamError",
+      "name": "workspaceQuarantine",
+      "result": "null"
+    },
+    {
+      "args": "vaultId: string",
+      "error": "LoamError",
+      "name": "workspaceRead",
+      "result": "string | null"
+    },
+    {
+      "args": "vaultId: string, content: string",
+      "error": "LoamError",
+      "name": "workspaceWrite",
+      "result": "null"
     }
   ],
   "contract": "loam-ipc",
@@ -99,10 +123,13 @@
     "NoteMeta",
     "NoteRef",
     "SizePolicy",
+    "TreeEntryDto",
+    "TreeEntryKind",
     "VaultCounts",
     "VaultEvent",
     "VaultInfo",
     "VaultPath",
+    "VaultTreeDto",
     "WriteResult"
   ]
 }

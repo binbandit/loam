@@ -128,10 +128,11 @@ fn manifest_is_complete_deterministic_and_snapshotted() {
     let manifest = build_manifest();
     assert_eq!(manifest, build_manifest(), "deterministic (AC2)");
 
-    // Completeness floor (AC1): all 9 M0 commands, 3 events, error variants.
+    // Completeness floor (AC1): 9 M0 commands + vault_tree (LOA-72) +
+    // the 3 workspace commands (LOA-91).
     assert_eq!(
         manifest["commands"].as_array().expect("commands").len(),
-        9,
+        13,
         "all M0 commands present"
     );
     assert_eq!(manifest["events"].as_array().expect("events").len(), 3);

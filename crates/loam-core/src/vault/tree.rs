@@ -45,6 +45,9 @@ pub struct TreeEntry {
     pub display_name: String,
     pub kind: EntryKind,
     pub size: u64,
+    /// Filesystem mtime in ms since the Unix epoch; `None` when unavailable
+    /// (exotic filesystems) or meaningless (external links).
+    pub modified_ms: Option<u64>,
 }
 
 #[derive(Debug, Clone, Serialize)]
@@ -110,6 +113,12 @@ fn nfc(name: &str) -> String {
     name.nfc().collect()
 }
 
+fn modified_ms(entry: &std::fs::DirEntry) -> Option<u64> {
+    let modified = entry.metadata().ok()?.modified().ok()?;
+    let since_epoch = modified.duration_since(std::time::UNIX_EPOCH).ok()?;
+    u64::try_from(since_epoch.as_millis()).ok()
+}
+
 fn walk(
     canonical_root: &Path,
     dir: &Path,
@@ -149,6 +158,7 @@ fn walk(
                         display_name,
                         kind: EntryKind::ExternalLink,
                         size: 0,
+                        modified_ms: None,
                     },
                 );
                 continue;
@@ -167,6 +177,7 @@ fn walk(
                     display_name,
                     kind: EntryKind::Folder,
                     size: 0,
+                    modified_ms: modified_ms(&entry),
                 },
             );
             walk(
@@ -190,6 +201,7 @@ fn walk(
                                 display_name,
                                 kind: EntryKind::ExternalLink,
                                 size: 0,
+                                modified_ms: None,
                             },
                         );
                         continue;
@@ -210,6 +222,7 @@ fn walk(
                     display_name,
                     kind,
                     size,
+                    modified_ms: modified_ms(&entry),
                 },
             );
         }

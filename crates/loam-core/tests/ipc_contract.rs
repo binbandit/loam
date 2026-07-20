@@ -2,8 +2,8 @@
 
 use loam_core::ipc::{
     ChangeOrigin, ConflictPayload, EventEnvelope, EventKind, HashHex, IndexProgress, IndexStatus,
-    LoamError, NoteDoc, NoteMeta, NoteRef, SizePolicy, VaultCounts, VaultEvent, VaultInfo,
-    VaultPath, WriteResult,
+    LoamError, NoteDoc, NoteMeta, NoteRef, SizePolicy, TreeEntryDto, TreeEntryKind, VaultCounts,
+    VaultEvent, VaultInfo, VaultPath, VaultTreeDto, WriteResult,
 };
 use loam_core::vault;
 
@@ -86,6 +86,9 @@ fn all_domain_types_export_to_typescript() {
         .register::<WriteResult>()
         .register::<NoteRef>()
         .register::<VaultEvent>()
+        .register::<TreeEntryDto>()
+        .register::<TreeEntryKind>()
+        .register::<VaultTreeDto>()
         .register::<EventKind>()
         .register::<ChangeOrigin>()
         .register::<IndexProgress>()

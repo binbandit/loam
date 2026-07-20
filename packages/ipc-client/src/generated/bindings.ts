@@ -38,6 +38,18 @@ export const commands = {
 	noteDuplicate: (vaultId: string, path: string) => typedError<NoteRef, LoamError>(__TAURI_INVOKE("note_duplicate", { vaultId, path })),
 	/**  Delete to the OS trash — never a permanent delete (§5.6). */
 	noteTrash: (vaultId: string, path: string) => typedError<null, LoamError>(__TAURI_INVOKE("note_trash", { vaultId, path })),
+	/**
+	 *  Enumerate the vault (§3.1 file tree). Deterministic order, capability-
+	 *  root confined (symlinks that escape are listed, never followed).
+	 */
+	vaultTree: (vaultId: string) => typedError<VaultTreeDto, LoamError>(__TAURI_INVOKE("vault_tree", { vaultId })),
+	workspaceRead: (vaultId: string) => typedError<string | null, LoamError>(__TAURI_INVOKE("workspace_read", { vaultId })),
+	workspaceWrite: (vaultId: string, content: string) => typedError<null, LoamError>(__TAURI_INVOKE("workspace_write", { vaultId, content })),
+	/**
+	 *  Quarantine corrupt workspace state aside (AC3) so the bytes survive for
+	 *  diagnosis while the app falls back to defaults.
+	 */
+	workspaceQuarantine: (vaultId: string) => typedError<null, LoamError>(__TAURI_INVOKE("workspace_quarantine", { vaultId })),
 };
 
 /* Types */
@@ -123,6 +135,21 @@ export type NoteRef = {
 
 export type SizePolicy = "normal" | "source-only" | "metadata-only";
 
+/**
+ *  One `vault_tree` entry (§3.1). Paths are NFC vault-relative; kinds are
+ *  kebab-tagged for the wire.
+ */
+export type TreeEntryDto = {
+	path: VaultPath,
+	/**  On-disk name form, exactly as stored (NFD survives on macOS). */
+	name: string,
+	kind: TreeEntryKind,
+	size: number,
+	modifiedMs: number | null,
+};
+
+export type TreeEntryKind = "folder" | "markdown" | "other" | "external-link";
+
 export type VaultCounts = {
 	notes: number,
 	folders: number,
@@ -153,6 +180,14 @@ export type VaultInfo = {
  *  absolute paths do not cross the IPC boundary (§5.4 privacy note).
  */
 export type VaultPath = string;
+
+/**
+ *  `vault_tree` result: the full deterministic enumeration (sorted by NFC
+ *  logical path). The frontend derives hierarchy from the flat paths.
+ */
+export type VaultTreeDto = {
+	entries: TreeEntryDto[],
+};
 
 /**
  *  `note_write` success payload: the new content hash to use as the next

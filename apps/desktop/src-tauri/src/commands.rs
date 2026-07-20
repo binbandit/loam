@@ -8,7 +8,9 @@ use std::collections::HashMap;
 use std::path::PathBuf;
 use std::sync::Mutex;
 
-use loam_core::ipc::{HashHex, LoamError, NoteDoc, NoteRef, VaultInfo, VaultPath, WriteResult};
+use loam_core::ipc::{
+    self, HashHex, LoamError, NoteDoc, NoteRef, VaultInfo, VaultPath, WriteResult,
+};
 use loam_core::vault::{self, Confirmation, OsTrash};
 use tauri::State;
 
@@ -207,6 +209,106 @@ pub fn note_duplicate(
             path: VaultPath(relative),
             title,
         })
+    })
+}
+
+/// Enumerate the vault (§3.1 file tree). Deterministic order, capability-
+/// root confined (symlinks that escape are listed, never followed).
+#[tauri::command]
+#[specta::specta]
+pub fn vault_tree(
+    registry: State<'_, VaultRegistry>,
+    vault_id: String,
+) -> Result<ipc::VaultTreeDto, LoamError> {
+    traced("vault_tree", "", || {
+        let root = registry.root_of(&vault_id)?;
+        let tree = vault::enumerate(&root).map_err(LoamError::from_tree_error)?;
+        Ok(ipc::VaultTreeDto::from(tree))
+    })
+}
+
+/// Per-device workspace state (§5.5, LOA-91): `workspace.json` lives in
+/// app-data keyed by vault id — NEVER inside the vault. Reads are raw
+/// strings (schema/versioning is the frontend's); writes are atomic
+/// (temp + rename in the same directory).
+fn workspace_path<R: tauri::Runtime>(
+    app: &tauri::AppHandle<R>,
+    vault_id: &str,
+) -> Result<std::path::PathBuf, LoamError> {
+    use tauri::Manager;
+    let dir = app
+        .path()
+        .app_config_dir()
+        .map_err(|error| LoamError::Internal {
+            detail: format!("app-config dir unavailable: {error}"),
+        })?
+        .join("workspaces");
+    std::fs::create_dir_all(&dir).map_err(|error| LoamError::Internal {
+        detail: format!("create workspaces dir: {}", error.kind()),
+    })?;
+    // Vault ids are uuid-like; defensively strip separators anyway.
+    let safe: String = vault_id
+        .chars()
+        .filter(|c| c.is_ascii_alphanumeric() || *c == '-')
+        .collect();
+    Ok(dir.join(format!("{safe}.json")))
+}
+
+#[tauri::command]
+#[specta::specta]
+pub fn workspace_read<R: tauri::Runtime>(
+    app: tauri::AppHandle<R>,
+    vault_id: String,
+) -> Result<Option<String>, LoamError> {
+    traced("workspace_read", "", || {
+        let path = workspace_path(&app, &vault_id)?;
+        match std::fs::read_to_string(&path) {
+            Ok(content) => Ok(Some(content)),
+            Err(error) if error.kind() == std::io::ErrorKind::NotFound => Ok(None),
+            Err(error) => Err(LoamError::Internal {
+                detail: format!("workspace read: {}", error.kind()),
+            }),
+        }
+    })
+}
+
+#[tauri::command]
+#[specta::specta]
+pub fn workspace_write<R: tauri::Runtime>(
+    app: tauri::AppHandle<R>,
+    vault_id: String,
+    content: String,
+) -> Result<(), LoamError> {
+    traced("workspace_write", "", || {
+        let path = workspace_path(&app, &vault_id)?;
+        let tmp = path.with_extension("json.tmp");
+        std::fs::write(&tmp, content).map_err(|error| LoamError::Internal {
+            detail: format!("workspace write: {}", error.kind()),
+        })?;
+        std::fs::rename(&tmp, &path).map_err(|error| LoamError::Internal {
+            detail: format!("workspace rename: {}", error.kind()),
+        })
+    })
+}
+
+/// Quarantine corrupt workspace state aside (AC3) so the bytes survive for
+/// diagnosis while the app falls back to defaults.
+#[tauri::command]
+#[specta::specta]
+pub fn workspace_quarantine<R: tauri::Runtime>(
+    app: tauri::AppHandle<R>,
+    vault_id: String,
+) -> Result<(), LoamError> {
+    traced("workspace_quarantine", "", || {
+        let path = workspace_path(&app, &vault_id)?;
+        let aside = path.with_extension("json.corrupt");
+        match std::fs::rename(&path, &aside) {
+            Ok(()) => Ok(()),
+            Err(error) if error.kind() == std::io::ErrorKind::NotFound => Ok(()),
+            Err(error) => Err(LoamError::Internal {
+                detail: format!("workspace quarantine: {}", error.kind()),
+            }),
+        }
     })
 }
 

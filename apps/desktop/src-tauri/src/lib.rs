@@ -91,6 +91,10 @@ macro_rules! specta_builder {
                 $crate::commands::note_rename,
                 $crate::commands::note_duplicate,
                 $crate::commands::note_trash,
+                $crate::commands::vault_tree,
+                $crate::commands::workspace_read::<$runtime>,
+                $crate::commands::workspace_write::<$runtime>,
+                $crate::commands::workspace_quarantine::<$runtime>,
             ])
             .typ::<ipc::EventEnvelope<ipc::VaultEvent>>()
             .typ::<ipc::EventEnvelope<ipc::IndexProgress>>()

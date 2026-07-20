@@ -16,6 +16,7 @@ import type {
   EventEnvelope,
   IndexProgress,
   LoamError,
+  TreeEntryDto,
   VaultEvent,
 } from "../generated/bindings";
 
@@ -30,6 +31,36 @@ import {
 import { type MockVaultFixture, MockVaultStore, mockHash } from "./store";
 
 export type MockCommands = typeof commands;
+
+interface WorkspaceKv {
+  get(vaultId: string): string | undefined;
+  set(vaultId: string, content: string): void;
+  remove(vaultId: string): void;
+}
+const memoryWorkspaces = new Map<string, string>();
+function workspaceStore(): WorkspaceKv {
+  try {
+    if (typeof window !== "undefined" && window.localStorage) {
+      const ls = window.localStorage;
+      return {
+        get: (id) => ls.getItem(`loam-mock-workspace.${id}`) ?? undefined,
+        set: (id, content) => ls.setItem(`loam-mock-workspace.${id}`, content),
+        remove: (id) => ls.removeItem(`loam-mock-workspace.${id}`),
+      };
+    }
+  } catch {
+    // Blocked storage: memory below.
+  }
+  return {
+    get: (id) => memoryWorkspaces.get(id),
+    set: (id, content) => {
+      memoryWorkspaces.set(id, content);
+    },
+    remove: (id) => {
+      memoryWorkspaces.delete(id);
+    },
+  };
+}
 
 export interface MockIpcOptions {
   /** Pre-registered vault fixtures keyed by the path used to open them. */
@@ -247,6 +278,64 @@ export function createMockIpc(options: MockIpcOptions = {}): MockIpc {
       }
       if (!store.remove(path)) {
         return err({ error: "not-found", path });
+      }
+      return ok(null);
+    },
+
+    async vaultTree(vaultId) {
+      await delay();
+      const store = vault(vaultId);
+      if (!(store instanceof MockVaultStore)) {
+        return err(store);
+      }
+      // Mirror native enumeration: flat entries sorted by logical path,
+      // folders derived from file paths. Deterministic modified times keyed
+      // by position keep sorting testable without wall clocks.
+      const entries = new Map<string, TreeEntryDto>();
+      const paths = store.paths();
+      paths.forEach((path, index) => {
+        const parts = path.split("/");
+        for (let depth = 1; depth < parts.length; depth += 1) {
+          const folder = parts.slice(0, depth).join("/");
+          if (!entries.has(folder)) {
+            entries.set(folder, {
+              path: folder,
+              name: parts[depth - 1] as string,
+              kind: "folder",
+              size: 0,
+              modifiedMs: null,
+            });
+          }
+        }
+        const content = store.read(path) ?? "";
+        entries.set(path, {
+          path,
+          name: parts.at(-1) as string,
+          kind: path.toLowerCase().endsWith(".md") ? "markdown" : "other",
+          size: content.length,
+          modifiedMs: 1_700_000_000_000 + index * 60_000,
+        });
+      });
+      return ok({ entries: [...entries.values()].sort((a, b) => (a.path < b.path ? -1 : 1)) });
+    },
+
+    // Per-device workspace state (LOA-91): localStorage when available so
+    // browser-demo reloads persist, otherwise instance memory.
+    async workspaceRead(vaultId) {
+      await delay();
+      return ok(workspaceStore().get(vaultId) ?? null);
+    },
+    async workspaceWrite(vaultId, content) {
+      await delay();
+      workspaceStore().set(vaultId, content);
+      return ok(null);
+    },
+    async workspaceQuarantine(vaultId) {
+      await delay();
+      const existing = workspaceStore().get(vaultId);
+      if (existing !== undefined) {
+        workspaceStore().set(`${vaultId}.corrupt`, existing);
+        workspaceStore().remove(vaultId);
       }
       return ok(null);
     },
