@@ -3,5 +3,13 @@ packages:
   - packages/*
   - docs
 
+# Build scripts are opt-in (supply-chain policy). esbuild/@swc/core only
+# download their platform binaries (vite/Ladle toolchain); msw's postinstall
+# is an optional worker copy we don't need.
+allowBuilds:
+  '@swc/core': true
+  esbuild: true
+  msw: false
+
 onlyBuiltDependencies:
   - turbo
