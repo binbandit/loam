@@ -36,11 +36,11 @@ function popup(
 
 export interface MenuItemProps extends PlainClassName<ComponentProps<typeof BaseMenu.Item>> {
   /** Leading 16 px icon. */
-  icon?: ReactNode;
+  icon?: ReactNode | undefined;
   /** Right-aligned shortcut column, e.g. "⌘⌫". */
-  shortcut?: string;
+  shortcut?: string | undefined;
   /** Destructive action treatment. */
-  danger?: boolean;
+  danger?: boolean | undefined;
 }
 
 function MenuItem({

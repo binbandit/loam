@@ -37,7 +37,7 @@ test("the production CSP blocks external fetches but boots the app", async ({ pa
 
   await page.goto("/");
   // The app boots under the production policy (script-src 'self' allows the bundle).
-  await expect(page.locator("main")).toHaveAttribute("data-ready", "true");
+  await expect(page.getByTestId("app-root")).toHaveAttribute("data-ready", "true");
 
   const result = await page.evaluate(() =>
     fetch("https://example.com/probe")

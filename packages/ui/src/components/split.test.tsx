@@ -131,3 +131,19 @@ describe("state geometry", () => {
     expect(css).toMatch(/data-direction="column"[^{]*\{\s*height: 4px/);
   });
 });
+
+/** `primary="end"` fixes the second pane (right panel) and inverts drag. */
+describe("end-primary pane", () => {
+  it("resizes the end pane with inverted pointer deltas and arrows", async () => {
+    const user = userEvent.setup();
+    const { separator, onSizeChange } = renderSplit({ primary: "end" });
+    // Dragging left (negative delta) grows an end-primary pane.
+    fireEvent.pointerDown(separator, { clientX: 400, pointerId: 1 });
+    fireEvent.pointerMove(separator, { clientX: 360, pointerId: 1 });
+    expect(onSizeChange).toHaveBeenLastCalledWith(280);
+    fireEvent.pointerUp(separator, { pointerId: 1 });
+    separator.focus();
+    await user.keyboard("{ArrowLeft}");
+    expect(onSizeChange).toHaveBeenLastCalledWith(280 + 16);
+  });
+});

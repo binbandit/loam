@@ -24,6 +24,9 @@ const COLLAPSE_SLACK = 40;
 export interface SplitPaneProps {
   /** Pane flow: `row` = side-by-side (vertical separator). */
   direction?: "row" | "column";
+  /** Which pane `size` fixes: `start` (default, e.g. sidebar) or `end`
+   * (e.g. right panel). The other pane fills. */
+  primary?: "start" | "end";
   /** Accessible name for the separator, e.g. "Resize sidebar". */
   label: string;
   children: [ReactNode, ReactNode];
@@ -40,6 +43,7 @@ export interface SplitPaneProps {
 
 export function SplitPane({
   direction = "row",
+  primary = "start",
   label,
   children,
   size: sizeProp,
@@ -78,7 +82,9 @@ export function SplitPane({
   };
   const onPointerMove = (event: PointerEvent<HTMLDivElement>): void => {
     if (!dragStart.current) return;
-    const raw = dragStart.current.size + (axisOf(event) - dragStart.current.at);
+    const delta = axisOf(event) - dragStart.current.at;
+    // Dragging toward an end-primary pane shrinks it.
+    const raw = dragStart.current.size + (primary === "end" ? -delta : delta);
     if (onCollapse && raw < minSize - COLLAPSE_SLACK) {
       dragStart.current = null;
       setDragging(false);
@@ -93,8 +99,9 @@ export function SplitPane({
   };
 
   const onKeyDown = (event: KeyboardEvent<HTMLDivElement>): void => {
-    const grow = direction === "row" ? "ArrowRight" : "ArrowDown";
-    const shrink = direction === "row" ? "ArrowLeft" : "ArrowUp";
+    let grow = direction === "row" ? "ArrowRight" : "ArrowDown";
+    let shrink = direction === "row" ? "ArrowLeft" : "ArrowUp";
+    if (primary === "end") [grow, shrink] = [shrink, grow];
     if (event.key === grow) {
       event.preventDefault();
       setSize(size + SPLIT_KEYBOARD_STEP);
@@ -114,11 +121,15 @@ export function SplitPane({
   };
 
   const [first, second] = children;
+  const fixedStyle = direction === "row" ? { width: size } : { height: size };
   return (
     <div className={cx("loam-split", className)} data-direction={direction}>
       <div
-        className="loam-split__pane loam-split__pane--fixed"
-        style={direction === "row" ? { width: size } : { height: size }}
+        className={cx(
+          "loam-split__pane",
+          primary === "start" ? "loam-split__pane--fixed" : "loam-split__pane--fill",
+        )}
+        style={primary === "start" ? fixedStyle : undefined}
       >
         {first}
       </div>
@@ -141,7 +152,15 @@ export function SplitPane({
       >
         <span className="loam-split__line" />
       </div>
-      <div className="loam-split__pane loam-split__pane--fill">{second}</div>
+      <div
+        className={cx(
+          "loam-split__pane",
+          primary === "end" ? "loam-split__pane--fixed" : "loam-split__pane--fill",
+        )}
+        style={primary === "end" ? fixedStyle : undefined}
+      >
+        {second}
+      </div>
     </div>
   );
 }

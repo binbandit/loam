@@ -1,13 +1,20 @@
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
-import { expect, test } from "@playwright/test";
+import { expect, type Page, test } from "@playwright/test";
+
+/** The titlebar renders inside the shell (LOA-66): open the demo vault. */
+async function openShell(page: Page): Promise<void> {
+  await page.goto("/");
+  await page.getByTestId("open-vault").click();
+  await expect(page.getByTestId("app-shell")).toBeVisible();
+}
 
 // LOA-44 titlebar behavior in a real browser engine. Native window controls
 // themselves (traffic lights, decorations) are platform chrome, verified by
 // the LOA-49 native checklist.
 
 test("hovering titlebar controls never shifts layout (AC5)", async ({ page }) => {
-  await page.goto("/");
+  await openShell(page);
   const vault = page.locator(".titlebar__vault");
   const before = await vault.boundingBox();
   await vault.hover();
@@ -24,7 +31,7 @@ test("macOS platform reserves the traffic-light inset (AC2)", async ({ page }) =
   await page.addInitScript(() => {
     window.__LOAM_PLATFORM_OVERRIDE__ = "macos";
   });
-  await page.goto("/");
+  await openShell(page);
   const bar = page.locator(".titlebar");
   await expect(bar).toHaveAttribute("data-platform", "macos");
   const paddingLeft = await bar.evaluate((el) => getComputedStyle(el).paddingLeft);
@@ -32,7 +39,7 @@ test("macOS platform reserves the traffic-light inset (AC2)", async ({ page }) =
 });
 
 test("web/non-mac platforms use the standard inset", async ({ page }) => {
-  await page.goto("/");
+  await openShell(page);
   const bar = page.locator(".titlebar");
   await expect(bar).toHaveAttribute("data-platform", "web");
   const paddingLeft = await bar.evaluate((el) => getComputedStyle(el).paddingLeft);
@@ -55,7 +62,7 @@ test("titlebar background is fallback-first solid with progressive blur (AC4)", 
 
   // Behavioral: in a supporting engine the bar is still visually opaque enough
   // to read (never fully transparent).
-  await page.goto("/");
+  await openShell(page);
   const background = await page
     .locator(".titlebar")
     .evaluate((el) => getComputedStyle(el).backgroundColor);
@@ -64,12 +71,15 @@ test("titlebar background is fallback-first solid with progressive blur (AC4)", 
 
 for (const scheme of ["dark", "light"] as const) {
   test(`titlebar renders in the ${scheme} theme (screenshot)`, async ({ page }) => {
-    await page.emulateMedia({ colorScheme: scheme });
     await page.addInitScript(() => {
       window.__LOAM_PLATFORM_OVERRIDE__ = "macos";
     });
-    await page.goto("/");
-    await expect(page.locator("main")).toHaveAttribute("data-ready", "true");
+    await openShell(page);
+    // The app defaults to Loam Dark (§4.2); force the sheet for the light shot.
+    await page.evaluate((theme) => {
+      document.documentElement.dataset.theme = theme;
+    }, scheme);
+    await expect(page.getByTestId("app-root")).toHaveAttribute("data-ready", "true");
     await page.screenshot({
       path: `test-results/titlebar-${scheme}.png`,
       clip: { x: 0, y: 0, width: 900, height: 120 },
