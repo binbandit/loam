@@ -42,7 +42,7 @@
   font-size: 13px;
   font-weight: 550;
   /* Hover changes color only — geometry is fixed, nothing shifts (AC5). */
-  transition: background-color var(--dur-fast) var(--ease);
+  transition: background-color var(--dur-fast) var(--loam-ease);
 }
 
 .titlebar__vault:hover {

@@ -1,0 +1,479 @@
+/**
+ * App shell layout (LOA-66, §3.5/§4.4). Chrome uses panel surfaces so note
+ * content stays the brightest region; every color is a §4.2 token.
+ */
+
+.shell {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background: var(--loam-bg-app);
+  color: var(--loam-text-primary);
+  font-family: var(--loam-font-ui);
+  font-feature-settings: var(--loam-font-features-ui);
+  font-size: var(--loam-type-base-size);
+  line-height: var(--loam-type-base-line);
+}
+.shell__body {
+  flex: 1;
+  min-height: 0;
+}
+
+.shell__sidebar {
+  height: 100%;
+  overflow: hidden auto;
+  background: var(--loam-bg-panel);
+  border-inline-end: 1px solid var(--loam-border-subtle);
+  padding: var(--loam-space-8);
+}
+.shell__workspace {
+  height: 100%;
+  min-width: 0;
+  overflow: auto;
+}
+.shell__panel {
+  height: 100%;
+  overflow: hidden auto;
+  background: var(--loam-bg-panel);
+  border-inline-start: 1px solid var(--loam-border-subtle);
+  padding: var(--loam-space-12);
+}
+
+.shell__status {
+  display: flex;
+  align-items: center;
+  gap: var(--loam-space-16);
+  height: 24px;
+  padding-inline: var(--loam-space-12);
+  border-block-start: 1px solid var(--loam-border-subtle);
+  background: var(--loam-bg-panel);
+  color: var(--loam-text-tertiary);
+  font-size: var(--loam-type-micro-size);
+  line-height: var(--loam-type-micro-line);
+}
+
+.shell__placeholder {
+  padding: var(--loam-space-12);
+  color: var(--loam-text-tertiary);
+  font-size: var(--loam-type-secondary-size);
+  line-height: var(--loam-type-secondary-line);
+}
+
+/* ── First run (§4.4: one quiet screen, no wizard) ──────────────────────── */
+.first-run {
+  display: grid;
+  place-items: center;
+  height: 100vh;
+  background: var(--loam-bg-app);
+  color: var(--loam-text-primary);
+  font-family: var(--loam-font-ui);
+  font-feature-settings: var(--loam-font-features-ui);
+}
+.first-run__card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--loam-space-16);
+  width: min(420px, calc(100vw - var(--loam-space-32)));
+}
+.first-run__name {
+  margin: 0;
+  font-size: var(--loam-type-title-size);
+  line-height: var(--loam-type-title-line);
+  font-weight: var(--loam-type-title-weight);
+}
+.first-run__actions {
+  display: flex;
+  gap: var(--loam-space-8);
+}
+.first-run__drop {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  min-height: 96px;
+  border: 1px dashed var(--loam-border-strong);
+  border-radius: var(--loam-radius-popover);
+  color: var(--loam-text-tertiary);
+  font-size: var(--loam-type-secondary-size);
+  line-height: var(--loam-type-secondary-line);
+  transition:
+    border-color var(--dur-fast) var(--loam-ease),
+    color var(--dur-fast) var(--loam-ease);
+}
+.first-run__drop[data-active] {
+  border-color: var(--loam-accent);
+  color: var(--loam-text-secondary);
+}
+.first-run__error {
+  margin: 0;
+  color: var(--loam-danger);
+  font-size: var(--loam-type-secondary-size);
+  line-height: var(--loam-type-secondary-line);
+}
+
+/* ── File tree (LOA-72) ─────────────────────────────────────────────────── */
+.file-tree {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+}
+.file-tree__toolbar {
+  display: flex;
+  justify-content: flex-end;
+  padding-block-end: var(--loam-space-8);
+}
+.file-tree__body {
+  flex: 1;
+  min-height: 0;
+}
+.file-tree__error {
+  margin: var(--loam-space-8) 0 0;
+  color: var(--loam-danger);
+  font-size: var(--loam-type-secondary-size);
+  line-height: var(--loam-type-secondary-line);
+}
+
+/* ── Tab bar (LOA-75, §3.5) ─────────────────────────────────────────────── */
+.tab-bar {
+  display: flex;
+  align-items: center;
+  gap: var(--loam-space-4);
+  padding: var(--loam-space-4) var(--loam-space-8);
+  border-block-end: 1px solid var(--loam-border-subtle);
+  background: var(--loam-bg-panel);
+}
+.tab-bar__strip {
+  display: flex;
+  align-items: center;
+  gap: var(--loam-space-2);
+  flex: 1;
+  min-width: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.tab-bar__tab {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  flex: none;
+  max-width: 200px;
+  height: 28px;
+  padding-inline: var(--loam-space-8) var(--loam-space-4);
+  border-radius: var(--loam-radius-button);
+  color: var(--loam-text-secondary);
+  transition:
+    background-color var(--dur-fast) var(--loam-ease),
+    color var(--dur-fast) var(--loam-ease);
+}
+.tab-bar__tab:hover {
+  background: var(--loam-bg-hover);
+}
+.tab-bar__tab[data-active] {
+  background: var(--loam-bg-raised);
+  color: var(--loam-text-primary);
+  /* §3.5: subtle active marker along the top edge. */
+  box-shadow: inset 0 1.5px 0 var(--loam-accent);
+}
+.tab-bar__tab[data-missing] .tab-bar__title {
+  color: var(--loam-danger);
+  text-decoration: line-through;
+}
+.tab-bar__label {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--loam-space-6);
+  min-width: 0;
+  border: none;
+  background: transparent;
+  color: inherit;
+  font-family: var(--loam-font-ui);
+  font-size: var(--loam-type-base-size);
+  line-height: var(--loam-type-base-line);
+  cursor: default;
+  padding: 0;
+}
+.tab-bar__label:focus-visible {
+  outline: 1.5px solid var(--loam-accent);
+  outline-offset: 1px;
+  border-radius: var(--loam-radius-input);
+}
+.tab-bar__title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.tab-bar__dirty {
+  flex: none;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--loam-accent);
+}
+.tab-bar__close {
+  flex: none;
+  width: 18px;
+  height: 18px;
+}
+.tab-bar__overflow {
+  flex: none;
+}
+
+/* ── Note preview (stopgap until E09) ───────────────────────────────────── */
+.note-preview {
+  margin: 0;
+  padding: var(--loam-space-24);
+  max-width: var(--loam-editor-measure);
+  font-family: var(--loam-font-mono);
+  font-size: var(--loam-type-code-size);
+  line-height: var(--loam-type-editor-line);
+  color: var(--loam-text-primary);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+/* Visually hidden, screen-reader visible. */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* ── Panes (LOA-76, §3.5) ───────────────────────────────────────────────── */
+.pane {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+}
+.pane[data-active] .tab-bar {
+  /* Subtle active-pane marker along the top edge (§3.5). */
+  box-shadow: inset 0 1.5px 0 var(--loam-accent-subtle);
+}
+.pane > .note-preview,
+.pane > .shell__placeholder {
+  flex: 1;
+  overflow: auto;
+}
+/* Drag-to-edge split target: the shared 2px accent indicator (§4.4). */
+.pane__edge-indicator {
+  position: absolute;
+  pointer-events: none;
+  background: var(--loam-accent);
+  border-radius: 1px;
+}
+.pane__edge-indicator[data-edge="row"] {
+  top: var(--loam-space-4);
+  bottom: var(--loam-space-4);
+  right: var(--loam-space-4);
+  width: 2px;
+}
+.pane__edge-indicator[data-edge="column"] {
+  left: var(--loam-space-4);
+  right: var(--loam-space-4);
+  bottom: var(--loam-space-4);
+  height: 2px;
+}
+
+/* ── Right panel views (LOA-80) ─────────────────────────────────────────── */
+.right-panel__view {
+  padding-block-start: var(--loam-space-12);
+  overflow: auto;
+}
+
+/* ── Status bar items (LOA-84) ──────────────────────────────────────────── */
+.status__index {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--loam-space-4);
+}
+.status__index[data-status="ready"] svg {
+  color: var(--loam-success);
+}
+.status__index[data-status="indexing"] svg {
+  animation: loam-spin 1200ms linear infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .status__index[data-status="indexing"] svg {
+    animation: none;
+  }
+}
+.status__item {
+  border: none;
+  background: transparent;
+  padding: 0;
+  color: inherit;
+  font: inherit;
+  cursor: default;
+}
+.status__item:hover {
+  color: var(--loam-text-secondary);
+}
+.status__item:focus-visible {
+  outline: 1.5px solid var(--loam-accent);
+  outline-offset: 1px;
+  border-radius: var(--loam-radius-input);
+}
+.status__spacer {
+  flex: 1;
+}
+.status__plugins {
+  display: inline-flex;
+  gap: var(--loam-space-12);
+}
+
+/* ── Settings surface (LOA-86, §3.12) ───────────────────────────────────── */
+.settings.loam-modal {
+  width: min(720px, calc(100vw - var(--loam-space-32)));
+  height: min(560px, calc(100vh - var(--loam-space-40)));
+  padding: 0;
+  overflow: hidden;
+}
+.settings__layout {
+  display: flex;
+  height: 100%;
+}
+.settings__nav {
+  display: flex;
+  flex-direction: column;
+  gap: var(--loam-space-2);
+  width: 176px;
+  flex: none;
+  padding: var(--loam-space-12);
+  border-inline-end: 1px solid var(--loam-border-subtle);
+  background: var(--loam-bg-panel);
+  overflow-y: auto;
+}
+.settings__nav-item {
+  height: var(--loam-row-sidebar);
+  padding-inline: var(--loam-space-8);
+  border: none;
+  border-radius: var(--loam-radius-input);
+  background: transparent;
+  color: var(--loam-text-secondary);
+  font: inherit;
+  text-align: start;
+  cursor: default;
+}
+.settings__nav-item:hover {
+  background: var(--loam-bg-hover);
+  color: var(--loam-text-primary);
+}
+.settings__nav-item[data-active] {
+  background: var(--loam-bg-selected);
+  color: var(--loam-text-primary);
+}
+.settings__nav-item:focus-visible {
+  outline: 1.5px solid var(--loam-accent);
+  outline-offset: -1.5px;
+}
+.settings__content {
+  flex: 1;
+  min-width: 0;
+  padding: var(--loam-space-20);
+  overflow-y: auto;
+}
+.settings__heading {
+  margin: 0 0 var(--loam-space-16);
+  font-size: var(--loam-type-title-size);
+  line-height: var(--loam-type-title-line);
+  font-weight: var(--loam-type-title-weight);
+}
+.settings__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--loam-space-16);
+  padding-block: var(--loam-space-12);
+  border-block-end: 1px solid var(--loam-border-subtle);
+}
+.settings__meta {
+  display: flex;
+  flex-direction: column;
+  gap: var(--loam-space-2);
+  min-width: 0;
+}
+.settings__label {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--loam-space-6);
+}
+.settings__description {
+  color: var(--loam-text-tertiary);
+  font-size: var(--loam-type-secondary-size);
+  line-height: var(--loam-type-secondary-line);
+}
+.settings__slider {
+  width: 200px;
+  flex: none;
+}
+
+/* ── Conflict banner + merge surface (LOA-89, §5.6) ─────────────────────── */
+.conflict-banner {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--loam-space-8);
+  padding: var(--loam-space-8) var(--loam-space-12);
+  border-block-end: 1px solid var(--loam-border);
+  background: var(--loam-bg-raised);
+  box-shadow: inset 3px 0 0 var(--loam-warning);
+}
+.conflict-banner__text {
+  color: var(--loam-text-primary);
+}
+.conflict-banner__actions {
+  display: flex;
+  gap: var(--loam-space-6);
+}
+.conflict-banner__error {
+  flex-basis: 100%;
+  margin: 0;
+  color: var(--loam-danger);
+  font-size: var(--loam-type-secondary-size);
+  line-height: var(--loam-type-secondary-line);
+}
+
+.merge.loam-modal {
+  width: min(960px, calc(100vw - var(--loam-space-32)));
+}
+.merge__columns {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: var(--loam-space-12);
+  margin-block-start: var(--loam-space-12);
+  max-height: 320px;
+}
+.merge__column {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.merge__label {
+  margin: 0 0 var(--loam-space-4);
+  font-size: var(--loam-type-micro-size);
+  line-height: var(--loam-type-micro-line);
+  font-weight: var(--loam-type-micro-weight);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--loam-text-tertiary);
+}
+.merge__content {
+  flex: 1;
+  margin: 0;
+  padding: var(--loam-space-8);
+  overflow: auto;
+  border: 1px solid var(--loam-border-subtle);
+  border-radius: var(--loam-radius-input);
+  background: var(--loam-bg-panel);
+  font-family: var(--loam-font-mono);
+  font-size: var(--loam-type-secondary-size);
+  line-height: 1.5;
+  white-space: pre-wrap;
+}
