@@ -1,0 +1,187 @@
+/**
+ * Floating surfaces (§4.3, LOA-37): menu, context menu, tooltip, popover.
+ * Base UI owns semantics and focus; Floating UI (embedded in Base UI's
+ * positioners) owns collision-aware placement. Token-only styling; §4.2
+ * elevation says only popovers/modals cast shadows, so tooltips are flat.
+ */
+
+/* ── Shared entrance: opacity + anchor-side translate, ≤ --dur-base. ────── */
+.loam-menu,
+.loam-popover,
+.loam-tooltip {
+  transform-origin: var(--transform-origin);
+  transition:
+    opacity var(--dur-base) var(--loam-ease),
+    transform var(--dur-base) var(--loam-ease);
+}
+.loam-menu[data-starting-style],
+.loam-menu[data-ending-style],
+.loam-tooltip[data-starting-style],
+.loam-tooltip[data-ending-style],
+.loam-popover[data-starting-style],
+.loam-popover[data-ending-style] {
+  opacity: 0;
+}
+.loam-menu[data-starting-style],
+.loam-menu[data-ending-style] {
+  transform: scale(var(--loam-motion-scale-from));
+}
+/* Popovers/tooltips enter from their anchor side; reduced motion zeroes the
+ * translate token, collapsing this to pure opacity. */
+.loam-popover[data-side="top"][data-starting-style],
+.loam-popover[data-side="top"][data-ending-style],
+.loam-tooltip[data-side="top"][data-starting-style],
+.loam-tooltip[data-side="top"][data-ending-style] {
+  transform: translateY(var(--loam-motion-translate));
+}
+.loam-popover[data-side="bottom"][data-starting-style],
+.loam-popover[data-side="bottom"][data-ending-style],
+.loam-tooltip[data-side="bottom"][data-starting-style],
+.loam-tooltip[data-side="bottom"][data-ending-style] {
+  transform: translateY(calc(-1 * var(--loam-motion-translate)));
+}
+.loam-popover[data-side="left"][data-starting-style],
+.loam-popover[data-side="left"][data-ending-style],
+.loam-tooltip[data-side="left"][data-starting-style],
+.loam-tooltip[data-side="left"][data-ending-style] {
+  transform: translateX(var(--loam-motion-translate));
+}
+.loam-popover[data-side="right"][data-starting-style],
+.loam-popover[data-side="right"][data-ending-style],
+.loam-tooltip[data-side="right"][data-starting-style],
+.loam-tooltip[data-side="right"][data-ending-style] {
+  transform: translateX(calc(-1 * var(--loam-motion-translate)));
+}
+
+/* ── Menu & context menu (rows 30 px, §4.2) ─────────────────────────────── */
+.loam-menu {
+  min-width: 180px;
+  padding: var(--loam-space-4);
+  background: var(--loam-bg-overlay);
+  border: 1px solid var(--loam-border);
+  border-radius: var(--loam-radius-popover);
+  box-shadow: var(--loam-shadow-popover);
+  outline: none;
+}
+.loam-menu__item {
+  display: flex;
+  align-items: center;
+  gap: var(--loam-space-8);
+  height: var(--loam-row-menu);
+  padding: 0 var(--loam-space-8);
+  border-radius: var(--loam-radius-input);
+  color: var(--loam-text-primary);
+  font-family: var(--loam-font-ui);
+  font-feature-settings: var(--loam-font-features-ui);
+  font-size: var(--loam-type-base-size);
+  line-height: var(--loam-type-base-line);
+  user-select: none;
+  cursor: default;
+  outline: none;
+}
+.loam-menu__item[data-highlighted] {
+  background: var(--loam-bg-hover);
+}
+.loam-menu__item[data-disabled] {
+  color: var(--loam-text-disabled);
+}
+.loam-menu__item[data-danger] {
+  color: var(--loam-danger);
+}
+.loam-menu__icon {
+  display: inline-flex;
+  flex: none;
+  color: var(--loam-text-secondary);
+}
+.loam-menu__item[data-danger] .loam-menu__icon {
+  color: var(--loam-danger);
+}
+.loam-menu__label {
+  flex: 1;
+  white-space: nowrap;
+}
+/* Right-aligned shortcut column (§4.3). */
+.loam-menu__shortcut {
+  flex: none;
+  margin-left: var(--loam-space-16);
+  color: var(--loam-text-tertiary);
+  font-family: var(--loam-font-ui);
+  font-size: var(--loam-type-secondary-size);
+  line-height: var(--loam-type-secondary-line);
+}
+.loam-menu__submenu-caret {
+  flex: none;
+  margin-left: var(--loam-space-16);
+  color: var(--loam-text-tertiary);
+}
+.loam-menu__separator {
+  height: 1px;
+  margin: var(--loam-space-4) calc(-1 * var(--loam-space-4));
+  background: var(--loam-border-subtle);
+}
+.loam-menu__group-label {
+  padding: var(--loam-space-4) var(--loam-space-8);
+  color: var(--loam-text-tertiary);
+  font-family: var(--loam-font-ui);
+  font-size: var(--loam-type-micro-size);
+  line-height: var(--loam-type-micro-line);
+  font-weight: var(--loam-type-micro-weight);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+/* ── Tooltip (400 ms delay, instant between targets; flat per §4.2) ─────── */
+.loam-tooltip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--loam-space-8);
+  max-width: 280px;
+  padding: var(--loam-space-4) var(--loam-space-8);
+  background: var(--loam-bg-overlay);
+  border: 1px solid var(--loam-border);
+  border-radius: var(--loam-radius-input);
+  color: var(--loam-text-primary);
+  font-family: var(--loam-font-ui);
+  font-size: var(--loam-type-secondary-size);
+  line-height: var(--loam-type-secondary-line);
+}
+.loam-tooltip__shortcut {
+  color: var(--loam-text-tertiary);
+  font-family: var(--loam-font-ui);
+  font-size: var(--loam-type-secondary-size);
+  line-height: var(--loam-type-secondary-line);
+}
+
+/* ── Popover (radius 8, popover elevation, §4.2) ────────────────────────── */
+.loam-popover {
+  padding: var(--loam-space-12) var(--loam-space-16);
+  background: var(--loam-bg-overlay);
+  border: 1px solid var(--loam-border);
+  border-radius: var(--loam-radius-popover);
+  box-shadow: var(--loam-shadow-popover);
+  color: var(--loam-text-primary);
+  font-family: var(--loam-font-ui);
+  font-size: var(--loam-type-base-size);
+  line-height: var(--loam-type-base-line);
+  outline: none;
+}
+.loam-popover__title {
+  margin: 0 0 var(--loam-space-4);
+  font-size: var(--loam-type-emphasis-size);
+  line-height: var(--loam-type-emphasis-line);
+  font-weight: var(--loam-type-emphasis-weight);
+}
+.loam-popover__description {
+  margin: 0;
+  color: var(--loam-text-secondary);
+  font-size: var(--loam-type-secondary-size);
+  line-height: var(--loam-type-secondary-line);
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .loam-menu,
+  .loam-tooltip,
+  .loam-popover {
+    background: var(--loam-bg-overlay);
+  }
+}

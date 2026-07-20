@@ -24,6 +24,12 @@ const gates = [
     args: ["deny", "check", "--config", "fixtures/licenses/deny-fail.toml", "licenses"],
     expectInOutput: "rejected",
   },
+  {
+    name: "hardcoded-color lint rejects raw colors in components (§4.2)",
+    command: "node",
+    args: ["scripts/check-hardcoded-colors.mjs", "fixtures/ui"],
+    expectInOutput: "hardcoded hex color",
+  },
 ];
 
 const failures = [];
