@@ -9,6 +9,7 @@
     "includes": [
       "**",
       "!packages/ipc-client/src/generated",
+      "!packages/ui/src/tokens/tokens.css",
       "!fixtures/markdown",
       "!fixtures/canvas",
       "!fixtures/vaults",

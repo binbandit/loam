@@ -1,0 +1,6 @@
+/* Negative fixture for scripts/check-hardcoded-colors.mjs: a component
+ * stylesheet with a raw hex color must FAIL the gate. */
+.bad-component {
+  color: #ff0000;
+  background: var(--loam-bg-panel);
+}
