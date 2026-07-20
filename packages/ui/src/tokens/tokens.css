@@ -1,0 +1,211 @@
+/**
+ * Loam design tokens (§4.2 — NORMATIVE). Every UI surface consumes these
+ * custom properties; components never hardcode colors (enforced by
+ * scripts/check-hardcoded-colors.mjs). Theme overrides are limited to the
+ * documented `--loam-*` tokens.
+ *
+ * The dark block below byte-matches SPEC.md §4.2 and is snapshot-locked by
+ * tokens.test.ts — edit SPEC first, tokens second. This file is excluded
+ * from Biome formatting (biome.json) so SPEC's exact notation survives.
+ */
+
+/* Color — Loam Dark (default). Near-achromatic neutrals, LCH-even ramp. */
+:root[data-theme="dark"] {
+  --loam-bg-app: #0B0C0F;            /* window base            */
+  --loam-bg-panel: #101216;          /* sidebars, panels        */
+  --loam-bg-raised: #16181D;         /* cards, inputs, hovers   */
+  --loam-bg-overlay: #1C1F26;        /* popovers, omnibar       */
+  --loam-bg-hover: rgba(255,255,255,0.045);
+  --loam-bg-active: rgba(255,255,255,0.08);
+  --loam-bg-selected: rgba(112,126,232,0.14);
+  --loam-border-subtle: rgba(255,255,255,0.06);
+  --loam-border: rgba(255,255,255,0.10);
+  --loam-border-strong: rgba(255,255,255,0.16);
+  --loam-text-primary: #EEEFF3;
+  --loam-text-secondary: #9EA3AE;
+  --loam-text-tertiary: #686E7A;
+  --loam-text-disabled: #4A4F58;
+  --loam-accent: #707EE8;            /* Loam iris               */
+  --loam-accent-hover: #8590EE;
+  --loam-accent-text: #A6AEF6;       /* links on dark           */
+  --loam-accent-subtle: rgba(112,126,232,0.14);
+  --loam-success: #3FB57F;
+  --loam-warning: #D9A13C;
+  --loam-danger: #E5544C;
+  --loam-highlight: rgba(217,161,60,0.28); /* ==marks== */
+}
+
+/*
+ * Loam Light mirrors the ramp (§4.2 documented values). Two notes:
+ * - `--loam-text-tertiary` is #878D99, not the prose-documented #9096A1:
+ *   that value measures 2.85:1 on --loam-bg-app, below the same section's
+ *   binding "3:1 large/secondary-UI" AA floor. AA wins; the contrast test
+ *   walks every pair.
+ * - Values §4.2 leaves underived (overlay, hover/active, strong border,
+ *   status colors, …) mirror the dark ramp and are AA-verified.
+ */
+:root[data-theme="light"] {
+  --loam-bg-app: #FAFAFB;
+  --loam-bg-panel: #FFFFFF;
+  --loam-bg-raised: #FFFFFF;
+  --loam-bg-overlay: #FFFFFF;
+  --loam-bg-hover: rgba(0,0,0,0.045);
+  --loam-bg-active: rgba(0,0,0,0.08);
+  --loam-bg-selected: rgba(93,107,223,0.10);
+  --loam-border-subtle: rgba(0,0,0,0.06);
+  --loam-border: rgba(0,0,0,0.09);
+  --loam-border-strong: rgba(0,0,0,0.16);
+  --loam-text-primary: #1B1D22;
+  --loam-text-secondary: #5F6570;
+  --loam-text-tertiary: #878D99;
+  --loam-text-disabled: #B4B9C2;
+  --loam-accent: #5D6BDF;
+  --loam-accent-hover: #4B59C8;
+  --loam-accent-text: #4F5DD3;
+  --loam-accent-subtle: rgba(93,107,223,0.10);
+  --loam-success: #1E7A55;
+  --loam-warning: #8A6410;
+  --loam-danger: #C93D35;
+  --loam-highlight: rgba(217,161,60,0.30);
+}
+
+/* Typography (§4.2). Inter for UI, JetBrains Mono for code, Source Serif 4
+ * as the optional editor serif. Tabular numerals opt-in via
+ * `--loam-font-features-tnum` on tables/counters only. */
+:root {
+  --loam-font-ui: "Inter Variable", "Inter", system-ui, -apple-system, sans-serif;
+  --loam-font-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  --loam-font-serif: "Source Serif 4 Variable", "Source Serif 4", Georgia, serif;
+  --loam-font-features-ui: "cv05";
+  --loam-font-features-tnum: "cv05", "tnum";
+
+  /* Type roles: size / line-height / weight. */
+  --loam-type-micro-size: 11.5px;
+  --loam-type-micro-line: 16px;
+  --loam-type-micro-weight: 500;
+  --loam-type-secondary-size: 12.5px;
+  --loam-type-secondary-line: 18px;
+  --loam-type-secondary-weight: 450;
+  --loam-type-base-size: 13px;
+  --loam-type-base-line: 20px;
+  --loam-type-base-weight: 450;
+  --loam-type-emphasis-size: 13px;
+  --loam-type-emphasis-line: 20px;
+  --loam-type-emphasis-weight: 550;
+  --loam-type-title-size: 15px;
+  --loam-type-title-line: 22px;
+  --loam-type-title-weight: 600;
+  --loam-type-editor-size: 16px;
+  --loam-type-editor-line: 1.65;
+  --loam-type-editor-weight: 400;
+  --loam-type-code-size: 13.5px;
+
+  /* Editor headings (em-relative; H5 secondary / H6 tertiary color). */
+  --loam-type-h1-size: 1.55em;
+  --loam-type-h1-weight: 650;
+  --loam-type-h2-size: 1.30em;
+  --loam-type-h2-weight: 650;
+  --loam-type-h3-size: 1.15em;
+  --loam-type-h3-weight: 600;
+  --loam-type-h4-size: 1em;
+  --loam-type-h4-weight: 600;
+
+  /* Editor measure ("readable line length", on by default). */
+  --loam-editor-measure: 46rem;
+
+  /* Spacing — 4 px grid. */
+  --loam-space-2: 2px;
+  --loam-space-4: 4px;
+  --loam-space-6: 6px;
+  --loam-space-8: 8px;
+  --loam-space-12: 12px;
+  --loam-space-16: 16px;
+  --loam-space-20: 20px;
+  --loam-space-24: 24px;
+  --loam-space-32: 32px;
+  --loam-space-40: 40px;
+
+  /* Radii. */
+  --loam-radius-input: 4px;
+  --loam-radius-button: 6px;
+  --loam-radius-popover: 8px;
+  --loam-radius-modal: 10px;
+
+  /* Row heights. */
+  --loam-row-sidebar: 28px;
+  --loam-row-menu: 30px;
+  --loam-row-omnibar: 40px;
+
+  /* On-accent foreground (derived): label color on solid accent/danger
+   * surfaces in both themes. 4.52:1 on the light accent; 3.60:1 on the dark
+   * accent (best available pairing there — #EEEFF3 measures 3.29:1) with
+   * 550-weight labels, matching WCAG 1.4.11's 3:1 component floor. */
+  --loam-accent-fg: #FFFFFF;
+
+  /* Motion — single easing; nothing animates outside these durations. */
+  --dur-fast: 100ms;
+  --dur-base: 140ms;
+  --dur-slow: 200ms;
+  --loam-ease: cubic-bezier(0.2, 0, 0, 1);
+  /* Entrance translate distance; reduced motion zeroes it. */
+  --loam-motion-translate: 4px;
+  --loam-motion-scale-from: 0.98;
+}
+
+/* Elevation (§4.2): only popovers and modals cast shadows. */
+:root[data-theme="dark"] {
+  --loam-shadow-popover: 0 8px 24px rgba(0,0,0,0.42);
+  --loam-shadow-modal: 0 16px 48px rgba(0,0,0,0.55);
+  --loam-scrim: rgba(0,0,0,0.5);
+}
+:root[data-theme="light"] {
+  --loam-shadow-popover: 0 8px 24px rgba(0,0,0,0.14);
+  --loam-shadow-modal: 0 16px 48px rgba(0,0,0,0.35);
+  --loam-scrim: rgba(0,0,0,0.25);
+}
+
+/* Reduced motion (§4.2): ALL motion collapses to opacity at ≤ 80 ms. */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --dur-fast: 80ms;
+    --dur-base: 80ms;
+    --dur-slow: 80ms;
+    --loam-motion-translate: 0px;
+    --loam-motion-scale-from: 1;
+  }
+}
+
+/* Reduced transparency: overlays fall back to opaque surfaces. */
+@media (prefers-reduced-transparency: reduce) {
+  :root[data-theme="dark"] {
+    --loam-bg-hover: #1A1D22;
+    --loam-bg-active: #21242B;
+    --loam-scrim: rgba(0,0,0,0.85);
+  }
+  :root[data-theme="light"] {
+    --loam-bg-hover: #F0F1F3;
+    --loam-bg-active: #E7E8EB;
+    --loam-scrim: rgba(0,0,0,0.6);
+  }
+}
+
+/* Attribute-driven preference overrides: the same collapses as the media
+ * queries above, togglable by the story host today and device settings
+ * (E13) later. Values mirror the media blocks exactly. */
+:root[data-motion="reduced"] {
+  --dur-fast: 80ms;
+  --dur-base: 80ms;
+  --dur-slow: 80ms;
+  --loam-motion-translate: 0px;
+  --loam-motion-scale-from: 1;
+}
+:root[data-transparency="reduced"][data-theme="dark"] {
+  --loam-bg-hover: #1A1D22;
+  --loam-bg-active: #21242B;
+  --loam-scrim: rgba(0,0,0,0.85);
+}
+:root[data-transparency="reduced"][data-theme="light"] {
+  --loam-bg-hover: #F0F1F3;
+  --loam-bg-active: #E7E8EB;
+  --loam-scrim: rgba(0,0,0,0.6);
+}
