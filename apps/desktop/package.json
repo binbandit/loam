@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "test": "node ../../scripts/workspace-task.mjs test desktop",
+    "test": "vitest run",
     "typecheck": "tsc --noEmit",
     "preview": "vite preview",
     "test:e2e": "playwright test",
@@ -18,15 +18,23 @@
   "devDependencies": {
     "@playwright/test": "1.61.1",
     "@tauri-apps/cli": "2.11.4",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
+    "@testing-library/user-event": "^14.6.1",
     "@types/node": "^26.1.1",
     "@types/react": "^19.2.17",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "6.0.3",
-    "vite": "8.1.5"
+    "jsdom": "^29.1.1",
+    "vite": "8.1.5",
+    "vitest": "4.1.10"
   },
   "dependencies": {
     "@loam-app/ipc-client": "workspace:*",
+    "@loam-app/ui": "workspace:*",
+    "lucide-react": "^1.25.0",
     "react": "19.2.7",
-    "react-dom": "19.2.7"
+    "react-dom": "19.2.7",
+    "zustand": "^5.0.14"
   }
 }
