@@ -61,9 +61,11 @@ test("fold controls appear on hover, are labelled, and fold only the body (AC3/A
   expect(await content.boundingBox()).toEqual(before);
 
   // The "## Section" control is the second one; folding hides its body only.
+  // Live Preview renders the heading, so its `##` marks are not in the text
+  // (LOA-102) — the heading itself must survive the fold.
   await foldSection.nth(1).click();
   await expect(page.locator(".cm-foldPlaceholder")).toHaveCount(1);
-  await expect(page.getByTestId("editor")).toContainText("## Section");
+  await expect(page.getByTestId("editor")).toContainText("Section");
   await expect(page.getByTestId("editor")).not.toContainText("body line");
   await expect(page.getByTestId("editor")).toContainText("intro");
 
