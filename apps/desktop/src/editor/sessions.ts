@@ -22,6 +22,7 @@ import {
   keymap,
   rectangularSelection,
 } from "@codemirror/view";
+import { foldingKeymap, markdownFolding, selectionKeymap } from "./folding";
 import { formattingKeymap, pasteLink, smartPairs } from "./formatting";
 import { listKeymap } from "./lists";
 import { highlightAllMatches } from "./search";
@@ -66,9 +67,18 @@ export function sourceExtensions(): Extension[] {
     markdown(),
     smartPairs(),
     pasteLink(),
+    // Heading/list folds, hover-only chevrons, and ⌘-click multicursor.
+    markdownFolding(),
     // List bindings come first: Enter/Tab fall through to the defaults
     // when the cursor is not in a list.
-    keymap.of([...listKeymap, ...formattingKeymap, ...defaultKeymap, ...historyKeymap]),
+    keymap.of([
+      ...listKeymap,
+      ...formattingKeymap,
+      ...selectionKeymap,
+      ...foldingKeymap,
+      ...defaultKeymap,
+      ...historyKeymap,
+    ]),
   ];
 }
 

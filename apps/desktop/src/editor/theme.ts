@@ -23,11 +23,13 @@ export const loamEditorTheme = EditorView.theme({
     fontFamily: "var(--loam-font-mono)",
     lineHeight: "var(--loam-type-editor-line)",
     overflow: "auto",
+    // The scroller is a flex row of gutters + content; centering it (rather
+    // than the content alone) keeps the fold gutter beside the text.
+    justifyContent: "center",
   },
   ".cm-content": {
     // §4.2 readable line length; the setting toggles the class in LOA-86.
     maxWidth: "var(--loam-editor-measure)",
-    margin: "0 auto",
     padding: "var(--loam-space-24) var(--loam-space-16)",
     caretColor: "var(--loam-accent)",
   },
@@ -44,6 +46,39 @@ export const loamEditorTheme = EditorView.theme({
   },
   ".cm-activeLineGutter": { backgroundColor: "transparent" },
   ".cm-selectionMatch": { backgroundColor: "var(--loam-bg-active)" },
+  // LOA-85: the fold column always reserves its width, so revealing a
+  // chevron on hover never reflows the text.
+  ".cm-foldGutter .cm-gutterElement": { width: "1rem", padding: "0" },
+  ".loam-fold-marker": {
+    all: "unset",
+    display: "block",
+    width: "100%",
+    textAlign: "center",
+    cursor: "pointer",
+    color: "var(--loam-text-tertiary)",
+    opacity: "0",
+    transition: "opacity var(--dur-fast) var(--loam-ease)",
+  },
+  // Visible on hover, on keyboard focus, and always while folded — a folded
+  // section must stay discoverable without a pointer.
+  "&:hover .loam-fold-marker, .loam-fold-marker:focus-visible, .loam-fold-marker-closed": {
+    opacity: "1",
+  },
+  ".loam-fold-marker:hover": { color: "var(--loam-text-primary)" },
+  // §4.6 shared focus ring.
+  ".loam-fold-marker:focus-visible": {
+    outline: "1.5px solid var(--loam-accent)",
+    outlineOffset: "-1px",
+    borderRadius: "var(--loam-radius-input)",
+  },
+  ".cm-foldPlaceholder": {
+    backgroundColor: "var(--loam-bg-active)",
+    border: "1px solid var(--loam-border)",
+    borderRadius: "var(--loam-radius-input)",
+    color: "var(--loam-text-secondary)",
+    padding: "0 var(--loam-space-4)",
+    margin: "0 var(--loam-space-2)",
+  },
   ".cm-searchMatch": { backgroundColor: "var(--loam-highlight)" },
   ".cm-searchMatch.cm-searchMatch-selected": {
     outline: "1.5px solid var(--loam-accent)",
