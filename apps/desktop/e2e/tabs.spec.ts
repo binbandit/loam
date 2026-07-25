@@ -18,10 +18,10 @@ test("opening notes creates tabs and shows the note body", async ({ page }) => {
     "aria-selected",
     "true",
   );
-  await expect(page.getByTestId("note-preview")).toContainText("How to take smart notes");
+  await expect(page.getByTestId("editor")).toContainText("How to take smart notes");
   // Pointer activation switches content without recreating the shell.
   await tablist.getByRole("tab", { name: "Ideas" }).click();
-  await expect(page.getByTestId("note-preview")).toContainText("Capture anything");
+  await expect(page.getByTestId("editor")).toContainText("Capture anything");
 });
 
 test("⌘W closes and ⌘⇧T reopens the last tab (AC1/AC3)", async ({ page }) => {
@@ -101,8 +101,8 @@ test("titlebar breadcrumb and status bar bind to the active pane (LOA-84)", asyn
   await expect(counts).toContainText("words");
   await counts.click();
   await expect(counts).toContainText("characters");
-  // Cursor position is absent until the E09 editor reports one (AC3).
-  await expect(page.getByTestId("status-cursor")).toHaveCount(0);
+  // The E09 editor reports a cursor, so the item now applies (AC3).
+  await expect(page.getByTestId("status-cursor")).toContainText("Ln 1, Col 1");
   await expect(page.getByTestId("status-plugins")).toBeAttached();
   // Switching tabs moves the breadcrumb (AC1).
   await page.getByRole("tab", { name: "Ideas" }).click();
@@ -193,7 +193,7 @@ test("dirty conflicts show the banner; clean external edits reload silently (LOA
       "# Reading list\n\n- changed on disk\n",
     );
   });
-  await expect(page.getByTestId("note-preview")).toContainText("changed on disk");
+  await expect(page.getByTestId("editor")).toContainText("changed on disk");
   await expect(page.getByTestId("conflict-banner")).toHaveCount(0);
   // Dirty conflict: the banner appears with all three actions; merge shows
   // all three labeled columns.
@@ -223,4 +223,60 @@ test("dirty conflicts show the banner; clean external edits reload silently (LOA
   // Take disk only on explicit activation.
   await banner.getByRole("button", { name: "Take disk" }).click();
   await expect(page.getByTestId("conflict-banner")).toHaveCount(0);
+});
+
+test("typing marks the tab dirty and ⌘S saves through note_write (LOA-69)", async ({ page }) => {
+  await openShellWithNotes(page);
+  await page.getByTestId("file-tree-body").getByText("Ideas", { exact: true }).click();
+  await page.waitForSelector(".cm-content");
+  // Type into the editor: the tab shows the unsaved marker.
+  await page.locator(".cm-content").click();
+  await page.keyboard.press("End");
+  await page.keyboard.type(" edited");
+  const tab = page.getByRole("tab", { name: /Ideas/ });
+  await expect(tab).toContainText("unsaved changes");
+  // Explicit save clears it and the bytes reach the vault.
+  await page.keyboard.press("ControlOrMeta+s");
+  await expect(tab).not.toContainText("unsaved changes");
+  const onDisk = await page.evaluate(async () => {
+    const mock = (
+      window as unknown as {
+        __LOAM_MOCK__: {
+          commands: {
+            vaultOpen: (path: string) => Promise<{ data: { id: string } }>;
+            noteRead: (vaultId: string, path: string) => Promise<{ data: { content: string } }>;
+          };
+        };
+      }
+    ).__LOAM_MOCK__;
+    const vault = await mock.commands.vaultOpen("/demo/Loam Demo");
+    const read = await mock.commands.noteRead(vault.data.id, "Ideas.md");
+    return read.data.content;
+  });
+  expect(onDisk).toContain(" edited");
+});
+
+test("⌘F finds with count and Escape restores the editor selection (LOA-74)", async ({ page }) => {
+  await openShellWithNotes(page);
+  await page.getByTestId("file-tree-body").getByText("Welcome to Loam", { exact: true }).click();
+  await page.waitForSelector(".cm-content");
+  await page.locator(".cm-content").click();
+  await page.keyboard.press("ControlOrMeta+f");
+  const panel = page.getByTestId("find-panel");
+  await expect(panel).toBeVisible();
+  await expect(panel.getByRole("textbox", { name: "Find" })).toBeFocused();
+  await panel.getByRole("textbox", { name: "Find" }).fill("Loam");
+  // Count is live and highlights are applied by the CM6 search extension.
+  await expect(page.getByTestId("find-count")).toHaveText(/\d+\/\d+/);
+  await expect(page.locator(".cm-searchMatch").first()).toBeVisible();
+  // Invalid regex reports inline, document untouched.
+  await panel.getByRole("button", { name: "Match options" }).isVisible();
+  await panel.getByRole("button", { name: ".*" }).click();
+  await panel.getByRole("textbox", { name: "Find" }).fill("Loam(");
+  await expect(page.getByTestId("find-error")).toBeVisible();
+  await expect(page.getByTestId("editor")).toContainText("Welcome to Loam");
+  // Escape closes and puts focus back in the editor.
+  await page.keyboard.press("Escape");
+  await expect(panel).toHaveCount(0);
+  await expect(page.locator(".cm-editor.cm-focused")).toBeVisible();
 });
