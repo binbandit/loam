@@ -1,0 +1,81 @@
+/**
+ * CM6 theme + Markdown highlight style (LOA-68, §4.2/§4.3). Every value is
+ * a §4.2 token, so the editor follows the app theme with no JS work: the
+ * theme extension is static and `data-theme` on <html> does the switching.
+ * Only the light/dark class flag lives in a compartment (CM6 needs it for
+ * its own internal defaults).
+ */
+
+import { HighlightStyle, syntaxHighlighting } from "@codemirror/language";
+import type { Extension } from "@codemirror/state";
+import { EditorView } from "@codemirror/view";
+import { tags } from "@lezer/highlight";
+
+/** Structural theme: type scale, measure, selection, cursor, gutters. */
+export const loamEditorTheme = EditorView.theme({
+  "&": {
+    height: "100%",
+    color: "var(--loam-text-primary)",
+    backgroundColor: "var(--loam-bg-app)",
+    fontSize: "var(--loam-type-editor-size)",
+  },
+  ".cm-scroller": {
+    fontFamily: "var(--loam-font-mono)",
+    lineHeight: "var(--loam-type-editor-line)",
+    overflow: "auto",
+  },
+  ".cm-content": {
+    // §4.2 readable line length; the setting toggles the class in LOA-86.
+    maxWidth: "var(--loam-editor-measure)",
+    margin: "0 auto",
+    padding: "var(--loam-space-24) var(--loam-space-16)",
+    caretColor: "var(--loam-accent)",
+  },
+  "&.cm-editor.cm-focused": { outline: "none" },
+  ".cm-cursor, .cm-dropCursor": { borderLeftColor: "var(--loam-accent)" },
+  "&.cm-focused .cm-selectionBackground, .cm-selectionBackground, .cm-content ::selection": {
+    backgroundColor: "var(--loam-bg-selected)",
+  },
+  ".cm-activeLine": { backgroundColor: "var(--loam-bg-hover)" },
+  ".cm-gutters": {
+    backgroundColor: "transparent",
+    color: "var(--loam-text-tertiary)",
+    border: "none",
+  },
+  ".cm-activeLineGutter": { backgroundColor: "transparent" },
+  ".cm-selectionMatch": { backgroundColor: "var(--loam-bg-active)" },
+  ".cm-searchMatch": { backgroundColor: "var(--loam-highlight)" },
+  ".cm-searchMatch.cm-searchMatch-selected": {
+    outline: "1.5px solid var(--loam-accent)",
+  },
+  ".cm-placeholder": { color: "var(--loam-text-tertiary)" },
+});
+
+/** Markdown syntax colors — §4.2 tokens only. */
+export const loamHighlightStyle = HighlightStyle.define([
+  { tag: tags.heading1, color: "var(--loam-text-primary)", fontWeight: "650" },
+  { tag: tags.heading2, color: "var(--loam-text-primary)", fontWeight: "650" },
+  { tag: [tags.heading3, tags.heading4, tags.heading5, tags.heading6], fontWeight: "600" },
+  { tag: tags.strong, fontWeight: "650", color: "var(--loam-text-primary)" },
+  { tag: tags.emphasis, fontStyle: "italic" },
+  { tag: tags.strikethrough, textDecoration: "line-through" },
+  { tag: tags.link, color: "var(--loam-accent-text)" },
+  { tag: tags.url, color: "var(--loam-accent-text)" },
+  { tag: tags.monospace, color: "var(--loam-text-secondary)" },
+  { tag: tags.quote, color: "var(--loam-text-secondary)", fontStyle: "italic" },
+  { tag: tags.list, color: "var(--loam-text-secondary)" },
+  // Formatting marks stay quiet in Source; Live Preview (E10) hides them.
+  { tag: tags.processingInstruction, color: "var(--loam-text-tertiary)" },
+  { tag: tags.meta, color: "var(--loam-text-tertiary)" },
+  { tag: tags.contentSeparator, color: "var(--loam-border-strong)" },
+  { tag: tags.keyword, color: "var(--loam-accent-text)" },
+  { tag: tags.comment, color: "var(--loam-text-tertiary)", fontStyle: "italic" },
+  { tag: tags.string, color: "var(--loam-success)" },
+  { tag: tags.number, color: "var(--loam-warning)" },
+  { tag: tags.invalid, color: "var(--loam-danger)" },
+]);
+
+/** The full appearance bundle (theme + highlighting). */
+export function loamAppearance(): Extension {
+  return [loamEditorTheme, syntaxHighlighting(loamHighlightStyle)];
+}

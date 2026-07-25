@@ -219,19 +219,6 @@
   flex: none;
 }
 
-/* ── Note preview (stopgap until E09) ───────────────────────────────────── */
-.note-preview {
-  margin: 0;
-  padding: var(--loam-space-24);
-  max-width: var(--loam-editor-measure);
-  font-family: var(--loam-font-mono);
-  font-size: var(--loam-type-code-size);
-  line-height: var(--loam-type-editor-line);
-  color: var(--loam-text-primary);
-  white-space: pre-wrap;
-  overflow-wrap: anywhere;
-}
-
 /* Visually hidden, screen-reader visible. */
 .sr-only {
   position: absolute;
@@ -256,7 +243,7 @@
   /* Subtle active-pane marker along the top edge (§3.5). */
   box-shadow: inset 0 1.5px 0 var(--loam-accent-subtle);
 }
-.pane > .note-preview,
+.pane > .loam-editor,
 .pane > .shell__placeholder {
   flex: 1;
   overflow: auto;
@@ -476,4 +463,35 @@
   font-size: var(--loam-type-secondary-size);
   line-height: 1.5;
   white-space: pre-wrap;
+}
+
+/* ── Find/replace panel (LOA-74, §3.2) ──────────────────────────────────── */
+.find-panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--loam-space-6);
+  padding: var(--loam-space-8) var(--loam-space-12);
+  border-block-end: 1px solid var(--loam-border-subtle);
+  background: var(--loam-bg-panel);
+}
+.find-panel__row {
+  display: flex;
+  align-items: center;
+  gap: var(--loam-space-6);
+}
+.find-panel__input {
+  width: 220px;
+  flex: none;
+}
+.find-panel__count {
+  min-width: 76px;
+  color: var(--loam-text-tertiary);
+  font-size: var(--loam-type-secondary-size);
+  font-feature-settings: var(--loam-font-features-tnum);
+}
+.find-panel__error {
+  margin: 0;
+  color: var(--loam-danger);
+  font-size: var(--loam-type-secondary-size);
+  line-height: var(--loam-type-secondary-line);
 }

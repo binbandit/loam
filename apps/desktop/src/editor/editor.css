@@ -1,0 +1,7 @@
+/** Editor host (LOA-68). The CM6 theme carries the rest (editor/theme.ts). */
+
+.loam-editor {
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+}
