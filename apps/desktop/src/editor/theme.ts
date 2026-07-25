@@ -79,6 +79,44 @@ export const loamEditorTheme = EditorView.theme({
     padding: "0 var(--loam-space-4)",
     margin: "0 var(--loam-space-2)",
   },
+  // LOA-102 Live Preview: §4.2 editor heading roles. Sizes are em-relative
+  // so they scale with the editor's own type size.
+  ".cm-loam-h1": {
+    fontSize: "var(--loam-type-h1-size)",
+    fontWeight: "var(--loam-type-h1-weight)",
+    lineHeight: "1.3",
+  },
+  ".cm-loam-h2": {
+    fontSize: "var(--loam-type-h2-size)",
+    fontWeight: "var(--loam-type-h2-weight)",
+    lineHeight: "1.35",
+  },
+  ".cm-loam-h3": {
+    fontSize: "var(--loam-type-h3-size)",
+    fontWeight: "var(--loam-type-h3-weight)",
+  },
+  ".cm-loam-h4": {
+    fontSize: "var(--loam-type-h4-size)",
+    fontWeight: "var(--loam-type-h4-weight)",
+  },
+  // H5 and H6 share H4's metrics and step down in color instead (§4.2).
+  ".cm-loam-h5": {
+    fontSize: "var(--loam-type-h4-size)",
+    fontWeight: "var(--loam-type-h4-weight)",
+    color: "var(--loam-text-secondary)",
+  },
+  ".cm-loam-h6": {
+    fontSize: "var(--loam-type-h4-size)",
+    fontWeight: "var(--loam-type-h4-weight)",
+    color: "var(--loam-text-tertiary)",
+  },
+  // Inline code reads as a raised chip rather than just recolored text.
+  ".cm-loam-code": {
+    backgroundColor: "var(--loam-bg-active)",
+    borderRadius: "var(--loam-radius-input)",
+    padding: "0.05em 0.3em",
+    fontSize: "var(--loam-type-code-size)",
+  },
   ".cm-searchMatch": { backgroundColor: "var(--loam-highlight)" },
   ".cm-searchMatch.cm-searchMatch-selected": {
     outline: "1.5px solid var(--loam-accent)",

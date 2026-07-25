@@ -10,6 +10,8 @@
 import type { EditorState } from "@codemirror/state";
 import { EditorView, type ViewUpdate } from "@codemirror/view";
 import { useEffect, useRef } from "react";
+import { setLivePreviewFamilies } from "./preview/engine";
+import { CORE_FAMILIES } from "./preview/families";
 import { readOnlyExtension, type SessionRegistry } from "./sessions";
 import "./editor.css";
 
@@ -20,6 +22,8 @@ export interface EditorProps {
   doc: string;
   baseHash: string | null;
   readOnly?: boolean | undefined;
+  /** §3.2 Live Preview; false renders plain Source (LOA-102). */
+  livePreview?: boolean | undefined;
   /** Fires on document-changing updates only (LOA-69 wires save/dirty). */
   onDocChange?: ((content: string, state: EditorState) => void) | undefined;
   /** Fires on selection moves (status-bar cursor, LOA-84). */
@@ -32,6 +36,7 @@ export function Editor({
   doc,
   baseHash,
   readOnly = false,
+  livePreview = true,
   onDocChange,
   onSelectionChange,
 }: EditorProps) {
@@ -42,14 +47,20 @@ export function Editor({
   // editor; the mount effect reads the values current at mount time.
   const handlers = useRef({ onDocChange, onSelectionChange });
   handlers.current = { onDocChange, onSelectionChange };
-  const latest = useRef({ path, doc, baseHash, readOnly });
-  latest.current = { path, doc, baseHash, readOnly };
+  const latest = useRef({ path, doc, baseHash, readOnly, livePreview });
+  latest.current = { path, doc, baseHash, readOnly, livePreview };
 
   // Mount once. The view outlives every parent render.
   useEffect(() => {
     if (!host.current) return;
-    const { path: at, doc: source, baseHash: hash, readOnly: locked } = latest.current;
-    const session = registry.open(at, source, hash, { readOnly: locked });
+    const {
+      path: at,
+      doc: source,
+      baseHash: hash,
+      readOnly: locked,
+      livePreview: preview,
+    } = latest.current;
+    const session = registry.open(at, source, hash, { readOnly: locked, livePreview: preview });
     const instance = new EditorView({
       state: session.state,
       parent: host.current,
@@ -86,11 +97,11 @@ export function Editor({
       registry.capture(mountedPath.current, instance.state);
       registry.detach(mountedPath.current, instance);
     }
-    const session = registry.open(path, doc, baseHash, { readOnly });
+    const session = registry.open(path, doc, baseHash, { readOnly, livePreview });
     instance.setState(session.state);
     mountedPath.current = path;
     registry.attach(path, instance);
-  }, [registry, path, doc, baseHash, readOnly]);
+  }, [registry, path, doc, baseHash, readOnly, livePreview]);
 
   // Read-only toggles reconfigure in place — the document is untouched (AC3).
   useEffect(() => {
@@ -101,6 +112,14 @@ export function Editor({
       effects: session.compartments.readOnly.reconfigure(readOnlyExtension(readOnly)),
     });
   }, [registry, path, readOnly]);
+
+  // Mode switches swap the enabled families in place — same state, same
+  // history, and the document is never touched (LOA-95 AC1).
+  useEffect(() => {
+    const instance = view.current;
+    if (!instance) return;
+    setLivePreviewFamilies(instance, livePreview ? CORE_FAMILIES : []);
+  }, [livePreview, path]);
 
   return <div ref={host} className="loam-editor" data-testid="editor" data-path={path} />;
 }

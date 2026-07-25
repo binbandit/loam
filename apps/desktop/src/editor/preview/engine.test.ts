@@ -54,11 +54,13 @@ let counter = 0;
 function editor(doc = DOC, families: readonly SyntaxFamily[] = [emphasis, heading]) {
   const registry = new SessionRegistry();
   counter += 1;
-  const session = registry.open(`preview-${counter}.md`, doc, null);
+  // Start with no families so these tests drive the engine with their own
+  // fixtures rather than the shipped LOA-102 set.
+  const session = registry.open(`preview-${counter}.md`, doc, null, { livePreview: false });
   const view = new EditorView({ state: session.state });
   // Park the cursor at the end so line 1 is not "revealed" by default.
   view.dispatch({ selection: EditorSelection.cursor(view.state.doc.length) });
-  if (families.length > 0) setLivePreviewFamilies(view, families);
+  setLivePreviewFamilies(view, families);
   return view;
 }
 
