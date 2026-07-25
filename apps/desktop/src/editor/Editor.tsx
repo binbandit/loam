@@ -119,7 +119,9 @@ export function Editor({
     const instance = view.current;
     if (!instance) return;
     setLivePreviewFamilies(instance, livePreview ? CORE_FAMILIES : []);
-  }, [livePreview, path]);
+    // Only the mode matters: a note swapped in by the effect above already
+    // carries the right families in its own state.
+  }, [livePreview]);
 
   return <div ref={host} className="loam-editor" data-testid="editor" data-path={path} />;
 }
