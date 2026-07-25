@@ -44,24 +44,28 @@ test("H1–H6 render with the documented type roles (AC1)", async ({ page }) => 
       };
     }),
   );
-  expect(roles.every(Boolean)).toBe(true);
-  const [h1, h2, h3, h4, h5, h6] = roles as NonNullable<(typeof roles)[number]>[];
+  const measured = roles.filter((entry) => entry !== null);
+  expect(measured).toHaveLength(6);
+  const byLevel = new Map(measured.map((entry) => [entry.level, entry]));
+  const role = (level: number) => {
+    const entry = byLevel.get(level);
+    if (!entry) throw new Error(`no rendered H${level}`);
+    return entry;
+  };
 
   // §4.2: H1 1.55em/650 · H2 1.30em/650 · H3 1.15em/600 · H4–H6 1.0em/600.
   const base = await page.evaluate(() =>
     Number.parseFloat(getComputedStyle(document.querySelector(".cm-content") as Element).fontSize),
   );
-  expect(h1.size).toBeCloseTo(base * 1.55, 0);
-  expect(h2.size).toBeCloseTo(base * 1.3, 0);
-  expect(h3.size).toBeCloseTo(base * 1.15, 0);
-  expect(h4.size).toBeCloseTo(base, 0);
-  expect(h5.size).toBeCloseTo(base, 0);
-  expect(h6.size).toBeCloseTo(base, 0);
-  expect([h1.weight, h2.weight]).toEqual([650, 650]);
-  expect([h3.weight, h4.weight, h5.weight, h6.weight]).toEqual([600, 600, 600, 600]);
+  expect(role(1).size).toBeCloseTo(base * 1.55, 0);
+  expect(role(2).size).toBeCloseTo(base * 1.3, 0);
+  expect(role(3).size).toBeCloseTo(base * 1.15, 0);
+  for (const level of [4, 5, 6]) expect(role(level).size).toBeCloseTo(base, 0);
+  expect([role(1).weight, role(2).weight]).toEqual([650, 650]);
+  expect([3, 4, 5, 6].map((level) => role(level).weight)).toEqual([600, 600, 600, 600]);
   // H5 and H6 step down in color instead of size.
-  expect(h5.color).not.toBe(h4.color);
-  expect(h6.color).not.toBe(h5.color);
+  expect(role(5).color).not.toBe(role(4).color);
+  expect(role(6).color).not.toBe(role(5).color);
 
   // The marks themselves are gone from the rendered text.
   await expect(page.getByTestId("editor")).not.toContainText("#");
