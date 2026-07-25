@@ -26,6 +26,7 @@ import { editorAnnouncements } from "./announce";
 import { foldingKeymap, markdownFolding, selectionKeymap } from "./folding";
 import { formattingKeymap, pasteLink, smartPairs } from "./formatting";
 import { listKeymap } from "./lists";
+import { livePreview, livePreviewCompartment, MARKDOWN_FAMILIES } from "./preview/engine";
 import { highlightAllMatches } from "./search";
 import { loamAppearance } from "./theme";
 
@@ -103,6 +104,13 @@ export function extensionLayers(): ExtensionLayer[] {
       name: "announcements",
       description: "§4.6 live-region announcements (LOA-90)",
       extensions: [editorAnnouncements],
+    },
+    {
+      name: "preview",
+      description: "Live Preview decoration engine, per-family flags (LOA-95)",
+      // Compartmented so families toggle without recreating the state; with
+      // none registered this draws nothing and the editor is Source.
+      extensions: [livePreviewCompartment.of(livePreview(MARKDOWN_FAMILIES))],
     },
     {
       name: "keymap",
