@@ -4,7 +4,19 @@ import { gzipSync } from "node:zlib";
 
 // §5.9 startup discipline: the cold path must not include heavy feature modules.
 // Their loaders must be route-level code-split when they arrive (E17/E22/E23).
-const FORBIDDEN = [/katex/i, /mermaid/i, /shiki/i, /pixi/i, /d3-force/i, /xyflow/i, /\.canvas\b/i];
+// The canvas rule matches real 2D-canvas rendering, not the substring
+// ".canvas": CM6's Markdown support pulls the HTML/CSS keyword tables, which
+// list `canvas` among the element names (LOA-90).
+const FORBIDDEN = [
+  /katex/i,
+  /mermaid/i,
+  /shiki/i,
+  /pixi/i,
+  /d3-force/i,
+  /xyflow/i,
+  /HTMLCanvasElement/,
+  /getContext\(\s*["'`]2d/,
+];
 
 const root = resolve(import.meta.dirname, "..");
 const assetsDir = join(root, "apps/desktop/dist/assets");

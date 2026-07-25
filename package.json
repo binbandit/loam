@@ -23,6 +23,8 @@
     "toolchain:check": "node scripts/check-toolchain.mjs",
     "test:e2e": "pnpm --filter @loam-app/desktop test:e2e",
     "stories": "pnpm --filter @loam-app/ui exec ladle serve",
+    "editor:bench": "node scripts/editor-bench.mjs",
+    "editor:bench:check": "node scripts/editor-bench.mjs --check",
     "visual:check": "node scripts/visual-regression.mjs --self-test",
     "visual:update": "node scripts/visual-regression.mjs --update",
     "visual:determinism": "node scripts/visual-regression.mjs --determinism",

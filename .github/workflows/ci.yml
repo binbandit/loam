@@ -299,12 +299,26 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-workspace
       - uses: ./.github/actions/setup-native
       # Switcher SLO + regression gates (LOA-93, §5.9): p95 first-batch,
       # total, and empty-query latencies on the bench-10k record set, gated
       # against absolute SLOs and baselines/switcher.json × 1.10.
       - name: Switcher bench gates (bench-10k)
         run: cargo run --release -p loam-bench -- switcher --check
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-perf-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
+          restore-keys: playwright-perf-${{ runner.os }}-
+      - name: Install Playwright browser
+        run: pnpm --filter @loam-app/desktop exec playwright install --with-deps chromium
+      # Editor keystroke gates (LOA-90, §5.9): p95 per-keystroke cost in a
+      # 10k-word document, against the 16 ms frame budget and
+      # apps/desktop/baselines/editor.json × 1.10.
+      - name: Editor bench gates (10k-word document)
+        run: pnpm editor:bench:check
 
 # Unsigned development artifacts (LOA-11). No signing secrets exist in this
   # workflow at all; publication is additionally gated to trusted (same-repo) runs.
