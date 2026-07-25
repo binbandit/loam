@@ -5,9 +5,9 @@
  * top accent border.
  */
 
-import type { VaultInfo } from "@loam-app/ipc-client";
+import type { NoteMeta, VaultInfo } from "@loam-app/ipc-client";
 import { SplitPane } from "@loam-app/ui";
-import { type DragEvent, useState } from "react";
+import { type DragEvent, useCallback, useState } from "react";
 import type { ConflictsStore } from "../stores/conflicts";
 import type { FindStore } from "../stores/find";
 import {
@@ -18,6 +18,7 @@ import {
 } from "../stores/panes";
 import type { SavesStore } from "../stores/saves";
 import { ConflictBanner } from "./ConflictBanner";
+import { LargeNoteNotice } from "./LargeNoteNotice";
 import { NoteView } from "./NoteView";
 import { TabBar } from "./TabBar";
 import "./shell.css";
@@ -56,6 +57,17 @@ export function PaneView({
     activeLeafTabPath ? (state.reloadGeneration[activeLeafTabPath] ?? 0) : 0,
   );
   const [edge, setEdge] = useState<SplitDirection | null>(null);
+  // Byte sizes for the §5.6 notice; the policy itself lives on the tab.
+  const [sizes, setSizes] = useState<Record<string, number>>({});
+  const handleMeta = useCallback(
+    (path: string, meta: NoteMeta) => {
+      setSizes((current) =>
+        current[path] === meta.size ? current : { ...current, [path]: meta.size },
+      );
+      panesStore.getState().setSizePolicy(path, meta.sizePolicy);
+    },
+    [panesStore],
+  );
 
   if (node.kind === "split") {
     return (
@@ -138,6 +150,13 @@ export function PaneView({
       {activeTab?.path ? (
         <ConflictBanner conflictsStore={conflictsStore} vaultId={vault.id} path={activeTab.path} />
       ) : null}
+      {activeTab ? (
+        <LargeNoteNotice
+          tab={activeTab}
+          size={sizes[activeTab.path] ?? 0}
+          onDismiss={() => panesStore.getState().dismissSizeNotice(activeTab.path)}
+        />
+      ) : null}
       {activeTab?.path ? (
         <NoteView
           key={activeTab.path}
@@ -145,6 +164,7 @@ export function PaneView({
           path={activeTab.path}
           onContent={node.id === activePaneId ? onActiveContent : undefined}
           onCursor={node.id === activePaneId ? onActiveCursor : undefined}
+          onMeta={handleMeta}
           reloadGeneration={reloadGeneration}
           savesStore={savesStore}
           findStore={findStore}

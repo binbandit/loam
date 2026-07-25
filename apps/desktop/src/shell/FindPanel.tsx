@@ -9,6 +9,7 @@ import type { Command } from "@codemirror/view";
 import { IconButton, Input, Segment, SegmentedControl } from "@loam-app/ui";
 import { ChevronDown, ChevronUp, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { announce, describeMatches } from "../editor/announce";
 import {
   applyQuery,
   countMatches,
@@ -80,7 +81,11 @@ export function FindPanel({ registry, path, withReplace, onClose, revision }: Fi
   const run = (command: Command): void => {
     if (!view || error) return;
     command(view);
-    setCount(countMatches(view.state));
+    const next = countMatches(view.state);
+    setCount(next);
+    // §4.6: the editor's own live region carries the result, so it is
+    // announced even when focus moves back into the document (LOA-90).
+    announce(view, describeMatches(next.current, next.total));
   };
 
   const close = (): void => {

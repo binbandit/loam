@@ -3,6 +3,8 @@
  * (LOA-76) — every pane hosts its own strip of these.
  */
 
+import type { SizePolicy } from "@loam-app/ipc-client";
+
 export type ViewMode = "source" | "reading";
 
 export interface Tab {
@@ -13,4 +15,8 @@ export interface Tab {
   viewMode: ViewMode;
   dirty: boolean;
   missing: boolean;
+  /** §5.6 classification from the last read; pins the mode (LOA-88). */
+  sizePolicy: SizePolicy;
+  /** Whether the large-note notice has been dismissed for this tab. */
+  noticeDismissed: boolean;
 }

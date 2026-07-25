@@ -8,6 +8,7 @@ import { ThemeProvider } from "@loam-app/ui";
 import "@loam-app/ui/fonts.css";
 import "@loam-app/ui/tokens.css";
 import { useEffect, useState } from "react";
+import { editorBench } from "./editor/bench";
 import { sessions } from "./editor/sessions";
 import { ipc } from "./ipc";
 import { AppShell } from "./shell/AppShell";
@@ -26,9 +27,15 @@ import { createVaultStore, selectVault, selectVaultStatus } from "./stores/vault
 import { createWorkspaceStore } from "./stores/workspace";
 import { createWorkspaceCoordinator } from "./stores/workspace-file";
 
-// Browser-only test seam: e2e drives external changes/conflicts through it.
+// Browser-only test seams: e2e drives external changes/conflicts through the
+// mock, and the §5.9 editor benchmark drives the real extension stack.
 if (ipc.mock && typeof window !== "undefined") {
-  (window as Window & { __LOAM_MOCK__?: typeof ipc.mock }).__LOAM_MOCK__ = ipc.mock;
+  const seam = window as Window & {
+    __LOAM_MOCK__?: typeof ipc.mock;
+    __LOAM_BENCH__?: typeof editorBench;
+  };
+  seam.__LOAM_MOCK__ = ipc.mock;
+  seam.__LOAM_BENCH__ = editorBench;
 }
 
 const vaultStore = createVaultStore(ipc);

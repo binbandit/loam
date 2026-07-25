@@ -22,6 +22,8 @@ describe("tree building", () => {
     expect(nodes.map((node) => node.label)).toEqual([
       "Projects",
       "Ideas",
+      // The demo vault carries an oversized note for the §5.6 policy (LOA-88).
+      "Large note",
       "Reading list",
       "Welcome to Loam",
     ]);

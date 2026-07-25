@@ -11,9 +11,11 @@
  * never touched by layout state (AC5).
  */
 
+import type { SizePolicy } from "@loam-app/ipc-client";
 import { create } from "zustand";
+import { effectiveViewMode } from "../editor/policy";
 import { deviceStorage } from "./device-storage";
-import type { Tab } from "./tabs";
+import type { Tab, ViewMode } from "./tabs";
 
 export type SplitDirection = "row" | "column";
 
@@ -183,7 +185,37 @@ function makeTab(path: string): Tab {
     viewMode: "source",
     dirty: false,
     missing: false,
+    // Until the note is read it is assumed ordinary; NoteView reports the
+    // real classification (LOA-88).
+    sizePolicy: "normal",
+    noticeDismissed: false,
   };
+}
+
+/**
+ * Applies `patch` to every tab showing `path`, in every pane. Unchanged
+ * nodes keep their identity: a patch that changes nothing must not produce a
+ * new tree, or selectors re-render and callers that patch during a render
+ * (NoteView reporting a size policy) loop forever.
+ */
+function patchTabs(node: PaneNode, path: string, patch: (tab: Tab) => Partial<Tab>): PaneNode {
+  if (node.kind === "pane") {
+    let changed = false;
+    const tabs = node.tabs.map((tab) => {
+      if (tab.path !== path) return tab;
+      const fields = patch(tab);
+      if (Object.entries(fields).every(([key, value]) => tab[key as keyof Tab] === value)) {
+        return tab;
+      }
+      changed = true;
+      return { ...tab, ...fields };
+    });
+    return changed ? { ...node, tabs } : node;
+  }
+  const first = patchTabs(node.first, path, patch);
+  const second = patchTabs(node.second, path, patch);
+  if (first === node.first && second === node.second) return node;
+  return { ...node, first, second };
 }
 
 /** Rebuilds the tree, dropping notes that no longer exist (AC5). */
@@ -294,6 +326,11 @@ export interface PanesState {
   setSplitSize(splitId: string, size: number): void;
   markDirty(path: string, dirty: boolean): void;
   markMissing(path: string, missing: boolean): void;
+  /** Records the §5.6 classification from a read and pins the mode (LOA-88). */
+  setSizePolicy(path: string, policy: SizePolicy): void;
+  /** Requests a view mode; oversized notes stay in Source regardless. */
+  setViewMode(path: string, mode: ViewMode): void;
+  dismissSizeNotice(path: string): void;
   /** ⌘[ / ⌘] per-pane navigation (LOA-78). */
   navigateBack(): void;
   navigateForward(): void;
@@ -556,28 +593,33 @@ export function createPanesStore() {
       },
 
       markDirty(path, dirty) {
-        const update = (node: PaneNode): PaneNode => {
-          if (node.kind === "pane") {
-            return {
-              ...node,
-              tabs: node.tabs.map((tab) => (tab.path === path ? { ...tab, dirty } : tab)),
-            };
-          }
-          return { ...node, first: update(node.first), second: update(node.second) };
-        };
-        set({ root: update(get().root) });
+        set({ root: patchTabs(get().root, path, () => ({ dirty })) });
       },
       markMissing(path, missing) {
-        const update = (node: PaneNode): PaneNode => {
-          if (node.kind === "pane") {
-            return {
-              ...node,
-              tabs: node.tabs.map((tab) => (tab.path === path ? { ...tab, missing } : tab)),
-            };
-          }
-          return { ...node, first: update(node.first), second: update(node.second) };
-        };
-        set({ root: update(get().root) });
+        set({ root: patchTabs(get().root, path, () => ({ missing })) });
+      },
+
+      setSizePolicy(path, sizePolicy) {
+        // The classification also pins the mode: an oversized note can never
+        // sit in a rendered mode, whatever it was showing before (LOA-88).
+        set({
+          root: patchTabs(get().root, path, (tab) => ({
+            sizePolicy,
+            viewMode: effectiveViewMode(tab.viewMode, sizePolicy),
+          })),
+        });
+      },
+
+      setViewMode(path, mode) {
+        set({
+          root: patchTabs(get().root, path, (tab) => ({
+            viewMode: effectiveViewMode(mode, tab.sizePolicy),
+          })),
+        });
+      },
+
+      dismissSizeNotice(path) {
+        set({ root: patchTabs(get().root, path, () => ({ noticeDismissed: true })) });
       },
     };
   });

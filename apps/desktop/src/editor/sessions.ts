@@ -22,6 +22,7 @@ import {
   keymap,
   rectangularSelection,
 } from "@codemirror/view";
+import { editorAnnouncements } from "./announce";
 import { foldingKeymap, markdownFolding, selectionKeymap } from "./folding";
 import { formattingKeymap, pasteLink, smartPairs } from "./formatting";
 import { listKeymap } from "./lists";
@@ -48,38 +49,83 @@ export interface SessionOptions {
   extensions?: Extension[];
 }
 
+/** One named slice of the Source-mode stack; the perf profile costs these. */
+export interface ExtensionLayer {
+  name: string;
+  description: string;
+  extensions: Extension[];
+}
+
+/**
+ * The Source-mode stack, in application order, split into the layers the
+ * LOA-90 profile reports. This list is the single source of truth: the
+ * benchmark measures the real stack, never a copy that can drift.
+ */
+export function extensionLayers(): ExtensionLayer[] {
+  return [
+    {
+      name: "core",
+      description: "history, selection drawing, active line, bracket matching, wrapping",
+      extensions: [
+        history(),
+        drawSelection(),
+        dropCursor(),
+        rectangularSelection(),
+        highlightActiveLine(),
+        indentOnInput(),
+        bracketMatching(),
+        EditorState.allowMultipleSelections.of(true),
+        EditorView.lineWrapping,
+      ],
+    },
+    {
+      name: "search",
+      // Matching only — Loam renders its own panel (LOA-74, §4.3).
+      description: "CM6 search state, highlight-all, selection matches",
+      extensions: [search({ literal: true }), highlightAllMatches, highlightSelectionMatches()],
+    },
+    {
+      name: "markdown",
+      description: "Lezer Markdown parsing and highlighting",
+      extensions: [markdown()],
+    },
+    {
+      name: "editing",
+      description: "smart pairs and paste-as-link (LOA-79)",
+      extensions: [smartPairs(), pasteLink()],
+    },
+    {
+      name: "folding",
+      description: "heading/list folds, fold gutter, ⌘-click multicursor (LOA-85)",
+      extensions: [markdownFolding()],
+    },
+    {
+      name: "announcements",
+      description: "§4.6 live-region announcements (LOA-90)",
+      extensions: [editorAnnouncements],
+    },
+    {
+      name: "keymap",
+      // List bindings come first: Enter/Tab fall through to the defaults
+      // when the cursor is not in a list.
+      description: "list, formatting, selection, fold, default, and history bindings",
+      extensions: [
+        keymap.of([
+          ...listKeymap,
+          ...formattingKeymap,
+          ...selectionKeymap,
+          ...foldingKeymap,
+          ...defaultKeymap,
+          ...historyKeymap,
+        ]),
+      ],
+    },
+  ];
+}
+
 /** Base Source-mode extensions (§3.2 baseline; Live Preview is E10). */
 export function sourceExtensions(): Extension[] {
-  return [
-    history(),
-    drawSelection(),
-    dropCursor(),
-    rectangularSelection(),
-    highlightActiveLine(),
-    indentOnInput(),
-    bracketMatching(),
-    EditorState.allowMultipleSelections.of(true),
-    EditorView.lineWrapping,
-    // Matching only — Loam renders its own panel (LOA-74, §4.3).
-    search({ literal: true }),
-    highlightAllMatches,
-    highlightSelectionMatches(),
-    markdown(),
-    smartPairs(),
-    pasteLink(),
-    // Heading/list folds, hover-only chevrons, and ⌘-click multicursor.
-    markdownFolding(),
-    // List bindings come first: Enter/Tab fall through to the defaults
-    // when the cursor is not in a list.
-    keymap.of([
-      ...listKeymap,
-      ...formattingKeymap,
-      ...selectionKeymap,
-      ...foldingKeymap,
-      ...defaultKeymap,
-      ...historyKeymap,
-    ]),
-  ];
+  return extensionLayers().flatMap((layer) => layer.extensions);
 }
 
 export class SessionRegistry {

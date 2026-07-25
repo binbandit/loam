@@ -3,6 +3,15 @@
  * content stays the brightest region; every color is a §4.2 token.
  */
 
+/* The UA's default 8 px body margin pushed the whole 100vh shell down, so the
+ * status bar sat below the fold at every window size (LOA-90). */
+html,
+body,
+#root {
+  margin: 0;
+  height: 100%;
+}
+
 .shell {
   display: flex;
   flex-direction: column;
@@ -399,6 +408,23 @@
 .settings__slider {
   width: 200px;
   flex: none;
+}
+
+/* ── Large-note notice (LOA-88, §5.6) ───────────────────────────────────── */
+.size-notice {
+  display: flex;
+  align-items: center;
+  gap: var(--loam-space-8);
+  padding: var(--loam-space-6) var(--loam-space-12);
+  border-block-end: 1px solid var(--loam-border);
+  background: var(--loam-bg-raised);
+  box-shadow: inset 3px 0 0 var(--loam-accent);
+}
+.size-notice__text {
+  flex: 1;
+  color: var(--loam-text-secondary);
+  font-size: var(--loam-type-secondary-size);
+  line-height: var(--loam-type-secondary-line);
 }
 
 /* ── Conflict banner + merge surface (LOA-89, §5.6) ─────────────────────── */

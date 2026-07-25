@@ -5,10 +5,11 @@
  * Save and dirty tracking arrive with LOA-69.
  */
 
-import type { NoteDoc, VaultInfo } from "@loam-app/ipc-client";
+import type { NoteDoc, NoteMeta, VaultInfo } from "@loam-app/ipc-client";
 import { LoamIpcError } from "@loam-app/ipc-client";
 import { useEffect, useState } from "react";
 import { Editor } from "../editor/Editor";
+import { isEditable } from "../editor/policy";
 import { sessions } from "../editor/sessions";
 import { ipc } from "../ipc";
 import { describeError } from "../stores/files";
@@ -26,6 +27,8 @@ export interface NoteViewProps {
   reloadGeneration?: number | undefined;
   /** Active-pane cursor reporting (status bar, LOA-84). */
   onCursor?: ((line: number, column: number) => void) | undefined;
+  /** Reports the §5.6 size classification upward (LOA-88). */
+  onMeta?: ((path: string, meta: NoteMeta) => void) | undefined;
   savesStore: SavesStore;
   findStore: FindStore;
 }
@@ -36,6 +39,7 @@ export function NoteView({
   onContent,
   reloadGeneration,
   onCursor,
+  onMeta,
   savesStore,
   findStore,
 }: NoteViewProps) {
@@ -63,6 +67,10 @@ export function NoteView({
         setDoc(fresh);
         setError(null);
         onContent?.(fresh.content);
+        onMeta?.(path, fresh.meta);
+        // A note past 20 MB is never read into memory (§5.6), so there is no
+        // buffer to save — registering one would let a write truncate it.
+        if (!isEditable(fresh.meta)) return;
         // Base hash for every subsequent write (§5.4).
         savesStore.getState().register(vault.id, path, fresh.content ?? "", fresh.hash);
       } catch (caught) {
@@ -72,7 +80,7 @@ export function NoteView({
     return () => {
       cancelled = true;
     };
-  }, [vault.id, path, onContent, reloadGeneration, savesStore]);
+  }, [vault.id, path, onContent, onMeta, reloadGeneration, savesStore]);
 
   if (error) {
     return (
@@ -102,7 +110,8 @@ export function NoteView({
         path={path}
         doc={doc.content ?? ""}
         baseHash={doc.hash}
-        readOnly={doc.meta.readOnly}
+        // AC4: editable unless the file is read-only — or too large to read.
+        readOnly={!isEditable(doc.meta)}
         onDocChange={(content) => {
           savesStore.getState().edited(path, content);
           findStore.getState().bumpRevision();
