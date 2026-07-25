@@ -5,7 +5,7 @@
 
 use std::collections::HashMap;
 use std::path::Path;
-use std::sync::atomic::{AtomicU64, Ordering};
+use std::sync::atomic::{AtomicBool, AtomicU64, Ordering};
 use std::sync::{Arc, Mutex};
 
 use loam_core::ipc::{
@@ -22,8 +22,18 @@ struct Bridge {
     window_label: String,
     seq: Arc<AtomicU64>,
     registry: AppWriteRegistry,
+    /// Cleared on drop. A debouncer thread can be mid-batch when the bridge
+    /// goes away, and dropping the watcher does not retract work already in
+    /// flight — this is what makes disposal immediate.
+    alive: Arc<AtomicBool>,
     // Dropping this stops the native watcher — disposal IS the unsubscribe.
     _watcher: vault::VaultWatcher,
+}
+
+impl Drop for Bridge {
+    fn drop(&mut self) {
+        self.alive.store(false, Ordering::SeqCst);
+    }
 }
 
 /// Managed state: bridges keyed by window label (one vault per window).
@@ -60,18 +70,35 @@ pub fn start_bridge<R: Runtime>(
     canonical_root: &Path,
     window_label: &str,
 ) -> Result<(), LoamError> {
+    // Dispose the previous bridge for this window *first*. Two watchers on
+    // one root would both see the next write, and the old one — with its own
+    // app-write registry — would classify it as external and emit a
+    // duplicate.
+    drop(
+        bridges
+            .inner
+            .lock()
+            .expect("bridges lock")
+            .remove(window_label),
+    );
+
     let registry = AppWriteRegistry::new();
     let seq = Arc::new(AtomicU64::new(0));
+    let alive = Arc::new(AtomicBool::new(true));
 
     let emit_app = app.clone();
     let emit_seq = seq.clone();
     let emit_vault = vault_id.to_string();
     let emit_label = window_label.to_string();
+    let emit_alive = alive.clone();
     let watcher = vault::start_watching(
         canonical_root,
         Backend::Native,
         registry.clone(),
         move |events| {
+            if !emit_alive.load(Ordering::SeqCst) {
+                return;
+            }
             for event in events {
                 emit_enveloped(
                     &emit_app,
@@ -93,10 +120,10 @@ pub fn start_bridge<R: Runtime>(
         window_label: window_label.to_string(),
         seq,
         registry,
+        alive,
         _watcher: watcher,
     };
-    // Insert replaces any previous bridge for this window; the old Bridge
-    // drops here, stopping its watcher (AC2).
+    // The previous bridge is already gone; this is a plain insert (AC2).
     bridges
         .inner
         .lock()
@@ -112,8 +139,9 @@ pub fn stop_bridge_for_window(bridges: &EventBridges, window_label: &str) -> Opt
         .inner
         .lock()
         .expect("bridges lock")
+        // Cloned, not moved: `Bridge` has a `Drop` that retires it.
         .remove(window_label)
-        .map(|bridge| bridge.vault_id)
+        .map(|bridge| bridge.vault_id.clone())
 }
 
 /// Number of live bridges (tests/diagnostics).
