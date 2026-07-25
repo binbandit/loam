@@ -8,6 +8,7 @@ import { ThemeProvider } from "@loam-app/ui";
 import "@loam-app/ui/fonts.css";
 import "@loam-app/ui/tokens.css";
 import { useEffect, useState } from "react";
+import { sessions } from "./editor/sessions";
 import { ipc } from "./ipc";
 import { AppShell } from "./shell/AppShell";
 import { FirstRun } from "./shell/FirstRun";
@@ -15,8 +16,10 @@ import { backlinksView } from "./shell/RightPanel";
 import { createConflictsStore } from "./stores/conflicts";
 import { setDeviceStorage } from "./stores/device-storage";
 import { createFilesStore } from "./stores/files";
+import { createFindStore } from "./stores/find";
 import { createPanelStore } from "./stores/panel";
 import { createPanesStore } from "./stores/panes";
+import { createSavesStore } from "./stores/saves";
 import { createSettingsStore } from "./stores/settings";
 import { createStatusStore } from "./stores/status";
 import { createVaultStore, selectVault, selectVaultStatus } from "./stores/vault";
@@ -36,6 +39,12 @@ const panelStore = createPanelStore([backlinksView]);
 const statusStore = createStatusStore();
 const settingsStore = createSettingsStore(ipc);
 const conflictsStore = createConflictsStore();
+const findStore = createFindStore();
+const savesStore = createSavesStore(ipc, {
+  // Dirty state drives tab indicators (LOA-75) and the §5.6 conflict path.
+  onDirtyChange: (path, dirty) => panesStore.getState().markDirty(path, dirty),
+  onSaved: (path, hash) => sessions.setBaseHash(path, hash),
+});
 const workspaceCoordinator = createWorkspaceCoordinator(ipc);
 
 export function App() {
@@ -89,6 +98,8 @@ export function App() {
             statusStore={statusStore}
             settingsStore={settingsStore}
             conflictsStore={conflictsStore}
+            savesStore={savesStore}
+            findStore={findStore}
           />
         ) : (
           <FirstRun vault={{ openFromPicker, openPath, createNew, error, status }} />

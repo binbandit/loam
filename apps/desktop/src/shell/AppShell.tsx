@@ -11,8 +11,10 @@ import { useEffect, useState } from "react";
 import { ipc } from "../ipc";
 import type { ConflictsStore } from "../stores/conflicts";
 import type { FilesStore } from "../stores/files";
+import type { FindStore } from "../stores/find";
 import { type PanelStore, selectPanelCollapsed } from "../stores/panel";
 import { type PanesStore, selectGlobalActiveTab, selectRoot } from "../stores/panes";
+import type { SavesStore } from "../stores/saves";
 import type { SettingsStore } from "../stores/settings";
 import type { StatusStore } from "../stores/status";
 import { selectLeftSidebar, type WorkspaceStore } from "../stores/workspace";
@@ -35,6 +37,8 @@ export interface AppShellProps {
   statusStore: StatusStore;
   settingsStore: SettingsStore;
   conflictsStore: ConflictsStore;
+  savesStore: SavesStore;
+  findStore: FindStore;
 }
 
 export function AppShell({
@@ -46,6 +50,8 @@ export function AppShell({
   statusStore,
   settingsStore,
   conflictsStore,
+  savesStore,
+  findStore,
 }: AppShellProps) {
   const leftSidebar = workspaceStore(selectLeftSidebar);
   const setLeftSidebarWidth = workspaceStore((state) => state.setLeftSidebarWidth);
@@ -124,6 +130,22 @@ export function AppShell({
         panelStore.getState().toggle();
         return;
       }
+      // ⌘F find / ⌘⌥F replace in the active note (LOA-74).
+      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "f") {
+        const active = selectGlobalActiveTab(panesStore.getState());
+        if (active?.path) {
+          event.preventDefault();
+          findStore.getState().open(active.path, event.altKey);
+        }
+        return;
+      }
+      // ⌘S saves the active note now, bypassing autosave (LOA-69).
+      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "s") {
+        event.preventDefault();
+        const active = selectGlobalActiveTab(panesStore.getState());
+        if (active?.path) void savesStore.getState().saveNow(active.path);
+        return;
+      }
       // ⌘, opens settings (LOA-86); Escape closes via the modal itself.
       if ((event.metaKey || event.ctrlKey) && event.key === ",") {
         event.preventDefault();
@@ -141,7 +163,7 @@ export function AppShell({
     };
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [panesStore, filesStore, panelStore]);
+  }, [panesStore, filesStore, panelStore, savesStore, findStore]);
 
   const workspace = (
     <main className="shell__workspace" data-testid="workspace" tabIndex={-1}>
@@ -150,7 +172,10 @@ export function AppShell({
         vault={vault}
         panesStore={panesStore}
         onActiveContent={(content) => statusStore.getState().setNoteContent(content)}
+        onActiveCursor={(line, ch) => statusStore.getState().setCursor({ line, ch })}
         conflictsStore={conflictsStore}
+        savesStore={savesStore}
+        findStore={findStore}
       />
       <ConfirmDialog
         open={pendingClose !== null}

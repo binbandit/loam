@@ -8,8 +8,10 @@ import { describe, expect, it } from "vitest";
 import { App } from "../App";
 import { createConflictsStore } from "../stores/conflicts";
 import { createFilesStore } from "../stores/files";
+import { createFindStore } from "../stores/find";
 import { createPanelStore } from "../stores/panel";
 import { createPanesStore } from "../stores/panes";
+import { createSavesStore } from "../stores/saves";
 import { createSettingsStore } from "../stores/settings";
 import { createStatusStore } from "../stores/status";
 import { createVaultStore } from "../stores/vault";
@@ -72,6 +74,8 @@ describe("shell regions", () => {
           statusStore={createStatusStore()}
           settingsStore={createSettingsStore(createMockTransport())}
           conflictsStore={createConflictsStore()}
+          savesStore={createSavesStore(createMockTransport())}
+          findStore={createFindStore()}
         />
       </ThemeProvider>,
     );
@@ -98,6 +102,8 @@ describe("shell regions", () => {
           statusStore={createStatusStore()}
           settingsStore={createSettingsStore(createMockTransport())}
           conflictsStore={createConflictsStore()}
+          savesStore={createSavesStore(createMockTransport())}
+          findStore={createFindStore()}
         />
       </ThemeProvider>,
     );

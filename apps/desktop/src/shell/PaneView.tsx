@@ -9,14 +9,16 @@ import type { VaultInfo } from "@loam-app/ipc-client";
 import { SplitPane } from "@loam-app/ui";
 import { type DragEvent, useState } from "react";
 import type { ConflictsStore } from "../stores/conflicts";
+import type { FindStore } from "../stores/find";
 import {
   type PaneNode,
   type PanesStore,
   type SplitDirection,
   selectActivePaneId,
 } from "../stores/panes";
+import type { SavesStore } from "../stores/saves";
 import { ConflictBanner } from "./ConflictBanner";
-import { NotePreview } from "./NotePreview";
+import { NoteView } from "./NoteView";
 import { TabBar } from "./TabBar";
 import "./shell.css";
 
@@ -28,7 +30,11 @@ export interface PaneViewProps {
   panesStore: PanesStore;
   /** Active-pane note content sink (status counts, LOA-84). */
   onActiveContent?: ((content: string | null) => void) | undefined;
+  /** Active-pane cursor sink (status bar, LOA-84). */
+  onActiveCursor?: ((line: number, column: number) => void) | undefined;
   conflictsStore: ConflictsStore;
+  savesStore: SavesStore;
+  findStore: FindStore;
 }
 
 export function PaneView({
@@ -36,7 +42,10 @@ export function PaneView({
   vault,
   panesStore,
   onActiveContent,
+  onActiveCursor,
   conflictsStore,
+  savesStore,
+  findStore,
 }: PaneViewProps) {
   const activePaneId = panesStore(selectActivePaneId);
   const activeLeafTabPath =
@@ -65,7 +74,10 @@ export function PaneView({
             vault={vault}
             panesStore={panesStore}
             onActiveContent={onActiveContent}
+            onActiveCursor={onActiveCursor}
             conflictsStore={conflictsStore}
+            savesStore={savesStore}
+            findStore={findStore}
           />,
           <PaneView
             key={node.second.id}
@@ -73,7 +85,10 @@ export function PaneView({
             vault={vault}
             panesStore={panesStore}
             onActiveContent={onActiveContent}
+            onActiveCursor={onActiveCursor}
             conflictsStore={conflictsStore}
+            savesStore={savesStore}
+            findStore={findStore}
           />,
         ]}
       </SplitPane>
@@ -124,12 +139,15 @@ export function PaneView({
         <ConflictBanner conflictsStore={conflictsStore} vaultId={vault.id} path={activeTab.path} />
       ) : null}
       {activeTab?.path ? (
-        <NotePreview
+        <NoteView
           key={activeTab.path}
           vault={vault}
           path={activeTab.path}
           onContent={node.id === activePaneId ? onActiveContent : undefined}
+          onCursor={node.id === activePaneId ? onActiveCursor : undefined}
           reloadGeneration={reloadGeneration}
+          savesStore={savesStore}
+          findStore={findStore}
         />
       ) : (
         <p className="shell__placeholder">No note open. The editor arrives with E09.</p>
