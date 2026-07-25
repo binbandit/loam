@@ -13,10 +13,10 @@ and vsync are outside the number.
 
 | Metric | ms |
 | --- | --- |
-| mean | 0.430 |
-| p50 | 0.400 |
-| p95 | 0.600 |
-| max | 2.200 |
+| mean | 0.323 |
+| p50 | 0.300 |
+| p95 | 0.500 |
+| max | 2.100 |
 | samples | 300 |
 
 Budget: **p95 ≤ 16 ms** (one 60 Hz frame).
@@ -30,10 +30,11 @@ so anything within noise of zero reads as ~0.000.
 
 | Layer | Contents | Cumulative mean (ms) | Marginal mean (ms) | Cumulative p95 (ms) |
 | --- | --- | --- | --- | --- |
-| `core` | history, selection drawing, active line, bracket matching, wrapping | 0.156 | 0.156 | 0.300 |
-| `search` | CM6 search state, highlight-all, selection matches | 0.149 | -0.007 | 0.300 |
-| `markdown` | Lezer Markdown parsing and highlighting | 0.289 | 0.140 | 0.400 |
-| `editing` | smart pairs and paste-as-link (LOA-79) | 0.252 | -0.037 | 0.400 |
-| `folding` | heading/list folds, fold gutter, ⌘-click multicursor (LOA-85) | 0.302 | 0.050 | 0.400 |
-| `announcements` | §4.6 live-region announcements (LOA-90) | 0.290 | -0.012 | 0.400 |
-| `keymap` | list, formatting, selection, fold, default, and history bindings | 0.258 | -0.032 | 0.400 |
+| `core` | history, selection drawing, active line, bracket matching, wrapping | 0.109 | 0.109 | 0.200 |
+| `search` | CM6 search state, highlight-all, selection matches | 0.128 | 0.019 | 0.200 |
+| `markdown` | Lezer Markdown parsing and highlighting | 0.223 | 0.095 | 0.300 |
+| `editing` | smart pairs and paste-as-link (LOA-79) | 0.181 | -0.042 | 0.300 |
+| `folding` | heading/list folds, fold gutter, ⌘-click multicursor (LOA-85) | 0.209 | 0.028 | 0.300 |
+| `announcements` | §4.6 live-region announcements (LOA-90) | 0.208 | -0.001 | 0.300 |
+| `preview` | Live Preview decoration engine, per-family flags (LOA-95) | 0.214 | 0.006 | 0.300 |
+| `keymap` | list, formatting, selection, fold, default, and history bindings | 0.196 | -0.018 | 0.300 |
