@@ -10,7 +10,7 @@
  */
 
 import { defaultKeymap, history, historyKeymap } from "@codemirror/commands";
-import { markdown } from "@codemirror/lang-markdown";
+import { markdown, markdownLanguage } from "@codemirror/lang-markdown";
 import { bracketMatching, indentOnInput } from "@codemirror/language";
 import { highlightSelectionMatches, search } from "@codemirror/search";
 import { Compartment, EditorState, type Extension } from "@codemirror/state";
@@ -26,7 +26,8 @@ import { editorAnnouncements } from "./announce";
 import { foldingKeymap, markdownFolding, selectionKeymap } from "./folding";
 import { formattingKeymap, pasteLink, smartPairs } from "./formatting";
 import { listKeymap } from "./lists";
-import { livePreview, livePreviewCompartment, MARKDOWN_FAMILIES } from "./preview/engine";
+import { livePreview, livePreviewCompartment } from "./preview/engine";
+import { CORE_FAMILIES } from "./preview/families";
 import { highlightAllMatches } from "./search";
 import { loamAppearance } from "./theme";
 
@@ -46,6 +47,8 @@ export interface EditorSession {
 
 export interface SessionOptions {
   readOnly?: boolean;
+  /** §3.2 default mode; false opens the note in plain Source (LOA-102). */
+  livePreview?: boolean;
   /** Extra extensions (find/replace, formatting, … land in later stories). */
   extensions?: Extension[];
 }
@@ -62,7 +65,8 @@ export interface ExtensionLayer {
  * LOA-90 profile reports. This list is the single source of truth: the
  * benchmark measures the real stack, never a copy that can drift.
  */
-export function extensionLayers(): ExtensionLayer[] {
+export function extensionLayers(options: { livePreview?: boolean } = {}): ExtensionLayer[] {
+  const families = options.livePreview === false ? [] : CORE_FAMILIES;
   return [
     {
       name: "core",
@@ -87,8 +91,10 @@ export function extensionLayers(): ExtensionLayer[] {
     },
     {
       name: "markdown",
-      description: "Lezer Markdown parsing and highlighting",
-      extensions: [markdown()],
+      // §3.3 dialect is CommonMark + GFM; the GFM base is what gives the
+      // parser strikethrough, tables, and task-list nodes.
+      description: "Lezer Markdown (GFM) parsing and highlighting",
+      extensions: [markdown({ base: markdownLanguage })],
     },
     {
       name: "editing",
@@ -107,10 +113,10 @@ export function extensionLayers(): ExtensionLayer[] {
     },
     {
       name: "preview",
-      description: "Live Preview decoration engine, per-family flags (LOA-95)",
-      // Compartmented so families toggle without recreating the state; with
-      // none registered this draws nothing and the editor is Source.
-      extensions: [livePreviewCompartment.of(livePreview(MARKDOWN_FAMILIES))],
+      description: "Live Preview families: headings and inline emphasis (LOA-95/LOA-102)",
+      // Compartmented so a tab's mode flips families without recreating the
+      // state; with none enabled this draws nothing and the editor is Source.
+      extensions: [livePreviewCompartment.of(livePreview(families))],
     },
     {
       name: "keymap",
@@ -131,9 +137,9 @@ export function extensionLayers(): ExtensionLayer[] {
   ];
 }
 
-/** Base Source-mode extensions (§3.2 baseline; Live Preview is E10). */
-export function sourceExtensions(): Extension[] {
-  return extensionLayers().flatMap((layer) => layer.extensions);
+/** The editing stack; `livePreview: false` is plain Source mode (§3.2). */
+export function sourceExtensions(options: { livePreview?: boolean } = {}): Extension[] {
+  return extensionLayers(options).flatMap((layer) => layer.extensions);
 }
 
 export class SessionRegistry {
@@ -157,7 +163,7 @@ export class SessionRegistry {
     const state = EditorState.create({
       doc,
       extensions: [
-        ...sourceExtensions(),
+        sourceExtensions({ livePreview: options.livePreview ?? true }),
         ...(options.extensions ?? []),
         compartments.appearance.of(loamAppearance()),
         compartments.readOnly.of(readOnlyExtension(options.readOnly ?? false)),

@@ -182,7 +182,8 @@ function makeTab(path: string): Tab {
     id: `tab-${tabCounter}`,
     path,
     title: (path.split("/").at(-1) ?? path).replace(/\.md$/i, ""),
-    viewMode: "source",
+    // §3.2 default mode; oversized notes are clamped to Source (LOA-88).
+    viewMode: "live",
     dirty: false,
     missing: false,
     // Until the note is read it is assumed ordinary; NoteView reports the

@@ -9,12 +9,13 @@ import type { NoteDoc, NoteMeta, VaultInfo } from "@loam-app/ipc-client";
 import { LoamIpcError } from "@loam-app/ipc-client";
 import { useEffect, useState } from "react";
 import { Editor } from "../editor/Editor";
-import { isEditable } from "../editor/policy";
+import { isEditable, rendersInPlace } from "../editor/policy";
 import { sessions } from "../editor/sessions";
 import { ipc } from "../ipc";
 import { describeError } from "../stores/files";
 import type { FindStore } from "../stores/find";
 import type { SavesStore } from "../stores/saves";
+import type { ViewMode } from "../stores/tabs";
 import { FindPanel } from "./FindPanel";
 import "./shell.css";
 
@@ -29,6 +30,8 @@ export interface NoteViewProps {
   onCursor?: ((line: number, column: number) => void) | undefined;
   /** Reports the §5.6 size classification upward (LOA-88). */
   onMeta?: ((path: string, meta: NoteMeta) => void) | undefined;
+  /** The tab's mode; already clamped for oversized notes (LOA-88/LOA-102). */
+  viewMode?: ViewMode | undefined;
   savesStore: SavesStore;
   findStore: FindStore;
 }
@@ -40,6 +43,7 @@ export function NoteView({
   reloadGeneration,
   onCursor,
   onMeta,
+  viewMode = "live",
   savesStore,
   findStore,
 }: NoteViewProps) {
@@ -112,6 +116,7 @@ export function NoteView({
         baseHash={doc.hash}
         // AC4: editable unless the file is read-only — or too large to read.
         readOnly={!isEditable(doc.meta)}
+        livePreview={rendersInPlace(viewMode)}
         onDocChange={(content) => {
           savesStore.getState().edited(path, content);
           findStore.getState().bumpRevision();

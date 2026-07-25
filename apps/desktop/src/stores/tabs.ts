@@ -5,7 +5,8 @@
 
 import type { SizePolicy } from "@loam-app/ipc-client";
 
-export type ViewMode = "source" | "reading";
+/** §3.2: Live Preview is the default; Reading arrives with E17. */
+export type ViewMode = "live" | "source" | "reading";
 
 export interface Tab {
   /** Stable per-tab identity (multiple tabs may show one path later). */

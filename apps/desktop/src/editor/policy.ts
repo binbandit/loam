@@ -21,6 +21,11 @@ export function effectiveViewMode(requested: ViewMode, policy: SizePolicy): View
   return isOversized(policy) ? "source" : requested;
 }
 
+/** Whether a mode renders Markdown in place (Live Preview today). */
+export function rendersInPlace(mode: ViewMode): boolean {
+  return mode === "live";
+}
+
 /**
  * Past 20 MB the file is never read into memory (`content` is null), so
  * there is nothing to edit — writing the empty buffer back would truncate

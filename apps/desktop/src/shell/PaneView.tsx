@@ -165,6 +165,7 @@ export function PaneView({
           onContent={node.id === activePaneId ? onActiveContent : undefined}
           onCursor={node.id === activePaneId ? onActiveCursor : undefined}
           onMeta={handleMeta}
+          viewMode={activeTab.viewMode}
           reloadGeneration={reloadGeneration}
           savesStore={savesStore}
           findStore={findStore}
