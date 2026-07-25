@@ -14,6 +14,7 @@ import type {
   VaultInfo,
 } from "./generated/bindings";
 import { createMockIpc, type MockIpc } from "./mock";
+import { SOURCE_ONLY_BYTES } from "./size";
 
 /** The full typed command surface (identical for native and mock). */
 export type IpcCommands = typeof GeneratedCommands;
@@ -72,10 +73,23 @@ const DEMO_FILES: Record<string, string> = {
   "Projects/Garden.md": "# Garden\n\nPlant spring greens.\n",
 };
 
+/**
+ * A note just past the 2 MB line, so the §5.6 Source-only policy is
+ * reachable in the browser demo and in e2e. Built at open time — it is
+ * repeated text, not bundled bytes.
+ */
+function largeDemoNote(): string {
+  const paragraph = "This note is deliberately oversized so Loam pins it to Source mode.\n\n";
+  return `# Large note\n\n${paragraph.repeat(Math.ceil(SOURCE_ONLY_BYTES / paragraph.length) + 1)}`;
+}
+
 export function createMockTransport(): IpcTransport {
   const mock = createMockIpc({
     vaults: {
-      [MOCK_DEMO_VAULT_PATH]: { name: "Loam Demo", files: DEMO_FILES },
+      [MOCK_DEMO_VAULT_PATH]: {
+        name: "Loam Demo",
+        files: { ...DEMO_FILES, "Large note.md": largeDemoNote() },
+      },
       [MOCK_NEW_VAULT_PATH]: { name: "New Vault", files: {} },
     },
   });

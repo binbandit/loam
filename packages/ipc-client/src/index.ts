@@ -12,6 +12,12 @@ export type { MockCommands, MockIpc, MockIpcOptions } from "./mock";
 export { createMockIpc } from "./mock";
 export type { MockVaultFixture } from "./mock/store";
 export { mockHash } from "./mock/store";
+export {
+  byteLength,
+  classifySize,
+  METADATA_ONLY_BYTES,
+  SOURCE_ONLY_BYTES,
+} from "./size";
 export type { IpcCommands, IpcTransport } from "./transport";
 export {
   createMockTransport,

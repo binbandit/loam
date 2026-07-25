@@ -28,6 +28,7 @@ import {
   EVENT_INDEX_PROGRESS,
   type Unsubscribe,
 } from "../events";
+import { byteLength, classifySize } from "../size";
 import { type MockVaultFixture, MockVaultStore, mockHash } from "./store";
 
 export type MockCommands = typeof commands;
@@ -174,15 +175,18 @@ export function createMockIpc(options: MockIpcOptions = {}): MockIpc {
       if (content === undefined) {
         return err({ error: "not-found", path });
       }
+      // §5.6: past 20 MB the native reader never loads the bytes.
+      const size = byteLength(content);
+      const sizePolicy = classifySize(size);
       return ok({
         path,
-        content,
+        content: sizePolicy === "metadata-only" ? null : content,
         hash: mockHash(content),
         meta: {
-          size: content.length,
+          size,
           modifiedMs: null,
           readOnly: store.readOnly,
-          sizePolicy: "normal" as const,
+          sizePolicy,
           readMs: 0,
         },
       });
