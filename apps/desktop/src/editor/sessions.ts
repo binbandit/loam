@@ -26,6 +26,7 @@ import { editorAnnouncements } from "./announce";
 import { foldingKeymap, markdownFolding, selectionKeymap } from "./folding";
 import { formattingKeymap, pasteLink, smartPairs } from "./formatting";
 import { listKeymap } from "./lists";
+import { CODE_LANGUAGES } from "./preview/code";
 import { livePreview, livePreviewCompartment } from "./preview/engine";
 import { CORE_FAMILIES } from "./preview/families";
 import { highlightAllMatches } from "./search";
@@ -94,7 +95,7 @@ export function extensionLayers(options: { livePreview?: boolean } = {}): Extens
       // §3.3 dialect is CommonMark + GFM; the GFM base is what gives the
       // parser strikethrough, tables, and task-list nodes.
       description: "Lezer Markdown (GFM) parsing and highlighting",
-      extensions: [markdown({ base: markdownLanguage })],
+      extensions: [markdown({ base: markdownLanguage, codeLanguages: CODE_LANGUAGES })],
     },
     {
       name: "editing",
@@ -113,7 +114,7 @@ export function extensionLayers(options: { livePreview?: boolean } = {}): Extens
     },
     {
       name: "preview",
-      description: "Live Preview families: headings and inline emphasis (LOA-95/LOA-102)",
+      description: "Live Preview families: headings, inline, lists, tasks, quotes, code (E10)",
       // Compartmented so a tab's mode flips families without recreating the
       // state; with none enabled this draws nothing and the editor is Source.
       extensions: [livePreviewCompartment.of(livePreview(families))],

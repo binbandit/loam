@@ -11,6 +11,7 @@
 import { Decoration } from "@codemirror/view";
 import type { SyntaxNodeRef } from "@lezer/common";
 import { BLOCK_FAMILIES } from "./blocks";
+import { codeFamily } from "./code";
 import type { FamilyContext, SyntaxFamily } from "./engine";
 
 const hide = Decoration.replace({});
@@ -91,6 +92,9 @@ export const inlineFamily: SyntaxFamily = {
     if (context.revealed(node.from, node.to)) return;
 
     if (INLINE_MARKS.has(node.name)) {
+      // `CodeMark` is shared with fenced blocks, which the code family owns
+      // (LOA-110) — only inline code's own backticks belong here.
+      if (node.name === "CodeMark" && node.node.parent?.name !== "InlineCode") return;
       context.add(node.from, node.to, hide);
       return;
     }
@@ -106,4 +110,5 @@ export const CORE_FAMILIES: readonly SyntaxFamily[] = [
   headingFamily,
   inlineFamily,
   ...BLOCK_FAMILIES,
+  codeFamily,
 ];
