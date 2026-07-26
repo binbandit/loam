@@ -207,7 +207,14 @@ describe("source equivalence", () => {
 /** The families are independent flags on the LOA-95 engine. */
 describe("registration", () => {
   it("registers headings and inline as separate families", () => {
-    expect(CORE_FAMILIES.map((family) => family.name)).toEqual(["headings", "inline"]);
+    // Each syntax family is its own flag on the engine (LOA-95 AC1).
+    expect(CORE_FAMILIES.map((family) => family.name)).toEqual([
+      "headings",
+      "inline",
+      "lists",
+      "tasks",
+      "quotes",
+    ]);
     expect(headingFamily.nodes).toContain("ATXHeading1");
     expect(inlineFamily.nodes).toContain("StrikethroughMark");
   });
