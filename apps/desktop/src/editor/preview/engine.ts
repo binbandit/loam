@@ -249,7 +249,13 @@ class PreviewEngine {
       state,
       revealed: (from, to) => overlaps(reveal, from, to),
       add: (from, to, decoration) => {
-        if (from <= to) out.push(decoration.range(from, to));
+        if (from > to) return;
+        // A multi-line block (a blockquote, say) is entered whenever the span
+        // touches any part of it, and families decorate all of its lines.
+        // Only what belongs to *this* span may be kept: the rest is already
+        // drawn, and re-adding it would double the decoration.
+        if (to < span.from || from > span.to) return;
+        out.push(decoration.range(from, to));
       },
     };
 
