@@ -161,3 +161,63 @@ test("task checkboxes toggle the source and undo restores it (AC2/AC5)", async (
   });
   expect(onDisk).toBe(body);
 });
+
+/** LOA-110: fenced code blocks — highlighting, chip, and copy. */
+test.describe("fenced code", () => {
+  test.use({ permissions: ["clipboard-read", "clipboard-write"] });
+
+  test("known languages highlight, unknown ones stay plain but labelled (AC1/AC2)", async ({
+    page,
+  }) => {
+    const body = [
+      "```js",
+      "const answer = 42;",
+      "function ask() { return answer; }",
+      "```",
+      "",
+      "```rustlang",
+      "fn main() {}",
+      "```",
+      "",
+      "tail line",
+      "",
+    ].join("\n");
+    await openNote(page, body);
+
+    await expect(page.locator(".cm-loam-fence-open")).toHaveCount(2);
+    const chips = page.locator(".cm-loam-fence-lang");
+    await expect(chips.first()).toHaveText("js");
+    await expect(chips.nth(1)).toHaveText("rustlang");
+
+    // AC1: the JavaScript grammar loads on demand and colours the block.
+    const highlighted = page.locator(".cm-loam-fence span[class^='ͼ']");
+    await expect.poll(async () => await highlighted.count()).toBeGreaterThan(0);
+
+    // AC2: the unknown grammar renders its code as plain text, no crash.
+    await expect(page.getByTestId("editor")).toContainText("fn main() {}");
+  });
+
+  test("the copy action copies the code without its fences (AC3)", async ({ page }) => {
+    await openNote(page, "```js\nconst a = 1;\nconst b = 2;\n```\n\ntail\n");
+
+    const copy = page.getByRole("button", { name: "Copy js code" });
+    // Hover-revealed, like the fold chevrons.
+    await page.locator(".cm-loam-fence-open").hover();
+    await expect(copy).toHaveCSS("opacity", "1");
+    await copy.click();
+    await expect(copy).toHaveText("Copied");
+
+    const clipboard = await page.evaluate(() => navigator.clipboard.readText());
+    expect(clipboard).toBe("const a = 1;\nconst b = 2;");
+  });
+
+  test("fence markers return while the cursor is on their line (AC4)", async ({ page }) => {
+    await openNote(page, "```js\nconst a = 1;\n```\n\ntail\n");
+    const editor = page.getByTestId("editor");
+    await expect(editor).not.toContainText("```");
+
+    await page.getByText("const a = 1;").click();
+    await page.keyboard.press("ArrowUp");
+    await expect(editor).toContainText("```js");
+  });
+});

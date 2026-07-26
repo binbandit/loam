@@ -134,6 +134,53 @@ export const loamEditorTheme = EditorView.theme({
   },
   ".cm-loam-quote-2": { marginInlineStart: "var(--loam-space-12)" },
   ".cm-loam-quote-3": { marginInlineStart: "var(--loam-space-24)" },
+  // LOA-110 fenced blocks: 13.5 px mono on a raised surface, with the fence
+  // rounded at its ends so the block reads as one object.
+  ".cm-loam-fence": {
+    backgroundColor: "var(--loam-bg-raised)",
+    fontSize: "var(--loam-type-code-size)",
+    paddingInline: "var(--loam-space-12)",
+  },
+  ".cm-loam-fence-open": {
+    borderStartStartRadius: "var(--loam-radius-input)",
+    borderStartEndRadius: "var(--loam-radius-input)",
+    paddingBlockStart: "var(--loam-space-4)",
+  },
+  ".cm-loam-fence-close": {
+    borderEndStartRadius: "var(--loam-radius-input)",
+    borderEndEndRadius: "var(--loam-radius-input)",
+    paddingBlockEnd: "var(--loam-space-4)",
+  },
+  ".cm-loam-fence-controls": {
+    display: "inline-flex",
+    alignItems: "center",
+    gap: "var(--loam-space-8)",
+    userSelect: "none",
+  },
+  ".cm-loam-fence-lang": {
+    color: "var(--loam-text-tertiary)",
+    fontSize: "var(--loam-type-secondary-size)",
+    textTransform: "lowercase",
+  },
+  // The copy action stays out of the way until the block is hovered or the
+  // button itself is focused — the same rule the fold chevrons follow.
+  ".cm-loam-fence-copy": {
+    all: "unset",
+    cursor: "pointer",
+    color: "var(--loam-text-secondary)",
+    fontSize: "var(--loam-type-secondary-size)",
+    padding: "0 var(--loam-space-4)",
+    borderRadius: "var(--loam-radius-input)",
+    opacity: "0",
+    transition: "opacity var(--dur-fast) var(--loam-ease)",
+  },
+  ".cm-loam-fence:hover .cm-loam-fence-copy, .cm-loam-fence-copy:focus-visible": { opacity: "1" },
+  ".cm-loam-fence-copy:hover": { color: "var(--loam-text-primary)" },
+  ".cm-loam-fence-copy:focus-visible": {
+    outline: "1.5px solid var(--loam-accent)",
+    outlineOffset: "1px",
+  },
+  ".cm-loam-fence-copy[data-copied]": { color: "var(--loam-success)", opacity: "1" },
   // Inline code reads as a raised chip rather than just recolored text.
   ".cm-loam-code": {
     backgroundColor: "var(--loam-bg-active)",
