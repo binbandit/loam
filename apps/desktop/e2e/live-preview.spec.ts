@@ -117,3 +117,47 @@ test("escaped markers are never emphasis (AC4)", async ({ page }) => {
   await expect(editor).toContainText("*stars*");
   await expect(editor).toContainText("_underscores_");
 });
+
+/** LOA-107 AC2/AC3/AC5: the rendered checkbox is the ⌘L transaction. */
+test("task checkboxes toggle the source and undo restores it (AC2/AC5)", async ({ page }) => {
+  const body = "- [ ] buy milk\n- [x] call Ada\n\n> a quoted line\n";
+  await openNote(page, body);
+
+  const boxes = page.locator("input.cm-loam-task");
+  await expect(boxes).toHaveCount(2);
+  // AC3: real checkboxes with state and names taken from the item text.
+  await expect(boxes.first()).not.toBeChecked();
+  await expect(boxes.first()).toHaveAttribute("aria-label", "buy milk");
+  await expect(boxes.nth(1)).toBeChecked();
+
+  await boxes.first().click();
+  await expect(page.getByTestId("editor")).toContainText("buy milk");
+  await expect(boxes.first()).toBeChecked();
+
+  // AC5: one undo puts the exact source back.
+  await page.locator(".cm-content").click();
+  await page.keyboard.press("ControlOrMeta+z");
+  await expect(boxes.first()).not.toBeChecked();
+
+  // The quote renders through its border, with the `>` marker hidden.
+  await expect(page.locator(".cm-loam-quote")).toHaveCount(1);
+  await expect(page.getByTestId("editor")).toContainText("a quoted line");
+
+  await page.keyboard.press("ControlOrMeta+s");
+  const onDisk = await page.evaluate(async () => {
+    const mock = (
+      window as unknown as {
+        __LOAM_MOCK__: {
+          commands: {
+            vaultOpen: (path: string) => Promise<{ data: { id: string } }>;
+            noteRead: (vaultId: string, path: string) => Promise<{ data: { content: string } }>;
+          };
+        };
+      }
+    ).__LOAM_MOCK__;
+    const vault = await mock.commands.vaultOpen("/demo/Loam Demo");
+    const read = await mock.commands.noteRead(vault.data.id, "Ideas.md");
+    return read.data.content;
+  });
+  expect(onDisk).toBe(body);
+});
