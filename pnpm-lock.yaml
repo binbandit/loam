@@ -65,6 +65,9 @@ importers:
       '@lezer/highlight':
         specifier: ^1.2.3
         version: 1.2.3
+      '@lezer/markdown':
+        specifier: ^1.7.2
+        version: 1.7.2
       '@loam-app/ipc-client':
         specifier: workspace:*
         version: link:../../packages/ipc-client
