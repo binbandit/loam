@@ -207,8 +207,10 @@ test.describe("fenced code", () => {
     await copy.click();
     await expect(copy).toHaveText("Copied");
 
+    // Windows' clipboard rewrites LF as CRLF on the way through, so compare
+    // the content rather than the platform's line endings.
     const clipboard = await page.evaluate(() => navigator.clipboard.readText());
-    expect(clipboard).toBe("const a = 1;\nconst b = 2;");
+    expect(clipboard.replace(/\r\n/g, "\n")).toBe("const a = 1;\nconst b = 2;");
   });
 
   test("fence markers return while the cursor is on their line (AC4)", async ({ page }) => {
