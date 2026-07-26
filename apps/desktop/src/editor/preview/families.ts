@@ -10,6 +10,7 @@
 
 import { Decoration } from "@codemirror/view";
 import type { SyntaxNodeRef } from "@lezer/common";
+import { BLOCK_FAMILIES } from "./blocks";
 import type { FamilyContext, SyntaxFamily } from "./engine";
 
 const hide = Decoration.replace({});
@@ -101,4 +102,8 @@ export const inlineFamily: SyntaxFamily = {
 };
 
 /** The M1 families, in application order. */
-export const CORE_FAMILIES: readonly SyntaxFamily[] = [headingFamily, inlineFamily];
+export const CORE_FAMILIES: readonly SyntaxFamily[] = [
+  headingFamily,
+  inlineFamily,
+  ...BLOCK_FAMILIES,
+];
