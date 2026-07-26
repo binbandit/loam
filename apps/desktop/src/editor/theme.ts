@@ -110,6 +110,30 @@ export const loamEditorTheme = EditorView.theme({
     fontWeight: "var(--loam-type-h4-weight)",
     color: "var(--loam-text-tertiary)",
   },
+  // LOA-107 structure: list markers keep their column and just change ink.
+  ".cm-loam-list-mark": { color: "var(--loam-accent-text)" },
+  // The checkbox replaces `[ ]`/`[x]`; sized to the text so lines keep their
+  // rhythm, and it carries its own state for assistive tech.
+  ".cm-loam-task": {
+    verticalAlign: "middle",
+    margin: "0 0.35em 0 0",
+    width: "0.95em",
+    height: "0.95em",
+    accentColor: "var(--loam-accent)",
+    cursor: "pointer",
+  },
+  ".cm-loam-task:focus-visible": {
+    outline: "1.5px solid var(--loam-accent)",
+    outlineOffset: "1px",
+  },
+  // Quotes read by border + indent + color, never color alone (§4.6).
+  ".cm-loam-quote": {
+    borderInlineStart: "2px solid var(--loam-border-strong)",
+    paddingInlineStart: "var(--loam-space-12)",
+    color: "var(--loam-text-secondary)",
+  },
+  ".cm-loam-quote-2": { marginInlineStart: "var(--loam-space-12)" },
+  ".cm-loam-quote-3": { marginInlineStart: "var(--loam-space-24)" },
   // Inline code reads as a raised chip rather than just recolored text.
   ".cm-loam-code": {
     backgroundColor: "var(--loam-bg-active)",
