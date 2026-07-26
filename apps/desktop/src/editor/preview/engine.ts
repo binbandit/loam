@@ -58,6 +58,13 @@ export interface SyntaxFamily {
   /** Lezer node names this family decorates. */
   nodes: readonly string[];
   decorate(node: SyntaxNodeRef, context: FamilyContext): void;
+  /**
+   * Extra extension this family needs, enabled and disabled with it. CM6
+   * refuses block decorations from a view plugin, so a family that draws
+   * whole blocks (the frontmatter table) supplies a state field here and
+   * leaves `nodes` empty.
+   */
+  extension?: Extension;
 }
 
 /** Families the current configuration enables. */
@@ -299,7 +306,12 @@ export const livePreviewCompartment = new Compartment();
 
 /** The engine plus the families it should draw; pass [] for pure Source. */
 export function livePreview(families: readonly SyntaxFamily[] = []): Extension {
-  return [disabledFamilies, familyFacet.of(families), engine];
+  return [
+    disabledFamilies,
+    familyFacet.of(families),
+    engine,
+    families.flatMap((family) => family.extension ?? []),
+  ];
 }
 
 /** Reconfigures the enabled families in place (AC1). */

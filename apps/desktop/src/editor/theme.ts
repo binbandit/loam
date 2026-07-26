@@ -181,6 +181,53 @@ export const loamEditorTheme = EditorView.theme({
     outlineOffset: "1px",
   },
   ".cm-loam-fence-copy[data-copied]": { color: "var(--loam-success)", opacity: "1" },
+  // LOA-114 property table: a quiet block at the top of the note, keys in
+  // secondary ink so values lead.
+  ".cm-loam-props": {
+    width: "100%",
+    borderCollapse: "collapse",
+    margin: "0 0 var(--loam-space-12)",
+    fontSize: "var(--loam-type-base-size)",
+    fontFamily: "var(--loam-font-ui)",
+    borderBlockEnd: "1px solid var(--loam-border)",
+  },
+  ".cm-loam-props-caption": {
+    // Available to assistive tech, out of the way visually.
+    position: "absolute",
+    width: "1px",
+    height: "1px",
+    overflow: "hidden",
+    clipPath: "inset(50%)",
+    whiteSpace: "nowrap",
+  },
+  ".cm-loam-props th": {
+    textAlign: "start",
+    fontWeight: "var(--loam-type-base-weight)",
+    color: "var(--loam-text-secondary)",
+    padding: "var(--loam-space-4) var(--loam-space-12) var(--loam-space-4) 0",
+    verticalAlign: "baseline",
+    width: "12rem",
+  },
+  ".cm-loam-props td": {
+    padding: "var(--loam-space-4) 0",
+    color: "var(--loam-text-primary)",
+    verticalAlign: "baseline",
+  },
+  ".cm-loam-props-empty": { color: "var(--loam-text-tertiary)" },
+  ".cm-loam-prop-chip": {
+    display: "inline-block",
+    backgroundColor: "var(--loam-bg-active)",
+    borderRadius: "var(--loam-radius-input)",
+    padding: "0 var(--loam-space-6)",
+    marginInlineEnd: "var(--loam-space-4)",
+  },
+  ".cm-loam-prop-chip-known": { color: "var(--loam-accent-text)" },
+  ".cm-loam-props-error": {
+    color: "var(--loam-warning)",
+    fontFamily: "var(--loam-font-ui)",
+    fontSize: "var(--loam-type-secondary-size)",
+    padding: "var(--loam-space-4) 0",
+  },
   // Inline code reads as a raised chip rather than just recolored text.
   ".cm-loam-code": {
     backgroundColor: "var(--loam-bg-active)",

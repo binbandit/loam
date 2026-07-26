@@ -223,3 +223,74 @@ test.describe("fenced code", () => {
     await expect(editor).toContainText("```js");
   });
 });
+
+/** LOA-114: frontmatter renders as a read-only property table. */
+test("frontmatter renders as a property table and reveals raw YAML (AC1/AC2/AC5)", async ({
+  page,
+}) => {
+  const body = [
+    "---",
+    "title: Field Notes",
+    "tags: [research, deep/nested]",
+    "aliases:",
+    "  - FN",
+    '  - "Field Notes"',
+    "---",
+    "",
+    "# Body starts here",
+    "",
+  ].join("\n");
+  await openNote(page, body);
+
+  const table = page.locator("table.cm-loam-props");
+  await expect(table).toBeVisible();
+  // AC5: real row headers, and a caption for screen readers.
+  await expect(table.locator("caption")).toHaveText("Note properties");
+  await expect(table.getByRole("rowheader", { name: "title" })).toBeVisible();
+  await expect(table.getByRole("cell", { name: "Field Notes", exact: true })).toBeVisible();
+  // AC4: list values keep their order.
+  await expect(table.locator(".cm-loam-prop-chip")).toHaveText([
+    "research",
+    "deep/nested",
+    "FN",
+    "Field Notes",
+  ]);
+  // The YAML is not on screen while the table is.
+  await expect(page.getByTestId("editor")).not.toContainText("tags: [research");
+
+  // AC2: clicking into the block brings the raw YAML back for editing.
+  await page.getByText("Body starts here").click();
+  await page.keyboard.press("ControlOrMeta+Home");
+  await expect(page.getByTestId("editor")).toContainText("title: Field Notes");
+  await expect(table).toHaveCount(0);
+
+  // The file itself never changed.
+  await page.keyboard.press("ControlOrMeta+s");
+  const onDisk = await page.evaluate(async () => {
+    const mock = (
+      window as unknown as {
+        __LOAM_MOCK__: {
+          commands: {
+            vaultOpen: (path: string) => Promise<{ data: { id: string } }>;
+            noteRead: (vaultId: string, path: string) => Promise<{ data: { content: string } }>;
+          };
+        };
+      }
+    ).__LOAM_MOCK__;
+    const vault = await mock.commands.vaultOpen("/demo/Loam Demo");
+    const read = await mock.commands.noteRead(vault.data.id, "Ideas.md");
+    return read.data.content;
+  });
+  expect(onDisk).toBe(body);
+});
+
+/** AC3: unreadable YAML shows the banner over untouched source. */
+test("malformed frontmatter shows the banner and keeps the YAML (AC3)", async ({ page }) => {
+  await openNote(
+    page,
+    "---\ntitle: [unclosed bracket\ntags: still: not: valid: yaml\n---\n\nBody\n",
+  );
+  await expect(page.locator(".cm-loam-props-error")).toHaveText("Frontmatter could not be parsed");
+  await expect(page.locator("table.cm-loam-props")).toHaveCount(0);
+  await expect(page.getByTestId("editor")).toContainText("title: [unclosed bracket");
+});

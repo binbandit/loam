@@ -29,6 +29,7 @@ import { listKeymap } from "./lists";
 import { CODE_LANGUAGES } from "./preview/code";
 import { livePreview, livePreviewCompartment } from "./preview/engine";
 import { CORE_FAMILIES } from "./preview/families";
+import { frontmatterParser } from "./preview/frontmatter";
 import { highlightAllMatches } from "./search";
 import { loamAppearance } from "./theme";
 
@@ -95,7 +96,14 @@ export function extensionLayers(options: { livePreview?: boolean } = {}): Extens
       // §3.3 dialect is CommonMark + GFM; the GFM base is what gives the
       // parser strikethrough, tables, and task-list nodes.
       description: "Lezer Markdown (GFM) parsing and highlighting",
-      extensions: [markdown({ base: markdownLanguage, codeLanguages: CODE_LANGUAGES })],
+      extensions: [
+        markdown({
+          base: markdownLanguage,
+          codeLanguages: CODE_LANGUAGES,
+          // §3.3 lists frontmatter as part of the dialect (LOA-114).
+          extensions: [frontmatterParser],
+        }),
+      ],
     },
     {
       name: "editing",

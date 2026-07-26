@@ -13,6 +13,7 @@ import type { SyntaxNodeRef } from "@lezer/common";
 import { BLOCK_FAMILIES } from "./blocks";
 import { codeFamily } from "./code";
 import type { FamilyContext, SyntaxFamily } from "./engine";
+import { frontmatterFamily } from "./frontmatter";
 
 const hide = Decoration.replace({});
 
@@ -111,4 +112,5 @@ export const CORE_FAMILIES: readonly SyntaxFamily[] = [
   inlineFamily,
   ...BLOCK_FAMILIES,
   codeFamily,
+  frontmatterFamily,
 ];

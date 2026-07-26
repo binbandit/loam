@@ -215,6 +215,7 @@ describe("registration", () => {
       "tasks",
       "quotes",
       "code",
+      "frontmatter",
     ]);
     expect(headingFamily.nodes).toContain("ATXHeading1");
     expect(inlineFamily.nodes).toContain("StrikethroughMark");
