@@ -1,0 +1,532 @@
+{
+  "blocks/block-ids": {
+    "rendered": "Block IDs\n\nA referenced paragraph of text. ^quote-1\n\n- list item carrying an id ^item2\n- plain item without one\n\nMath stays out: $x^2$ and $a ^2$ too.\n\n\ncode line with ^not-a-block\n\n\nLinking to [[Other Note#^quote-1]] resolves the block above.\n",
+    "lines": [
+      "1:cm-loam-h1",
+      "10:cm-loam-fence cm-loam-fence-open",
+      "11:cm-loam-fence",
+      "12:cm-loam-fence cm-loam-fence-close"
+    ],
+    "marks": [
+      "cm-loam-list-mark:-",
+      "cm-loam-list-mark:-"
+    ],
+    "widgets": [
+      "span.cm-loam-fence-controls"
+    ],
+    "hidden": [
+      "HeaderMark:# ",
+      "CodeMark:```",
+      "CodeInfo:text",
+      "CodeMark:```"
+    ]
+  },
+  "core/code-exclusion": {
+    "rendered": "Code exclusion\n\n\n[[Not A Wikilink]] and [not a link](nope.md) and #not-a-tag\nhttps://not-an-autolink.example\n- [ ] not a task\n\n\nInline [[also not a link]] and #also-not-a-tag stay code.\n",
+    "lines": [
+      "1:cm-loam-h1",
+      "3:cm-loam-fence cm-loam-fence-open",
+      "4:cm-loam-fence",
+      "5:cm-loam-fence",
+      "6:cm-loam-fence",
+      "7:cm-loam-fence cm-loam-fence-close"
+    ],
+    "marks": [
+      "cm-loam-code:`[[also not a link]]`",
+      "cm-loam-code:`#also-not-a-tag`"
+    ],
+    "widgets": [
+      "span.cm-loam-fence-controls"
+    ],
+    "hidden": [
+      "HeaderMark:# ",
+      "CodeMark:```",
+      "CodeInfo:markdown",
+      "CodeMark:```",
+      "CodeMark:`",
+      "CodeMark:`",
+      "CodeMark:`",
+      "CodeMark:`"
+    ]
+  },
+  "core/code-fences": {
+    "rendered": "Fences\n\n\nfn main() {\n    println!(\"*not emphasis*\");\n}\n\n\n\nno language label\n\n\n\nprint(\"tilde fence\")\n\n",
+    "lines": [
+      "1:cm-loam-h1",
+      "3:cm-loam-fence cm-loam-fence-open",
+      "4:cm-loam-fence",
+      "5:cm-loam-fence",
+      "6:cm-loam-fence",
+      "7:cm-loam-fence cm-loam-fence-close",
+      "9:cm-loam-fence cm-loam-fence-open",
+      "10:cm-loam-fence",
+      "11:cm-loam-fence cm-loam-fence-close",
+      "13:cm-loam-fence cm-loam-fence-open",
+      "14:cm-loam-fence",
+      "15:cm-loam-fence cm-loam-fence-close"
+    ],
+    "marks": [],
+    "widgets": [
+      "span.cm-loam-fence-controls",
+      "span.cm-loam-fence-controls",
+      "span.cm-loam-fence-controls"
+    ],
+    "hidden": [
+      "HeaderMark:# ",
+      "CodeMark:```",
+      "CodeInfo:rust",
+      "CodeMark:```",
+      "CodeMark:```",
+      "CodeMark:```",
+      "CodeMark:~~~",
+      "CodeInfo:python extra info words",
+      "CodeMark:~~~"
+    ]
+  },
+  "core/escapes": {
+    "rendered": "Escapes\n\n*not emphasis* and [not a link](nope) and `not code`.\n\n# not a heading\n\nLiteral backslash: \\ and escaped pipe in text | done.\n",
+    "lines": [
+      "1:cm-loam-h1"
+    ],
+    "marks": [],
+    "widgets": [],
+    "hidden": [
+      "HeaderMark:# ",
+      "Escape:\\",
+      "Escape:\\",
+      "Escape:\\",
+      "Escape:\\",
+      "Escape:\\",
+      "Escape:\\",
+      "Escape:\\",
+      "Escape:\\",
+      "Escape:\\"
+    ]
+  },
+  "core/headings-and-inlines": {
+    "rendered": "Top level\n\nNested emphasis with strong inside\n\nBody with inline code, bold, italic, and both.\n\nDeep > heading with # literal hash\n",
+    "lines": [
+      "1:cm-loam-h1",
+      "3:cm-loam-h2",
+      "7:cm-loam-h3"
+    ],
+    "marks": [
+      "cm-loam-code:`inline code`"
+    ],
+    "widgets": [],
+    "hidden": [
+      "HeaderMark:# ",
+      "HeaderMark:## ",
+      "EmphasisMark:*",
+      "EmphasisMark:**",
+      "EmphasisMark:**",
+      "EmphasisMark:*",
+      "CodeMark:`",
+      "CodeMark:`",
+      "EmphasisMark:**",
+      "EmphasisMark:**",
+      "EmphasisMark:*",
+      "EmphasisMark:*",
+      "EmphasisMark:*",
+      "EmphasisMark:**",
+      "EmphasisMark:**",
+      "EmphasisMark:*",
+      "HeaderMark:### "
+    ]
+  },
+  "core/nested-lists": {
+    "rendered": "Nested lists\n\n- top A\n  - middle A1\n    - deep A1a\n  - middle A2\n- top B\n  1. ordered inside bullet\n     - bullet inside ordered\n",
+    "lines": [
+      "1:cm-loam-h1"
+    ],
+    "marks": [
+      "cm-loam-list-mark:-",
+      "cm-loam-list-mark:-",
+      "cm-loam-list-mark:-",
+      "cm-loam-list-mark:-",
+      "cm-loam-list-mark:-",
+      "cm-loam-list-mark:1.",
+      "cm-loam-list-mark:-"
+    ],
+    "widgets": [],
+    "hidden": [
+      "HeaderMark:# "
+    ]
+  },
+  "core/nested-quotes": {
+    "rendered": "Nested quotes\n\nouter quote\ninner quote with emphasis\nthird level\n\n- list item inside quote\n-  task inside list inside quote\n",
+    "lines": [
+      "1:cm-loam-h1",
+      "3:cm-loam-quote",
+      "4:cm-loam-quote",
+      "4:cm-loam-quote cm-loam-quote-2",
+      "5:cm-loam-quote",
+      "5:cm-loam-quote cm-loam-quote-2",
+      "5:cm-loam-quote cm-loam-quote-3",
+      "6:cm-loam-quote",
+      "7:cm-loam-quote",
+      "8:cm-loam-quote"
+    ],
+    "marks": [
+      "cm-loam-list-mark:-",
+      "cm-loam-list-mark:-"
+    ],
+    "widgets": [
+      "input.cm-loam-task"
+    ],
+    "hidden": [
+      "HeaderMark:# ",
+      "QuoteMark:> ",
+      "QuoteMark:> ",
+      "QuoteMark:> ",
+      "EmphasisMark:*",
+      "EmphasisMark:*",
+      "QuoteMark:> ",
+      "QuoteMark:> ",
+      "QuoteMark:> ",
+      "QuoteMark:>",
+      "QuoteMark:> ",
+      "QuoteMark:>   "
+    ]
+  },
+  "core/thematic-break": {
+    "rendered": "Not frontmatter\n\nSome prose first.\n\n---\n\ntitle: this is body text after a thematic break, not YAML\n",
+    "lines": [
+      "1:cm-loam-h1"
+    ],
+    "marks": [],
+    "widgets": [],
+    "hidden": [
+      "HeaderMark:# "
+    ]
+  },
+  "core/unicode": {
+    "rendered": "Café ☕ und Straße\n\nEmoji 🎈 bold and combining éé plus CJK 日本語テスト.\n\n-  tâche terminée\n-  offene Aufgabe ß\n\n[Übersicht](https://example.com/übersicht) links to naïve façade.\n",
+    "lines": [
+      "1:cm-loam-h1"
+    ],
+    "marks": [
+      "cm-loam-list-mark:-",
+      "cm-loam-list-mark:-"
+    ],
+    "widgets": [
+      "input.cm-loam-task",
+      "input.cm-loam-task"
+    ],
+    "hidden": [
+      "HeaderMark:# ",
+      "EmphasisMark:**",
+      "EmphasisMark:**"
+    ]
+  },
+  "extensions/callouts": {
+    "rendered": "Callouts\n\n[!note] A plain note callout\nBody of the note.\n\n[!summary] Alias resolves to abstract\nSummary body.\n\n[!warning]- Folded warning\nHidden until expanded.\n\n[!tip]+ Expanded tip\nShown by default.\n\n[!danger]\nNo title danger.\n\n[!quirky-custom] Custom type\nRenders with default icon.\n\n[!question] Outer question\n[!todo]- Nested folded todo\nInner body.\n",
+    "lines": [
+      "1:cm-loam-h1",
+      "3:cm-loam-quote",
+      "4:cm-loam-quote",
+      "6:cm-loam-quote",
+      "7:cm-loam-quote",
+      "9:cm-loam-quote",
+      "10:cm-loam-quote",
+      "12:cm-loam-quote",
+      "13:cm-loam-quote",
+      "15:cm-loam-quote",
+      "16:cm-loam-quote",
+      "18:cm-loam-quote",
+      "19:cm-loam-quote",
+      "21:cm-loam-quote",
+      "22:cm-loam-quote",
+      "22:cm-loam-quote cm-loam-quote-2",
+      "23:cm-loam-quote",
+      "23:cm-loam-quote cm-loam-quote-2"
+    ],
+    "marks": [],
+    "widgets": [],
+    "hidden": [
+      "HeaderMark:# ",
+      "QuoteMark:> ",
+      "QuoteMark:> ",
+      "QuoteMark:> ",
+      "QuoteMark:> ",
+      "QuoteMark:> ",
+      "QuoteMark:> ",
+      "QuoteMark:> ",
+      "QuoteMark:> ",
+      "QuoteMark:> ",
+      "QuoteMark:> ",
+      "QuoteMark:> ",
+      "QuoteMark:> ",
+      "QuoteMark:> ",
+      "QuoteMark:> ",
+      "QuoteMark:> ",
+      "QuoteMark:> ",
+      "QuoteMark:> "
+    ]
+  },
+  "extensions/escaped-delimiters": {
+    "rendered": "Escaped delimiters\n\nLiteral ==not a highlight== stays plain.\n\nLiteral %%not a comment%% stays visible.\n\nA real ==highlight== after escapes still works, and == then ==this one== too.\n\nCode fences keep delimiters literal:\n\n\n==not a highlight== and %%not a comment%%\n\n\nInline ==also literal== and %%still literal%% in code.\n",
+    "lines": [
+      "1:cm-loam-h1",
+      "11:cm-loam-fence cm-loam-fence-open",
+      "12:cm-loam-fence",
+      "13:cm-loam-fence cm-loam-fence-close"
+    ],
+    "marks": [
+      "cm-loam-code:`==also literal==`",
+      "cm-loam-code:`%%still literal%%`"
+    ],
+    "widgets": [
+      "span.cm-loam-fence-controls"
+    ],
+    "hidden": [
+      "HeaderMark:# ",
+      "Escape:\\",
+      "Escape:\\",
+      "Escape:\\",
+      "Escape:\\",
+      "Escape:\\",
+      "CodeMark:```",
+      "CodeInfo:text",
+      "CodeMark:```",
+      "CodeMark:`",
+      "CodeMark:`",
+      "CodeMark:`",
+      "CodeMark:`"
+    ]
+  },
+  "extensions/highlights-comments": {
+    "rendered": "Highlights and comments\n\nA ==simple highlight== and ==one with code inside== here.\n\nA highlight ==spanning a soft\nline break== still closes.\n\nAn open == with a blank line\n\n== stays literal on both sides.\n\nInline %%hidden note%% comment.\n\n%%\nA block comment\nspanning several lines with a [[Hidden Link]] and #hidden-tag inside.\n%%\n\nVisible again with [[Visible Link]] and #visible-tag.\n",
+    "lines": [
+      "1:cm-loam-h1"
+    ],
+    "marks": [
+      "cm-loam-code:`code`"
+    ],
+    "widgets": [],
+    "hidden": [
+      "HeaderMark:# ",
+      "CodeMark:`",
+      "CodeMark:`"
+    ]
+  },
+  "frontmatter/typed": {
+    "rendered": "\n\nBody\n",
+    "lines": [
+      "17:cm-loam-h1"
+    ],
+    "marks": [],
+    "widgets": [
+      "table.cm-loam-props"
+    ],
+    "hidden": [
+      "HeaderMark:# "
+    ]
+  },
+  "frontmatter/valid": {
+    "rendered": "\n\nBody starts here\n\nContent after properties.\n",
+    "lines": [
+      "9:cm-loam-h1"
+    ],
+    "marks": [],
+    "widgets": [
+      "table.cm-loam-props"
+    ],
+    "hidden": [
+      "HeaderMark:# "
+    ]
+  },
+  "gfm/autolink-strikethrough": {
+    "rendered": "GFM inlines\n\nVisit https://example.com/auto and struck through text.\n\nNested list quote:\n\n- outer\n- inner with strike\n",
+    "lines": [
+      "1:cm-loam-h1",
+      "7:cm-loam-quote",
+      "8:cm-loam-quote"
+    ],
+    "marks": [
+      "cm-loam-list-mark:-",
+      "cm-loam-list-mark:-"
+    ],
+    "widgets": [],
+    "hidden": [
+      "HeaderMark:# ",
+      "StrikethroughMark:~~",
+      "StrikethroughMark:~~",
+      "QuoteMark:> ",
+      "QuoteMark:>   ",
+      "StrikethroughMark:~~",
+      "StrikethroughMark:~~"
+    ]
+  },
+  "gfm/footnotes": {
+    "rendered": "Footnotes\n\nA claim[^1] and another[^long-name].\n\n[^1]: Short note.\n[^long-name]: A longer footnote\n    spanning two lines.\n",
+    "lines": [
+      "1:cm-loam-h1"
+    ],
+    "marks": [],
+    "widgets": [],
+    "hidden": [
+      "HeaderMark:# "
+    ]
+  },
+  "gfm/table": {
+    "rendered": "Table\n\n| Left | Center | Right |\n| :--- | :----: | ----: |\n| a    | em   | c   |\n| 1    | 2      | 3     |\n",
+    "lines": [
+      "1:cm-loam-h1"
+    ],
+    "marks": [
+      "cm-loam-code:`c`"
+    ],
+    "widgets": [],
+    "hidden": [
+      "HeaderMark:# ",
+      "EmphasisMark:*",
+      "EmphasisMark:*",
+      "CodeMark:`",
+      "CodeMark:`"
+    ]
+  },
+  "gfm/tasklist": {
+    "rendered": "Tasks\n\n-  open task\n-  done task\n  -  nested open\n  -  nested done\n- plain bullet between tasks\n\n1.  ordered done\n2.  ordered open\n",
+    "lines": [
+      "1:cm-loam-h1"
+    ],
+    "marks": [
+      "cm-loam-list-mark:-",
+      "cm-loam-list-mark:-",
+      "cm-loam-list-mark:-",
+      "cm-loam-list-mark:-",
+      "cm-loam-list-mark:-",
+      "cm-loam-list-mark:1.",
+      "cm-loam-list-mark:2."
+    ],
+    "widgets": [
+      "input.cm-loam-task",
+      "input.cm-loam-task",
+      "input.cm-loam-task",
+      "input.cm-loam-task",
+      "input.cm-loam-task",
+      "input.cm-loam-task"
+    ],
+    "hidden": [
+      "HeaderMark:# "
+    ]
+  },
+  "links/embeds": {
+    "rendered": "Embeds\n\nNote embed ![[Note One]] inline.\n\nHeading embed ![[Note One#Section Two]] and block embed ![[Note One#^blk-1]].\n\nSized image ![[diagram.png|300]] and markdown image ![alt text](assets/photo.png).\n",
+    "lines": [
+      "1:cm-loam-h1"
+    ],
+    "marks": [],
+    "widgets": [],
+    "hidden": [
+      "HeaderMark:# "
+    ]
+  },
+  "links/markdown-links": {
+    "rendered": "Markdown links\n\nExternal [site](https://example.com \"with title\") and internal [note](notes/idea.md).\n\nReference style [ref][1] resolves too.\n\n[1]: https://example.com/ref\n",
+    "lines": [
+      "1:cm-loam-h1"
+    ],
+    "marks": [],
+    "widgets": [],
+    "hidden": [
+      "HeaderMark:# "
+    ]
+  },
+  "links/wikilinks": {
+    "rendered": "Wikilinks\n\nPlain [[Target Note]] and aliased [[Target Note|display text]].\n\nHeading link [[Target Note#Section]] and Unicode [[Résumé ☕]].\n",
+    "lines": [
+      "1:cm-loam-h1"
+    ],
+    "marks": [],
+    "widgets": [],
+    "hidden": [
+      "HeaderMark:# "
+    ]
+  },
+  "malformed/bad-yaml-frontmatter": {
+    "rendered": "---\ntitle: [unclosed bracket\ntags: still: not: valid: yaml\n---\n\nBody survives\n",
+    "lines": [
+      "6:cm-loam-h1"
+    ],
+    "marks": [],
+    "widgets": [
+      "div.cm-loam-props-error"
+    ],
+    "hidden": [
+      "HeaderMark:# "
+    ]
+  },
+  "malformed/empty-link-target": {
+    "rendered": "Empty targets\n\nA [click here]() link with nowhere to go.\n",
+    "lines": [
+      "1:cm-loam-h1"
+    ],
+    "marks": [],
+    "widgets": [],
+    "hidden": [
+      "HeaderMark:# "
+    ]
+  },
+  "malformed/unclosed-comment": {
+    "rendered": "Unclosed comment\n\nVisible text with [[Indexed Link]].\n\n%% everything after this opener\nis commented out, including [[Never Indexed]] and #never-indexed\nto the end of the note.\n",
+    "lines": [
+      "1:cm-loam-h1"
+    ],
+    "marks": [],
+    "widgets": [],
+    "hidden": [
+      "HeaderMark:# "
+    ]
+  },
+  "malformed/unclosed-fence": {
+    "rendered": "Unclosed fence\n\n\nfn never_closed() {\n    // the fence runs to EOF without a closing marker\n",
+    "lines": [
+      "1:cm-loam-h1",
+      "3:cm-loam-fence cm-loam-fence-open",
+      "4:cm-loam-fence",
+      "5:cm-loam-fence",
+      "6:cm-loam-fence cm-loam-fence-close"
+    ],
+    "marks": [],
+    "widgets": [
+      "span.cm-loam-fence-controls"
+    ],
+    "hidden": [
+      "HeaderMark:# ",
+      "CodeMark:```",
+      "CodeInfo:rust"
+    ]
+  },
+  "malformed/unclosed-wikilink": {
+    "rendered": "Unclosed delimiters\n\nA [[never closed wikilink runs on.\n\nAn embed ![[also unclosed keeps going.\n",
+    "lines": [
+      "1:cm-loam-h1"
+    ],
+    "marks": [],
+    "widgets": [],
+    "hidden": [
+      "HeaderMark:# "
+    ]
+  },
+  "malformed/unterminated-frontmatter": {
+    "rendered": "---\ntitle: never closed\n\n# Body swallowed by the open delimiter\n",
+    "lines": [],
+    "marks": [],
+    "widgets": [],
+    "hidden": []
+  },
+  "tags/unicode-tags": {
+    "rendered": "Tags #on-heading\n\nPlain #tag and nested #area/sub here.\n\nUnicode: #日本語 and #café-notes and #Straße_prep.\n\nNot tags: issue#123 mid-word, bare #, numeric #123, escaped #escaped.\n\nPunctuation boundary: #trailing, then (#parens) stays out, end #final.\n",
+    "lines": [
+      "1:cm-loam-h1"
+    ],
+    "marks": [],
+    "widgets": [],
+    "hidden": [
+      "HeaderMark:# ",
+      "Escape:\\"
+    ]
+  }
+}
