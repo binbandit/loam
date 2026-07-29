@@ -19,7 +19,6 @@
  */
 
 import { execFileSync } from "node:child_process";
-import { createHash } from "node:crypto";
 import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { createServer } from "node:http";
 import { extname, join, resolve } from "node:path";
@@ -97,14 +96,56 @@ async function captureStory(page, port, story, theme, perturb = false) {
     document.getElementById("ladle-root")?.style.setProperty("padding", "16px");
     await document.fonts.ready;
   });
+  // A focused text field blinks its caret on a ~1s cycle, which two captures
+  // taken milliseconds apart can catch in opposite phases (the inline rename
+  // in the file-tree story). Reduced motion does not cover the caret.
+  await page.addStyleTag({ content: "* { caret-color: transparent !important; }" });
   if (perturb) {
     // Inverting the whole page guarantees a viewport-wide change no matter
     // how sparse the story is.
     await page.addStyleTag({ content: "body { filter: invert(1); }" });
   }
-  // Two frames so entrance transitions (80ms under reduced motion) settle.
+  // Entrance transitions run 80ms under reduced motion; the wait covers them.
   await page.waitForTimeout(250);
   return page.screenshot({ fullPage: false });
+}
+
+
+/** How far two captures differ, and where. */
+function describeDelta(first, second) {
+  const a = PNG.sync.read(first);
+  const b = PNG.sync.read(second);
+  if (a.width !== b.width || a.height !== b.height) {
+    return {
+      ratio: 1,
+      summary: `size changed ${a.width}x${a.height} -> ${b.width}x${b.height}`,
+    };
+  }
+  const diff = new PNG({ width: a.width, height: a.height });
+  const changed = pixelmatch(a.data, b.data, diff.data, a.width, a.height, { threshold: 0.02 });
+  let minX = Number.POSITIVE_INFINITY;
+  let minY = Number.POSITIVE_INFINITY;
+  let maxX = -1;
+  let maxY = -1;
+  for (let y = 0; y < a.height; y += 1) {
+    for (let x = 0; x < a.width; x += 1) {
+      const index = (y * a.width + x) * 4;
+      if (diff.data[index] === 255 && diff.data[index + 1] === 0) {
+        if (x < minX) minX = x;
+        if (x > maxX) maxX = x;
+        if (y < minY) minY = y;
+        if (y > maxY) maxY = y;
+      }
+    }
+  }
+  const ratio = changed / (a.width * a.height);
+  return {
+    ratio,
+    summary:
+      changed === 0
+        ? "no pixels differ beyond the perceptual threshold"
+        : `${changed}px (${(ratio * 100).toFixed(3)}%) differ in x[${minX}-${maxX}] y[${minY}-${maxY}]`,
+  };
 }
 
 function compare(name, actualBuffer) {
@@ -168,10 +209,20 @@ async function main() {
         const shot = await captureStory(page, port, story, theme);
         if (determinism) {
           const again = await captureStory(page, port, story, theme);
-          const [a, b] = [shot, again].map((buffer) =>
-            createHash("sha256").update(buffer).digest("hex"),
-          );
-          if (a !== b) failures.push(`${name}: nondeterministic capture (${a} != ${b})`);
+          // Judge two captures the way baselines are judged. Hashing was
+          // stricter than the gate it protects: consecutive renders of the
+          // same story differ by a hair of anti-aliasing, which pixelmatch
+          // ignores and a hash cannot. A story that truly renders
+          // differently moves far more than the tolerance.
+          const delta = describeDelta(shot, again);
+          if (delta.ratio > MAX_MISMATCH_RATIO) {
+            // A gate that fails without evidence costs more than it saves:
+            // write both frames plus a diff, and say where they differ.
+            mkdirSync(artifactDir, { recursive: true });
+            writeFileSync(join(artifactDir, `${name}.first.png`), shot);
+            writeFileSync(join(artifactDir, `${name}.second.png`), again);
+            failures.push(`${name}: nondeterministic capture — ${delta.summary}`);
+          }
           compared += 1;
           continue;
         }
