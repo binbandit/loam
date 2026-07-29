@@ -181,4 +181,30 @@ export function benchLayers(options: BenchOptions = {}): LayerCost[] {
   return costs;
 }
 
-export const editorBench = { benchTyping, benchLayers, benchDocument };
+export interface ScalingPoint {
+  words: number;
+  meanMs: number;
+  p95Ms: number;
+}
+
+/**
+ * LOA-119 AC3: a local edit must cost the same in a long note as in a short
+ * one. Decoration is viewport-only, so text the reader cannot see must not
+ * enter the keystroke path — this measures the same edit at several document
+ * sizes and the gate compares the ends.
+ */
+export function benchScaling(sizes: readonly number[] = [2_000, 10_000, 40_000]): ScalingPoint[] {
+  const layers = extensionLayers();
+  const extensions = layers.flatMap((layer) => layer.extensions);
+  return sizes.map((words) => {
+    const harness = mount(benchDocument(words), extensions);
+    try {
+      const stats = summarize(typingSamples(harness.view, 120, 40));
+      return { words, meanMs: stats.meanMs, p95Ms: stats.p95Ms };
+    } finally {
+      harness.dispose();
+    }
+  });
+}
+
+export const editorBench = { benchTyping, benchLayers, benchDocument, benchScaling };

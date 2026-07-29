@@ -33,6 +33,13 @@ const KEYSTROKE_P95_SLO_MS = 16;
 /** A run slower than baseline × 1.10 is a regression (matches loam-bench). */
 const REGRESSION_FACTOR = 1.1;
 /**
+ * AC3 (LOA-119): decoration is viewport-only, so a 20x longer document must
+ * not cost 20x per keystroke. Some growth is real — the parser and the
+ * document tree are bigger — so the gate allows a factor, not equality.
+ */
+const SCALING_FACTOR = 3;
+
+/**
  * Below this the regression band is pure timer noise: Chromium clamps
  * `performance.now()` to 100 µs, so a sub-millisecond p95 moves a whole tick
  * at a time. The absolute SLO still applies at every value.
@@ -86,10 +93,11 @@ async function run() {
     await page.waitForFunction(() => "__LOAM_BENCH__" in window, null, { timeout: 30_000 });
     const typing = await page.evaluate(() => window.__LOAM_BENCH__.benchTyping());
     const layers = await page.evaluate(() => window.__LOAM_BENCH__.benchLayers());
+    const scaling = await page.evaluate(() => window.__LOAM_BENCH__.benchScaling());
     const words = await page.evaluate(
       () => window.__LOAM_BENCH__.benchDocument().split(/\s+/).filter(Boolean).length,
     );
-    return { words, typing, layers };
+    return { words, typing, layers, scaling };
   } finally {
     await browser.close();
     server.close();
@@ -110,6 +118,12 @@ function writeJson(path, value) {
 }
 
 function renderDoc(report) {
+  const scalingRows = (report.scaling ?? [])
+    .map(
+      (point) =>
+        `| ${point.words.toLocaleString("en-US")} | ${point.meanMs.toFixed(3)} | ${point.p95Ms.toFixed(3)} |`,
+    )
+    .join("\n");
   const rows = report.layers
     .map(
       (layer) =>
@@ -138,6 +152,15 @@ and vsync are outside the number.
 | samples | ${report.typing.samples} |
 
 Budget: **p95 ≤ ${KEYSTROKE_P95_SLO_MS} ms** (one 60 Hz frame).
+
+## Edit cost by document size
+
+A local edit is viewport work, so it should stay flat as the note grows. CI
+fails if the largest note costs more than ${SCALING_FACTOR}x the smallest.
+
+| Words | Mean (ms) | p95 (ms) |
+| --- | --- | --- |
+${scalingRows}
 
 ## Per-extension dispatch cost
 
@@ -175,6 +198,19 @@ if (args.includes("--check")) {
       `keystroke p95: ${measured.toFixed(2)} ms exceeds SLO ${KEYSTROKE_P95_SLO_MS.toFixed(2)} ms`,
     );
   }
+  const points = report.scaling ?? [];
+  const smallest = points[0];
+  const largest = points.at(-1);
+  if (smallest && largest && smallest.meanMs > 0) {
+    const growth = largest.meanMs / smallest.meanMs;
+    if (growth > SCALING_FACTOR) {
+      failures.push(
+        `edit cost scales with document size: ${largest.words} words costs ${growth.toFixed(2)}x ` +
+          `the ${smallest.words}-word note (limit ${SCALING_FACTOR}x)`,
+      );
+    }
+  }
+
   const baseline = readBaseline();
   if (baseline?.typing?.p95Ms && measured > REGRESSION_FLOOR_MS) {
     const ceiling = baseline.typing.p95Ms * REGRESSION_FACTOR;

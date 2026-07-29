@@ -13,13 +13,24 @@ and vsync are outside the number.
 
 | Metric | ms |
 | --- | --- |
-| mean | 0.367 |
+| mean | 0.322 |
 | p50 | 0.300 |
-| p95 | 0.500 |
-| max | 2.100 |
+| p95 | 0.400 |
+| max | 1.400 |
 | samples | 300 |
 
 Budget: **p95 ≤ 16 ms** (one 60 Hz frame).
+
+## Edit cost by document size
+
+A local edit is viewport work, so it should stay flat as the note grows. CI
+fails if the largest note costs more than 3x the smallest.
+
+| Words | Mean (ms) | p95 (ms) |
+| --- | --- | --- |
+| 2,000 | 0.176 | 0.300 |
+| 10,000 | 0.202 | 0.300 |
+| 40,000 | 0.295 | 0.400 |
 
 ## Per-extension dispatch cost
 
@@ -30,11 +41,11 @@ so anything within noise of zero reads as ~0.000.
 
 | Layer | Contents | Cumulative mean (ms) | Marginal mean (ms) | Cumulative p95 (ms) |
 | --- | --- | --- | --- | --- |
-| `core` | history, selection drawing, active line, bracket matching, wrapping | 0.112 | 0.112 | 0.200 |
-| `search` | CM6 search state, highlight-all, selection matches | 0.110 | -0.002 | 0.200 |
-| `markdown` | Lezer Markdown (GFM) parsing and highlighting | 0.255 | 0.145 | 0.400 |
-| `editing` | smart pairs and paste-as-link (LOA-79) | 0.207 | -0.047 | 0.300 |
-| `folding` | heading/list folds, fold gutter, ⌘-click multicursor (LOA-85) | 0.237 | 0.029 | 0.300 |
-| `announcements` | §4.6 live-region announcements (LOA-90) | 0.254 | 0.017 | 0.300 |
-| `preview` | Live Preview families: headings, inline, lists, tasks, quotes, code (E10) | 0.247 | -0.007 | 0.400 |
-| `keymap` | list, formatting, selection, fold, default, and history bindings | 0.227 | -0.020 | 0.300 |
+| `core` | history, selection drawing, active line, bracket matching, wrapping | 0.109 | 0.109 | 0.200 |
+| `search` | CM6 search state, highlight-all, selection matches | 0.121 | 0.013 | 0.200 |
+| `markdown` | Lezer Markdown (GFM) parsing and highlighting | 0.235 | 0.114 | 0.300 |
+| `editing` | smart pairs and paste-as-link (LOA-79) | 0.199 | -0.036 | 0.300 |
+| `folding` | heading/list folds, fold gutter, ⌘-click multicursor (LOA-85) | 0.227 | 0.027 | 0.300 |
+| `announcements` | §4.6 live-region announcements (LOA-90) | 0.223 | -0.003 | 0.300 |
+| `preview` | Live Preview families: headings, inline, lists, tasks, quotes, code (E10) | 0.225 | 0.001 | 0.300 |
+| `keymap` | list, formatting, selection, fold, default, and history bindings | 0.213 | -0.011 | 0.300 |

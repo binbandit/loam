@@ -150,3 +150,43 @@ test.describe("at 150% UI zoom", () => {
     await expect(page.getByTestId("editor")).toContainText("zoomed line one!");
   });
 });
+
+/**
+ * LOA-119 AC5: the IME suite must hold with Live Preview enabled — which is
+ * now the default mode, so composition happens inside decorated content.
+ */
+test("IME composition works inside rendered content (LOA-119 AC5)", async ({ page }) => {
+  await openEditor(page);
+  const cdp = await page.context().newCDPSession(page);
+
+  // Compose in a note that is being decorated: a heading and inline marks.
+  await page.keyboard.type("# 見出し");
+  await page.keyboard.press("Enter");
+  await page.keyboard.press("Enter");
+  await page.keyboard.type("Body with **bold** text ");
+
+  // The line above is rendered, so Live Preview is genuinely on.
+  await expect(page.locator(".cm-loam-h1")).toHaveCount(1);
+
+  for (const stage of ["k", "か", "かん", "かんじ"]) {
+    await cdp.send("Input.imeSetComposition", {
+      text: stage,
+      selectionStart: stage.length,
+      selectionEnd: stage.length,
+    });
+  }
+  await cdp.send("Input.insertText", { text: "漢字" });
+
+  const editor = page.getByTestId("editor");
+  // The composition committed exactly, on a line whose own marks are raw
+  // because the cursor is sitting there.
+  await expect(editor).toContainText("Body with **bold** text 漢字");
+  // The heading above kept its rendering throughout the composition.
+  await expect(editor).toContainText("見出し");
+  await expect(editor).not.toContainText("# 見出し");
+
+  // Move off the line and its marks render too — composition left the
+  // decoration machinery in a good state.
+  await page.keyboard.press("ControlOrMeta+Home");
+  await expect(editor).toContainText("Body with bold text 漢字");
+});
