@@ -4,6 +4,7 @@
 
 pub mod index;
 pub mod ipc;
+pub mod links;
 pub mod parse;
 pub mod search;
 pub mod vault;
