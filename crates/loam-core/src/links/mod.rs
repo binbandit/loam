@@ -13,8 +13,17 @@
 //! decides — that is what lets the editor draw a squiggle and offer a
 //! quick-fix instead of guessing wrong.
 
+mod backlinks;
+mod rename;
 mod resolve;
 
+pub use backlinks::{
+    MAX_MENTIONS_PER_NOTE, Mention, MentionGroup, MentionRef, mentions_with_context,
+};
+pub use rename::{
+    ApplyError, FailedFile, FilePlan, InboundLink, LinkEdit, LinkFormat, PlanProblem, PreviewLine,
+    RenamePlan, RenameReport, apply_rename, plan_rename,
+};
 pub use resolve::{
     Candidate, LinkTarget, MatchKind, Resolution, VaultEntry, resolve_link, resolve_target,
 };
