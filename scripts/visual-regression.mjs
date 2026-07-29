@@ -110,7 +110,6 @@ async function captureStory(page, port, story, theme, perturb = false) {
   return page.screenshot({ fullPage: false });
 }
 
-
 /** How far two captures differ, and where. */
 function describeDelta(first, second) {
   const a = PNG.sync.read(first);
